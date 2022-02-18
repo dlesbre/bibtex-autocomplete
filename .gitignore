@@ -1,0 +1,9 @@
+# Python generated files
+__pycache__
+*.pyc
+
+# Virtual environement
+venv
+
+# VSCode
+.vscode/

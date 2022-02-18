@@ -1,0 +1,9 @@
+-r requirements.txt
+
+# tools
+mypy
+black
+flake8
+isort
+pylint
+pre-commit
