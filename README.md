@@ -12,7 +12,7 @@ Using a [virtual environment](https://docs.python.org/3/tutorial/venv.html) (`py
 
 ```
 git clone https://github.com/dlesbre/bibtex-autocomplete.git &&
-cd bibtex-autocomple &&
+cd bibtex-autocomplete &&
 python3 -m venv venv &&
 source venv/bin/activate &&
 make setup
