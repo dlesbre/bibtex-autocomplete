@@ -1,2 +1,2 @@
 bibtexparser
-fuzzywuzzy # approximate string compare
+python-Levenshtein # approximate string compare

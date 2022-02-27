@@ -16,7 +16,7 @@ setup(
     long_description_content_type="text/markdown",
     packages=["bibtexautocomplete"],
     # scripts = [""],
-    install_requires=["bibtexparser", "fuzzywuzzy"],
+    install_requires=["bibtexparser", "python-Levenshtein"],
     extras_require={
         "dev": ["pytest", "mypy"],
     },

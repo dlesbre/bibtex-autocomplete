@@ -94,6 +94,7 @@ setup: $(SETTINGS) ## Install dependencies
 	$(call print,Installing dependencies)
 	$(PIP) install --upgrade pip
 	$(PIP) install -r requirements.txt
+	$(call print,Installing package)
 	$(PIP) install $(DIR)
 
 .PHONY: setup-dev
@@ -103,4 +104,5 @@ setup-dev: $(SETTINGS) ## Install development dependencies
 	$(PIP) install -r requirements-dev.txt
 	$(call print,Setting up pre-commit)
 	$(PRECOMMIT) install
+	$(call print,Installing package)
 	$(PIP) install -e $(DIR)
