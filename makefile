@@ -11,7 +11,7 @@ DIR = .
 
 PRECOMMIT = pre-commit
 MYPY = mypy
-
+PYTEST = pytest
 
 # set to ON/OFF to toggle ANSI escape sequences
 COLOR = ON
@@ -71,21 +71,23 @@ precommit-all: ## run precommit on all files
 .PHONY: test
 test: ## Tests all the apps with django's tests
 	$(call print,Running pytest)
-	pytest
+	$(PYTEST)
 
 .PHONY: mypy
 mypy: ## Typecheck all file
 	$(call print,Running mypy)
 	$(MYPY) ./bibtexautocomplete/
 
-preprod: test static ## Prepare and check production
-	$(PYTHON) $(MANAGER) check --deploy
+.PHONY: format
+format:
+	$(call print,Running black)
+	black .
+	$(call print,Running isort)
+	isort .
 
 # =================================================
 # Installation
 # =================================================
-
-.PHONY: install install-devel setup setup-devel
 
 .PHONY: setup
 setup: $(SETTINGS) ## Install dependencies

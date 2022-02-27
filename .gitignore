@@ -3,6 +3,8 @@ __pycache__
 *.pyc
 *.egg-info
 build
+.mypy_cache
+.pytest_cache
 
 # Virtual environement
 venv
