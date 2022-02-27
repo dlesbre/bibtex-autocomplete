@@ -2,10 +2,14 @@
 Functions to read/write/manipulate bibtex databases
 """
 
+from typing import List
+
 from bibtexparser import customization
 from bibtexparser.bibdatabase import BibDatabase
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
+
+from .constants import EntryType
 
 parser = BibTexParser()
 # Keep non standard entries if present
@@ -53,3 +57,30 @@ def read(filepath: str) -> BibDatabase:
         customization.add_plaintext_fields(entry)
 
     return database
+
+
+class Author:
+    firstnames: str
+    lastname: str
+
+    def __init__(self, lastname: str, firstnames: str) -> None:
+        self.lastname = lastname
+        self.firstnames = firstnames
+
+    def __repr__(self) -> str:
+        return f"Author({self.lastname}, {self.firstnames})"
+
+    def __eq__(self, other) -> bool:
+        return self.firstnames == other.firstnames and self.lastname == other.lastname
+
+
+def get_authors(entry: EntryType) -> List[Author]:
+    """Return a list of 'first name', 'last name' for authors"""
+    authors = [
+        author.strip() for author in entry["author"].replace("\n", " ").split(" and ")
+    ]
+    formatted_authors = []
+    for author in customization.getnames(authors):
+        split = author.split(", ")
+        formatted_authors.append(Author(split[0], split[1]))
+    return formatted_authors
