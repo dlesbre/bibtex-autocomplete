@@ -1,6 +1,8 @@
 # Python generated files
 __pycache__
 *.pyc
+*.egg-info
+build
 
 # Virtual environement
 venv
