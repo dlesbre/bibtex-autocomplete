@@ -70,7 +70,8 @@ precommit-all: ## run precommit on all files
 
 .PHONY: test
 test: ## Tests all the apps with django's tests
-	$(call print,No Tests setup)
+	$(call print,Running pytest)
+	pytest
 
 .PHONY: mypy
 mypy: ## Typecheck all file
