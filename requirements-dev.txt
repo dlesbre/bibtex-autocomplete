@@ -1,9 +1,11 @@
 -r requirements.txt
+pre-commit
 
-# tools
+# Testing
 mypy
+pytest
+
+# Formatting
 black
 flake8
 isort
-pylint
-pre-commit
