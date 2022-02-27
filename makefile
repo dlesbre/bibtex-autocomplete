@@ -75,7 +75,7 @@ test: ## Tests all the apps with django's tests
 .PHONY: mypy
 mypy: ## Typecheck all file
 	$(call print,Running mypy)
-	$(MYPY) ./src/ --exclude /migrations/
+	$(MYPY) ./bibtexautocomplete/
 
 preprod: test static ## Prepare and check production
 	$(PYTHON) $(MANAGER) check --deploy
