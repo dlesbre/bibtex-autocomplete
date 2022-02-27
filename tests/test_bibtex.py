@@ -23,4 +23,4 @@ def test_get_authors():
         ),
     ]
     for author, res in authors:
-        assert bibtex.get_authors({"author": author}) == res
+        assert bibtex.get_authors(author) == res

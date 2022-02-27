@@ -9,8 +9,6 @@ from bibtexparser.bibdatabase import BibDatabase
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
 
-from .constants import EntryType
-
 parser = BibTexParser()
 # Keep non standard entries if present
 parser.ignore_nonstandard_types = False
@@ -74,11 +72,9 @@ class Author:
         return self.firstnames == other.firstnames and self.lastname == other.lastname
 
 
-def get_authors(entry: EntryType) -> List[Author]:
+def get_authors(author: str) -> List[Author]:
     """Return a list of 'first name', 'last name' for authors"""
-    authors = [
-        author.strip() for author in entry["author"].replace("\n", " ").split(" and ")
-    ]
+    authors = [author.strip() for author in author.replace("\n", " ").split(" and ")]
     formatted_authors = []
     for author in customization.getnames(authors):
         split = author.split(", ")
