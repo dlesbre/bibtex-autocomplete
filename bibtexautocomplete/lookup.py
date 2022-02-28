@@ -1,14 +1,26 @@
 from http.client import HTTPSConnection, socket  # type: ignore
 from json import JSONDecodeError, JSONDecoder
-from typing import Any, Dict, Generic, List, Optional, TypeVar
+from typing import Any, Dict, Generic, Iterable, Optional, TypeVar
 from urllib.parse import urlencode
 
 from .bibtex import get_authors, has_field
 from .constants import CONNECTION_TIMEOUT, USER_AGENT, EntryType, logger, str_similar
 
 
-class Lookup:
-    """Abstract class to wrap queries"""
+class AbstractLookup:
+    """Abstract class to wrap https queries:
+    Initialized with the entry to query info about
+    - lookup() -> Optional[str]
+        method that performs the queries
+    - different attributes and methods can be overridden to specify values
+        namely get_params() which specify parameters to add to the url.
+        the entry attribute can be used to initialize those parameters
+    - handle_output(data: bytes) -> Optional[str]
+        must be overridden to process the output
+        it returns None if not found or the relevant info if found
+    - query() -> Optional[str]
+        performs a single query, can be overridden for multiple queries
+    """
 
     domain: str
     host: Optional[str] = None  # specify when different to domain
@@ -101,7 +113,7 @@ class Lookup:
         """Should modify self.entry with data extracted from data here"""
         raise NotImplementedError("should be overridden in child class")
 
-    def complete(self) -> Optional[str]:
+    def query(self) -> Optional[str]:
         """Tries to complete an entry
         override this to make multiple requests
         (i.e. try different search terms)"""
@@ -111,16 +123,16 @@ class Lookup:
         self.entry = entry
 
 
-class MultipleLookup(Lookup):
+class AbstractMultipleLookup(AbstractLookup):
     """Attempts multiple lookups, stop at first success:
     Attempts lookups using in order:
     - All authors (last name) + title
     - One author (last name) + title (for all authors, alphabetically)
     - title
 
-    This DOES NOT do any real work, just update self.author and self.title
+    This DOES NOT create smart queries, it just updates self.author and self.title
     before each call to lookup(). Use these attributes in the relevant functions
-    to build the correct query
+    to build the correct query (i.e. in get_params)
     """
 
     author_join: str = " "
@@ -168,10 +180,19 @@ class MultipleLookup(Lookup):
 result = TypeVar("result")
 
 
-class SearchLookup(Generic[result], Lookup):
-    """Searches through lookup results"""
+class AbstractSearchLookup(Generic[result], AbstractLookup):
+    """Searches through lookup results
+    provides and implementation of handle_output() using the following
+    methods to override:
+    - get_results(data: bytes) -> Optional[Iterable[result]]
+        process data into a list of results
+    - get_title(res: result) -> Optional[str]
+        return a result's title, used to compare to entry
+    - get_value(res: result) -> Optional[str]
+        return the found value
+    """
 
-    def get_results(self, data: bytes) -> Optional[List[result]]:
+    def get_results(self, data: bytes) -> Optional[Iterable[result]]:
         """Parse the data into a list of results to check
         Return None if no results/invalid data"""
         raise NotImplementedError("should be overridden in child class")
@@ -181,38 +202,50 @@ class SearchLookup(Generic[result], Lookup):
         raise NotImplementedError("should be overridden in child class")
 
     def get_value(self, res: result) -> Optional[str]:
-        """Return the relevant value (e.g. DOI or URL)
-        This should also update self.entry with the value"""
+        """Return the relevant value (e.g. DOI or URL)"""
         raise NotImplementedError("should be overridden in child class")
 
     def handle_output(self, data: bytes) -> Optional[str]:
         results = self.get_results(data)
         if results is None:
+            logger.debug("no results")
             return None
         for res in results:
             title = self.get_title(res)
-            if title is None:
-                continue
-            value = self.get_value(res)
-            if value is not None:
-                return value
+            if title is not None and str_similar(title, self.entry["plain_title"]):
+                value = self.get_value(res)
+                if value is not None:
+                    logger.debug(f"found {value}")
+                    return value
+                logger.debug("no value")
         return None
 
 
-class JSONLookup(Lookup):
-    def handle_output(self, data: bytes) -> Optional[str]:
+class AbstractJSONSearchLookup(AbstractSearchLookup[result]):
+    """
+    Version of AbstractSearchLookup for JSON outputs
+    replaces get_results(data: bytes) -> results
+    with get_results_json(data: JSON)
+    """
+
+    def get_results(self, data: bytes) -> Optional[Iterable[result]]:
         try:
             data = JSONDecoder().decode(data.decode())
         except JSONDecodeError:
             return None
-        self.handle_json(data)
-        return None
+        return self.get_results_json(data)
 
-    def handle_json(self, data):
+    def get_results_json(self, data):
         raise NotImplementedError("should be overridden in child class")
 
 
-class CrossrefLookup(MultipleLookup, SearchLookup[Dict[str, Any]]):
+class Lookup(AbstractMultipleLookup, AbstractJSONSearchLookup[Dict[str, Any]]):
+    """Shortand for common inheritance"""
+
+    pass
+
+
+class CrossrefLookup(Lookup):
     """Lookup info on https://www.crossref.org
     Uses the crossref REST API, documentated here:
     https://api.crossref.org/swagger-ui/index.html
@@ -221,37 +254,29 @@ class CrossrefLookup(MultipleLookup, SearchLookup[Dict[str, Any]]):
     domain = "api.crossref.org"
     path = "/works"
 
-    author: Optional[str]
-
     def get_params(self) -> Dict[str, str]:
-        base = {"rows": "3", "query.title": self.entry["title"]}
+        base = {"rows": "3"}
+        if self.title is not None:
+            base["query.title"] = self.title
         if self.author is not None:
             base["query.author"] = self.author
         return base
 
-    def complete(self) -> Optional[str]:
-        self.author = self.entry["author"]
-        return self.lookup()
+    def get_results_json(self, data) -> Optional[Iterable[Dict[str, Any]]]:
+        """Return the result list"""
+        if "status" in data and data["status"] == "ok":
+            return data["message"]["items"]
+        return None
 
-    def handle_output(self, data) -> Optional[str]:
-        try:
-            data = JSONDecoder().decode(data.decode())
-        except JSONDecodeError:
-            return None
-        if data["status"] != "ok":
-            return None
-        items = data["message"]["items"]
-        for item in items:
-            if "title" in item and str_similar(item["title"][0], self.entry["title"]):
-                if "DOI" in item:
-                    doi = item["DOI"]
-                    self.entry["doi"] = doi
-                    logger.info(f"Found DOI for {self.entry['ID']} : {doi}")
-                    return doi
-                # if item.has_key("ISSN"):
-                #     self.entry["issn"] = item["ISSN"]
-                # if item.has_key("ISBN"):
-                #     self.entry["isbn"] = item["ISBN"]
+    def get_title(self, result: Dict[str, Any]) -> Optional[str]:
+        """Get the title of a result"""
+        if "title" in result:
+            return result["title"][0]
+        return None
+
+    def get_value(self, result: Dict[str, Any]) -> Optional[str]:
+        if "DOI" in result:
+            return result["DOI"]
         return None
 
 
@@ -264,12 +289,27 @@ class DBLPLookup(Lookup):
     path = "/search/publ/api"
 
     def get_params(self) -> Dict[str, str]:
-        return {"format": "json", "h": "3", "q": self.entry["author"]}
+        search = ""
+        if self.author is not None:
+            search += self.author + " "
+        if self.title is not None:
+            search += self.title + " "
+        return {"format": "json", "h": "3", "q": search.strip()}
 
-    def handle_output(self, data) -> Optional[str]:
+    def get_results_json(self, data) -> Optional[Iterable[Dict[str, Any]]]:
+        """Return the result list"""
         try:
-            data = JSONDecoder().decode(data.decode())
-        except JSONDecodeError:
+            return data["result"]["hits"]["hit"]
+        except KeyError:
             return None
-        print(data)
+
+    def get_title(self, result: Dict[str, Any]) -> Optional[str]:
+        """Get the title of a result"""
+        if "info" in result and "title" in result["info"]:
+            return result["info"]["title"]
+        return None
+
+    def get_value(self, result: Dict[str, Any]) -> Optional[str]:
+        if "info" in result and "doi" in result["info"]:
+            return result["info"]["doi"]
         return None
