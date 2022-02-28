@@ -4,7 +4,8 @@ from logging import info as log
 from typing import Any, Dict, Optional
 from urllib.parse import urlencode
 
-from .constants import USER_AGENT, EntryType
+# from .bibtex import Author, get_authors
+from .constants import CONNECTION_TIMEOUT, USER_AGENT, EntryType, str_similar
 
 
 class Lookup:
@@ -19,6 +20,7 @@ class Lookup:
         "Accept": "text/html,application/json",
     }
     headers: Dict[str, str] = {}
+    params: Dict[str, str] = {}
 
     entry: EntryType
 
@@ -49,13 +51,21 @@ class Lookup:
     def get_path(self) -> str:
         """Return the path to connect to
         override this if not using self.path"""
+        params = self.get_params()
+        if params:
+            return self.path + "?" + urlencode(params)
         return self.path
 
-    def get_params(self) -> Optional[Any]:
-        """Query parameters, can use self.entry to set them"""
+    def get_params(self) -> Dict[str, str]:
+        """Url parameters, can use self.entry to set them
+        override this if not using self.path"""
+        return self.params
+
+    def get_body(self) -> Optional[Any]:
+        """Query body, can use self.entry to set them"""
         return None
 
-    def lookup(self) -> bool:
+    def lookup(self) -> Optional[str]:
         """main lookup function
         returns true if the lookup succeeded in finding all info
         false otherwise"""
@@ -63,26 +73,26 @@ class Lookup:
         request = self.get_request()
         path = self.get_path()
         log(f"{request} {domain} {path}")
-        connection = HTTPSConnection(domain)
+        connection = HTTPSConnection(domain, timeout=CONNECTION_TIMEOUT)
         connection.request(
             request,
             path,
-            self.get_params(),
+            self.get_body(),
             self.get_headers(),
         )
         response = connection.getresponse()
         connection.close()
         log(f"response: {response.status} {response.reason}")
         if response.status != 200:
-            return False
+            return None
         data = response.read()
         return self.handle_output(data)
 
-    def handle_output(self, data: bytes) -> bool:
+    def handle_output(self, data: bytes) -> Optional[str]:
         """Should modify self.entry with data extracted from data here"""
         raise NotImplementedError()
 
-    def complete(self) -> bool:
+    def complete(self) -> Optional[str]:
         """Tries to complete an entry
         override this to make multiple requests
         (i.e. try different search terms)"""
@@ -98,31 +108,35 @@ class CrossrefLookup(Lookup):
     domain = "api.crossref.org"
     path = "/works"
 
-    def get_path(self):
-        return (
-            self.path
-            + "?"
-            + urlencode(
-                {
-                    "rows": "3",
-                    "query.author": self.entry["author"],
-                    "query.title": self.entry["title"],
-                }
-            )
-        )
+    author: Optional[str]
 
-    def handle_output(self, data):
+    def get_params(self) -> Dict[str, str]:
+        base = {"rows": "3", "query.title": self.entry["title"]}
+        if self.author is not None:
+            base["query.author"] = self.author
+        return base
+
+    def complete(self) -> Optional[str]:
+        self.author = self.entry["author"]
+        return self.lookup()
+
+    def handle_output(self, data) -> Optional[str]:
         try:
             data = JSONDecoder().decode(data.decode())
         except JSONDecodeError:
-            return False
+            return None
         if data["status"] != "ok":
-            return False
+            return None
         items = data["message"]["items"]
         for item in items:
-            print(item.keys())
-            print(item["DOI"][0])
-            print(item["title"][0])
-            print(item["author"][0]["family"])
-        # print(items)
-        return True
+            if "title" in item and str_similar(item["title"][0], self.entry["title"]):
+                if "DOI" in item:
+                    doi = item["DOI"]
+                    self.entry["doi"] = doi
+                    log(f"Found DOI for {self.entry['ID']} : {doi}")
+                    return doi
+                # if item.has_key("ISSN"):
+                #     self.entry["issn"] = item["ISSN"]
+                # if item.has_key("ISBN"):
+                #     self.entry["isbn"] = item["ISBN"]
+        return None
