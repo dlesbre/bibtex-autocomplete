@@ -1,11 +1,10 @@
-from http.client import HTTPSConnection
+from http.client import HTTPSConnection, socket  # type: ignore
 from json import JSONDecodeError, JSONDecoder
-from logging import info as log
 from typing import Any, Dict, Optional
 from urllib.parse import urlencode
 
 # from .bibtex import Author, get_authors
-from .constants import CONNECTION_TIMEOUT, USER_AGENT, EntryType, str_similar
+from .constants import CONNECTION_TIMEOUT, USER_AGENT, EntryType, logger, str_similar
 
 
 class Lookup:
@@ -72,17 +71,24 @@ class Lookup:
         domain = self.get_domain()
         request = self.get_request()
         path = self.get_path()
-        log(f"{request} {domain} {path}")
-        connection = HTTPSConnection(domain, timeout=CONNECTION_TIMEOUT)
-        connection.request(
-            request,
-            path,
-            self.get_body(),
-            self.get_headers(),
-        )
-        response = connection.getresponse()
-        connection.close()
-        log(f"response: {response.status} {response.reason}")
+        logger.info(f"{request} {domain} {path}")
+        try:
+            connection = HTTPSConnection(domain, timeout=CONNECTION_TIMEOUT)
+            connection.request(
+                request,
+                path,
+                self.get_body(),
+                self.get_headers(),
+            )
+            response = connection.getresponse()
+            connection.close()
+        except socket.timeout:
+            logger.warn("connection timeout")
+            return None
+        except socket.gaierror as err:
+            logger.warn(f"connection error: {err}")
+            return None
+        logger.info(f"response: {response.status} {response.reason}")
         if response.status != 200:
             return None
         data = response.read()
@@ -136,7 +142,7 @@ class CrossrefLookup(Lookup):
                 if "DOI" in item:
                     doi = item["DOI"]
                     self.entry["doi"] = doi
-                    log(f"Found DOI for {self.entry['ID']} : {doi}")
+                    logger.info(f"Found DOI for {self.entry['ID']} : {doi}")
                     return doi
                 # if item.has_key("ISSN"):
                 #     self.entry["issn"] = item["ISSN"]

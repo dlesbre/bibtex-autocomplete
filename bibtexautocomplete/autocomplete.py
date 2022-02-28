@@ -1,15 +1,30 @@
-from typing import Iterator, List
+from typing import Callable, Iterator, List
 
 from bibtexparser.bibdatabase import BibDatabase
 
 from .bibtex import get_entries, has_field
 from .constants import EntryType
+from .lookup import CrossrefLookup, Lookup
+
+
+def memoize(attr_name: str):
+    def decorator(function):
+        def helper(self):
+            if hasattr(self, attr_name):
+                return getattr(self, attr_name)
+            value = function(self)
+            setattr(self, attr_name, value)
+            return value
 
 
 class BibtexAutocomplete:
     """Main class used to dispatch calls to the relevant lookups"""
 
     bibdatabases: List[BibDatabase]
+    progress_doi: float = 0.0
+    progress_url: float = 0.0
+
+    DOI_lookups: List[Callable[[EntryType], Lookup]] = [CrossrefLookup]
 
     def iter_entries(self) -> Iterator[EntryType]:
         """Iterate through entries"""
@@ -18,6 +33,7 @@ class BibtexAutocomplete:
                 yield entry
         raise StopIteration()
 
+    @memoize("_total")
     def count_entries(self) -> int:
         """count the number of entries"""
         count = 0
@@ -33,3 +49,21 @@ class BibtexAutocomplete:
             if not has_field(entry, field):
                 count += 1
         return count
+
+    @memoize("_missing_dois")
+    def count_missing_dois(self) -> int:
+        """Counts the number of entries with missing dois"""
+        return self.count_missing("doi")
+
+    def get_dois(self) -> None:
+        """Tries to find missing DOIs"""
+        found = 0
+        for entry in self.iter_entries():
+            if has_field(entry, "doi"):
+                continue
+            for lookup in self.DOI_lookups:
+                init = lookup(entry)
+                res = init.complete()
+                if res is not None:
+                    found += 1
+                    break
