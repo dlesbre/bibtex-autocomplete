@@ -3,7 +3,7 @@ from typing import Callable, Iterator, List
 from bibtexparser.bibdatabase import BibDatabase
 
 from .bibtex import get_entries, has_field
-from .constants import EntryType
+from .constants import EntryType, logger
 from .lookup import CrossrefLookup, Lookup
 
 
@@ -63,7 +63,9 @@ class BibtexAutocomplete:
                 continue
             for lookup in self.DOI_lookups:
                 init = lookup(entry)
-                res = init.complete()
+                res = init.query()
                 if res is not None:
+                    logger.info(f"Found DOI for {entry['ID']} : {res}")
+                    entry["doi"] = res
                     found += 1
                     break
