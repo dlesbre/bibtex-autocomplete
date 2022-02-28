@@ -103,7 +103,10 @@ class Lookup:
 
 
 class CrossrefLookup(Lookup):
-    """Lookup info on crossref"""
+    """Lookup info on crossref
+    Uses the crossref REST API, documentated here:
+    https://api.crossref.org/swagger-ui/index.html
+    """
 
     domain = "api.crossref.org"
     path = "/works"

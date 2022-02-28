@@ -9,6 +9,8 @@ from bibtexparser.bibdatabase import BibDatabase
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
 
+from .constants import EntryType
+
 parser = BibTexParser()
 # Keep non standard entries if present
 parser.ignore_nonstandard_types = False
@@ -80,3 +82,12 @@ def get_authors(author: str) -> List[Author]:
         split = author.split(", ")
         formatted_authors.append(Author(split[0], split[1]))
     return formatted_authors
+
+
+def has_field(entry: EntryType, field: str) -> bool:
+    """Check if a given entry has non empty field"""
+    return field in entry and entry[field] != ""
+
+
+def get_entries(db: BibDatabase) -> List[EntryType]:
+    return db["entries"]
