@@ -1,9 +1,9 @@
 from http.client import HTTPSConnection, socket  # type: ignore
 from json import JSONDecodeError, JSONDecoder
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Generic, List, Optional, TypeVar
 from urllib.parse import urlencode
 
-# from .bibtex import Author, get_authors
+from .bibtex import get_authors, has_field
 from .constants import CONNECTION_TIMEOUT, USER_AGENT, EntryType, logger, str_similar
 
 
@@ -16,7 +16,7 @@ class Lookup:
     request: str = "GET"
     default_headers: Dict[str, str] = {
         "User-Agent": USER_AGENT,
-        "Accept": "text/html,application/json",
+        "Accept": "application/json",
     }
     headers: Dict[str, str] = {}
     params: Dict[str, str] = {}
@@ -27,7 +27,7 @@ class Lookup:
         """Return the headers used in an HTTPS request"""
         headers = self.default_headers.copy()
         headers.update(self.headers)
-        headers["host"] = self.get_host()
+        headers["Host"] = self.get_host()
         return headers
 
     def get_request(self) -> str:
@@ -71,16 +71,23 @@ class Lookup:
         domain = self.get_domain()
         request = self.get_request()
         path = self.get_path()
+        headers = self.get_headers()
         logger.info(f"{request} {domain} {path}")
+        logger.debug(f"{headers}")
         try:
             connection = HTTPSConnection(domain, timeout=CONNECTION_TIMEOUT)
             connection.request(
                 request,
                 path,
                 self.get_body(),
-                self.get_headers(),
+                headers,
             )
             response = connection.getresponse()
+            logger.info(f"response: {response.status} {response.reason}")
+            if response.status != 200:
+                connection.close()
+                return None
+            data = response.read()
             connection.close()
         except socket.timeout:
             logger.warn("connection timeout")
@@ -88,15 +95,11 @@ class Lookup:
         except socket.gaierror as err:
             logger.warn(f"connection error: {err}")
             return None
-        logger.info(f"response: {response.status} {response.reason}")
-        if response.status != 200:
-            return None
-        data = response.read()
         return self.handle_output(data)
 
     def handle_output(self, data: bytes) -> Optional[str]:
         """Should modify self.entry with data extracted from data here"""
-        raise NotImplementedError()
+        raise NotImplementedError("should be overridden in child class")
 
     def complete(self) -> Optional[str]:
         """Tries to complete an entry
@@ -108,8 +111,109 @@ class Lookup:
         self.entry = entry
 
 
-class CrossrefLookup(Lookup):
-    """Lookup info on crossref
+class MultipleLookup(Lookup):
+    """Attempts multiple lookups, stop at first success:
+    Attempts lookups using in order:
+    - All authors (last name) + title
+    - One author (last name) + title (for all authors, alphabetically)
+    - title
+
+    This DOES NOT do any real work, just update self.author and self.title
+    before each call to lookup(). Use these attributes in the relevant functions
+    to build the correct query
+    """
+
+    author_join: str = " "
+    author: Optional[str]
+    title: Optional[str]
+
+    # Politeness: avoid making too many queries when lots of authors
+    max_search_queries: int = 10
+
+    def complete(self) -> Optional[str]:
+        if has_field(self.entry, "title"):
+            self.title = self.entry["plain_title"].strip()
+        if has_field(self.entry, "author"):
+            authors = get_authors(self.entry["plain_author"])
+            self.author = self.author_join.join(author.lastname for author in authors)
+        if self.title is None and self.author is None:
+            # No query data available
+            return None
+
+        # Query all authors + title
+        lookup = self.lookup()
+        if lookup is not None:
+            return lookup
+
+        # Query one authors + title
+        if len(authors) > 1:
+            queries = 1
+            for author in authors:
+                self.author = author.lastname
+                lookup = self.lookup()
+                if lookup is not None:
+                    return lookup
+                queries += 1
+                if queries > self.max_search_queries:
+                    break
+
+        # Query title
+        self.author = None
+        if self.title is not None:
+            lookup = self.lookup()
+            return lookup
+        return None
+
+
+result = TypeVar("result")
+
+
+class SearchLookup(Generic[result], Lookup):
+    """Searches through lookup results"""
+
+    def get_results(self, data: bytes) -> Optional[List[result]]:
+        """Parse the data into a list of results to check
+        Return None if no results/invalid data"""
+        raise NotImplementedError("should be overridden in child class")
+
+    def get_title(self, res: result) -> Optional[str]:
+        """Returns a result's title, used to compare to reference entry"""
+        raise NotImplementedError("should be overridden in child class")
+
+    def get_value(self, res: result) -> Optional[str]:
+        """Return the relevant value (e.g. DOI or URL)
+        This should also update self.entry with the value"""
+        raise NotImplementedError("should be overridden in child class")
+
+    def handle_output(self, data: bytes) -> Optional[str]:
+        results = self.get_results(data)
+        if results is None:
+            return None
+        for res in results:
+            title = self.get_title(res)
+            if title is None:
+                continue
+            value = self.get_value(res)
+            if value is not None:
+                return value
+        return None
+
+
+class JSONLookup(Lookup):
+    def handle_output(self, data: bytes) -> Optional[str]:
+        try:
+            data = JSONDecoder().decode(data.decode())
+        except JSONDecodeError:
+            return None
+        self.handle_json(data)
+        return None
+
+    def handle_json(self, data):
+        raise NotImplementedError("should be overridden in child class")
+
+
+class CrossrefLookup(MultipleLookup, SearchLookup[Dict[str, Any]]):
+    """Lookup info on https://www.crossref.org
     Uses the crossref REST API, documentated here:
     https://api.crossref.org/swagger-ui/index.html
     """
@@ -148,4 +252,24 @@ class CrossrefLookup(Lookup):
                 #     self.entry["issn"] = item["ISSN"]
                 # if item.has_key("ISBN"):
                 #     self.entry["isbn"] = item["ISBN"]
+        return None
+
+
+class DBLPLookup(Lookup):
+    """Lookup for info on https://dlbp.org
+    Uses the API documented here:
+    https://dblp.org/faq/13501473.html"""
+
+    domain = "dblp.org"
+    path = "/search/publ/api"
+
+    def get_params(self) -> Dict[str, str]:
+        return {"format": "json", "h": "3", "q": self.entry["author"]}
+
+    def handle_output(self, data) -> Optional[str]:
+        try:
+            data = JSONDecoder().decode(data.decode())
+        except JSONDecodeError:
+            return None
+        print(data)
         return None
