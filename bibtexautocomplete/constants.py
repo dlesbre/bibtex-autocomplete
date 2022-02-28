@@ -46,8 +46,20 @@ logger.addHandler(ch)
 # =====================================================
 
 
+def str_normalize(s1: str) -> str:
+    """Normalize string for decent comparison"""
+    res = ""
+    prev_space = False
+    for x in s1:
+        if x.isalnum():
+            res += x
+            prev_space = False
+        elif not prev_space:
+            res += " "
+            prev_space = True
+    return res.lower().strip()
+
+
 def str_similar(s1: str, s2: str) -> bool:
     """String equality, case insensitive"""
-    return s1.lower().strip().replace("  ", " ") == s2.lower().strip().replace(
-        "  ", " "
-    )
+    return str_normalize(s1) == str_normalize(s2)
