@@ -2,7 +2,7 @@
 Functions to read/write/manipulate bibtex databases
 """
 
-from typing import List
+from typing import List, Optional
 
 from bibtexparser import customization
 from bibtexparser.bibdatabase import BibDatabase
@@ -60,15 +60,20 @@ def read(filepath: str) -> BibDatabase:
 
 
 class Author:
-    firstnames: str
+    firstnames: Optional[str]
     lastname: str
 
-    def __init__(self, lastname: str, firstnames: str) -> None:
+    def __init__(self, lastname: str, firstnames: Optional[str]) -> None:
         self.lastname = lastname
         self.firstnames = firstnames
 
     def __repr__(self) -> str:
         return f"Author({self.lastname}, {self.firstnames})"
+
+    def to_bibtex(self) -> str:
+        if self.firstnames is not None:
+            return f"{self.lastname}, {self.firstnames}"
+        return self.lastname
 
     def __eq__(self, other) -> bool:
         return self.firstnames == other.firstnames and self.lastname == other.lastname

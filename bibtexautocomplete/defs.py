@@ -71,9 +71,10 @@ def str_similar(s1: str, s2: str) -> bool:
     return str_normalize(s1) == str_normalize(s2)
 
 
-def extract_doi(doi_or_url: str) -> Optional[str]:
+def extract_doi(doi_or_url: Optional[str]) -> Optional[str]:
     """Returns doi to canonical form (i.e. removing url)"""
-    match = search(DOI_REGEX, doi_or_url)
-    if match is not None:
-        return match.group(1)
+    if doi_or_url is not None:
+        match = search(DOI_REGEX, doi_or_url)
+        if match is not None:
+            return match.group(1)
     return None

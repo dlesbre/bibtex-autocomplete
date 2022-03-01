@@ -1,9 +1,10 @@
 # Explicit lookups for DOI searches
 
-from typing import Any, Dict, Iterable, Optional
+from typing import Any, Dict, Iterable, List, Optional
 from urllib.parse import quote_plus, urlencode
 
 from .abstractlookup import ADOITitleLookup, AJSONSearchLookup, ALookup
+from .bibtex import Author
 from .defs import EMAIL, ResultType, extract_doi
 
 
@@ -36,10 +37,62 @@ class CrossrefLookup(ALookup):
             return result["title"][0]
         return None
 
+    @staticmethod
+    def get_0(obj: Optional[List[str]]) -> Optional[str]:
+        """Get first element if it exists"""
+        if obj is None:
+            return None
+        return obj[0]
+
+    @staticmethod
+    def get_authors(authors: Any) -> Optional[str]:
+        """Parses JSON output into bibtex formatted author list"""
+        if isinstance(authors, list):
+            formatted = []
+            for author in authors:
+                if not isinstance(author, dict):
+                    continue
+                lastname = author.get("family")
+                if lastname is not None:
+                    formatted.append(Author(lastname, author.get("given")).to_bibtex())
+            return " and ".join(formatted)
+        return None
+
+    @staticmethod
+    def get_date(result: Dict[str, Any], values: ResultType) -> ResultType:
+        date = None
+        for field in (
+            "published-print",
+            "issued",
+            "published-online",
+            "created",
+            "content-created",
+        ):
+            if field in result:
+                date = result[field]
+        if date is None:
+            return values
+        parts = CrossrefLookup.get_0(date.get("date-parts"))
+        if parts is not None:
+            values["year"] = str(parts[0])
+            if len(parts) >= 2:
+                values["month"] = str(parts[1])
+        return values
+
     def get_value(self, result: Dict[str, Any]) -> ResultType:
-        if "DOI" in result:
-            return {"doi": extract_doi(result["DOI"])}
-        return dict()
+        """Extract bibtex data from JSON output"""
+        values = {
+            "doi": extract_doi(result.get("DOI")),
+            "issn": self.get_0(result.get("ISSN")),
+            "isbn": self.get_0(result.get("ISBN")),
+            "title": self.get_title(result),
+            "author": self.get_authors(result.get("author")),
+            "booktitle": self.get_0(result.get("container-title")),
+            "volume": result.get("volume"),
+            "page": result.get("page"),
+            "publisher": result.get("publisher"),
+        }
+        return self.get_date(result, values)
 
 
 class DBLPLookup(ALookup):
