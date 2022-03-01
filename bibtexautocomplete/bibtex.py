@@ -35,10 +35,13 @@ def write(database: BibDatabase) -> str:
     return writer.write(database)
 
 
-def write_to(filepath: str, database: BibDatabase) -> None:
+def write_to(filepath: Optional[str], database: BibDatabase) -> None:
     output = write(database)
-    with open(filepath, "w") as file:
-        file.write(output)
+    if filepath is None:
+        print(output)
+    else:
+        with open(filepath, "w") as file:
+            file.write(output)
 
 
 def read(filepath: str) -> BibDatabase:

@@ -1,45 +1,49 @@
 from argparse import ArgumentParser
+from pathlib import Path
 from sys import stdout
 from typing import List, Optional
 
 from .abstractlookup import ALookup
-from .defs import CONNECTION_TIMEOUT, NAME, VERSION, OnlyExclude
+from .autocomplete import BibtexAutocomplete
+from .defs import CONNECTION_TIMEOUT, NAME, VERSION, OnlyExclude, set_logger_level
 from .lookup import LOOKUP_NAMES, LOOKUPS
 
 parser = ArgumentParser(prog=NAME, add_help=False)
 
 parser.add_argument(
-    "--dont-query", "-Q", nargs="?", action="append", default=[], choices=LOOKUP_NAMES
+    "--dont-query", "-Q", nargs=1, action="append", default=[], choices=LOOKUP_NAMES
 )
 parser.add_argument(
-    "--only-query", "-q", nargs="?", action="append", default=[], choices=LOOKUP_NAMES
+    "--only-query", "-q", nargs=1, action="append", default=[], choices=LOOKUP_NAMES
 )
 parser.add_argument(
     "--dont-complete",
     "-C",
-    nargs="?",
+    nargs=1,
     action="append",
     default=[],
 )
 parser.add_argument(
     "--only-complete",
     "-c",
-    nargs="?",
+    nargs=1,
     action="append",
     default=[],
 )
-parser.add_argument("--exclude-entry", "-E", nargs="?", action="append", default=[])
-parser.add_argument("--only-entry", "-e", nargs="?", action="append", default=[])
+parser.add_argument("--exclude-entry", "-E", nargs=1, action="append", default=[])
+parser.add_argument("--only-entry", "-e", nargs=1, action="append", default=[])
 
 parser.add_argument("--force-overwrite", "-f", action="store_true")
 parser.add_argument("--inplace", "-i", action="store_true")
 parser.add_argument("--timeout", "-t", nargs=1, type=float, default=CONNECTION_TIMEOUT)
-parser.add_argument("--verbose", "-v", action="store_true")
+parser.add_argument("--verbose", "-v", action="count", default=0)
 parser.add_argument("--silent", "-s", action="store_true")
 parser.add_argument("--no-color", "-n", action="store_true")
 
 parser.add_argument("--version", action="store_true")
 parser.add_argument("--help", "-h", action="store_true")
+
+parser.add_argument("--output", "-o", nargs=1, type=Path, action="append", default=[])
 
 HELP_TEXT = """{b}{NAME}{e} version {VERSION}
 Program to autocomplete bibtex entries by searching online databases.
@@ -123,6 +127,10 @@ def bibtexautocomplete_main(argv: Optional[List[str]] = None) -> None:
         print(f"{NAME} version {VERSION}")
         exit(0)
 
+    if args.silent:
+        args.verbose = -1
+    set_logger_level(args.verbose)
+
     ALookup.connection_timeout = args.timeout
     lookups = (
         OnlyExclude[str]
@@ -131,6 +139,10 @@ def bibtexautocomplete_main(argv: Optional[List[str]] = None) -> None:
     )
     fields = OnlyExclude[str].from_nonempty(args.only_complete, args.dont_complete)
     entries = OnlyExclude[str].from_nonempty(args.only_entry, args.exclude_entry)
+
+    completer = BibtexAutocomplete([], lookups, fields, entries, args.force_overwrite)
+    completer.autocomplete()
+    completer.write(args.output)
 
 
 if __name__ == "__main__":

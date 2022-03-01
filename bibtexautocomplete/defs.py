@@ -1,6 +1,7 @@
 # Constants, usefull functions...
 import logging
 from re import search
+from sys import stderr, stdout
 from typing import Callable, Container, Dict, Iterable, Optional, Sized, TypeVar
 
 # =====================================================
@@ -27,24 +28,62 @@ ResultType = Dict[str, Optional[str]]  # Type of query results
 # Logger
 # =====================================================
 
+
+class LevelFilter(logging.Filter):
+    def __init__(self, low, high):
+        self._low = low
+        self._high = high
+        logging.Filter.__init__(self)
+
+    def filter(self, record):
+        if self._low <= record.levelno <= self._high:
+            return True
+        return False
+
+
+# custom level
+PROGRESS = logging.INFO + 2
+logging.addLevelName(PROGRESS, "INFO")
+
+DEFAULT_LEVEL = PROGRESS
+
 # create logger
 logger = logging.getLogger(NAME)
-logger.setLevel(logging.DEBUG)
+error_handler = logging.StreamHandler(stderr)
+error_handler.addFilter(LevelFilter(logging.WARN, logging.CRITICAL))
+error_handler.setFormatter(logging.Formatter("%(levelname)s - %(message)s"))
+logger.addHandler(error_handler)
+info_handler = logging.StreamHandler(stdout)
+info_handler.addFilter(LevelFilter(0, logging.WARN - 1))
+logger.addHandler(info_handler)
 
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
 
-# create formatter
-formatter = logging.Formatter(
-    "%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%H:%M:%S",
-)
+def set_logger_level(level: int) -> None:
+    """Translate my program levels into logger levels
+    -1 = silent => logging.ERROR
+    0 = default => PROGRESS
+    1 = verbose => logging.INFO
+    2 = very verbose => logging.DEBUG"""
+    if level < 0:
+        formatter_str = "%(message)s"
+        logger.setLevel(logging.ERROR)
+    elif level == 0:
+        formatter_str = "%(message)s"
+        logger.setLevel(PROGRESS)
+    elif level == 1:
+        formatter_str = "%(asctime)s - %(message)s"
+        logger.setLevel(logging.INFO)
+    else:
+        formatter_str = "%(asctime)s - %(levelname)s - %(message)s"
+        logger.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(
+        formatter_str,
+        datefmt="%H:%M:%S",
+    )
+    info_handler.setFormatter(formatter)
 
-# add formatter to ch
-ch.setFormatter(formatter)
 
-# add ch to logger
-logger.addHandler(ch)
+set_logger_level(0)
 
 # =====================================================
 # Utility functions
