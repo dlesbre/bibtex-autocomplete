@@ -8,7 +8,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="bibtexautocomplete",
-    version="0.1.0",
+    version="0.2",
     author="Dorian Lesbre",
     url="https://github.com/dlesbre/bibtex-autocomplete",
     description="Python package to autocomplete bibtex bibliographies ",

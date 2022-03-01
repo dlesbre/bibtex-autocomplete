@@ -9,7 +9,7 @@ from typing import Callable, Container, Dict, Iterable, Optional, Sized, TypeVar
 # =====================================================
 
 NAME = "bibtexautocomplete"
-VERSION = "0.1"
+VERSION = "0.2"
 URL = "https://github.com/dlesbre/bibtex-autocomplete"
 LICENSE = "MIT"
 
