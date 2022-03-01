@@ -1,5 +1,8 @@
+# Constants, usefull functions...
+
 import logging
-from typing import Dict
+from re import search
+from typing import Dict, Optional
 
 # =====================================================
 # Constants
@@ -15,6 +18,8 @@ EMAIL = "dorian.lesbre" + chr(64) + "gmail.com"
 CONNECTION_TIMEOUT = 10.0  # seconds
 
 USER_AGENT = f"{NAME}/{VERSION} ({URL}; mailto:{EMAIL})"
+
+DOI_REGEX = r"(10\.\d{4,5}\/[\S]+[^;,.\s])$"
 
 EntryType = Dict[str, str]  # Type of a bibtex entry
 
@@ -46,11 +51,11 @@ logger.addHandler(ch)
 # =====================================================
 
 
-def str_normalize(s1: str) -> str:
+def str_normalize(string: str) -> str:
     """Normalize string for decent comparison"""
     res = ""
     prev_space = False
-    for x in s1:
+    for x in string:
         if x.isalnum():
             res += x
             prev_space = False
@@ -63,3 +68,11 @@ def str_normalize(s1: str) -> str:
 def str_similar(s1: str, s2: str) -> bool:
     """String equality, case insensitive"""
     return str_normalize(s1) == str_normalize(s2)
+
+
+def extract_doi(doi_or_url: str) -> Optional[str]:
+    """Returns doi to canonical form (i.e. removing url)"""
+    match = search(DOI_REGEX, doi_or_url)
+    if match is not None:
+        return match.group(1)
+    return None

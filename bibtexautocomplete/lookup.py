@@ -158,7 +158,7 @@ class AbstractMultipleLookup(AbstractBaseLookup):
     # Politeness: avoid making too many queries when lots of authors
     max_search_queries: int = 10
 
-    def complete(self) -> Optional[str]:
+    def query(self) -> Optional[str]:
         if has_field(self.entry, "title"):
             self.title = self.entry["plain_title"].strip()
         if has_field(self.entry, "author"):

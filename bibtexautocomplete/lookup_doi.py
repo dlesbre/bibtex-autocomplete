@@ -1,7 +1,9 @@
 # Explicit lookups for DOI searches
 
 from typing import Any, Dict, Iterable, Optional
+from urllib.parse import quote_plus
 
+from .defs import extract_doi
 from .lookup import AbstractLookup
 
 
@@ -36,7 +38,7 @@ class CrossrefLookup(AbstractLookup):
 
     def get_value(self, result: Dict[str, Any]) -> Optional[str]:
         if "DOI" in result:
-            return result["DOI"]
+            return extract_doi(result["DOI"])
         return None
 
 
@@ -71,5 +73,39 @@ class DBLPLookup(AbstractLookup):
 
     def get_value(self, result: Dict[str, Any]) -> Optional[str]:
         if "info" in result and "doi" in result["info"]:
-            return result["info"]["doi"]
+            return extract_doi(result["info"]["doi"])
+        return None
+
+
+class ResearchrLookup(AbstractLookup):
+    """Lookup for info on https://researchr.org/
+    Uses the API documented here:
+    https://researchr.org/about/api"""
+
+    domain = "researchr.org"
+    path = "/api/search/publication/"
+
+    def get_path(self) -> str:
+        search = ""
+        if self.author is not None:
+            search += self.author + " "
+        if self.title is not None:
+            search += self.title + " "
+        return self.path + quote_plus(search.strip())
+
+    def get_results_json(self, data) -> Optional[Iterable[Dict[str, Any]]]:
+        """Return the result list"""
+        if "result" in data:
+            return data["result"]
+        return None
+
+    def get_title(self, result: Dict[str, Any]) -> Optional[str]:
+        """Get the title of a result"""
+        if "title" in result:
+            return result["title"]
+        return None
+
+    def get_value(self, result: Dict[str, Any]) -> Optional[str]:
+        if "doi" in result:
+            return extract_doi(result["doi"])
         return None
