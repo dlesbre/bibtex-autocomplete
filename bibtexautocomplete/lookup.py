@@ -16,7 +16,7 @@
 
 from http.client import HTTPSConnection, socket  # type: ignore
 from json import JSONDecodeError, JSONDecoder
-from typing import Any, Dict, Generic, Iterable, Optional, TypeVar
+from typing import Any, Callable, Dict, Generic, Iterable, Optional, TypeVar
 from urllib.parse import urlencode
 
 from .bibtex import get_authors, has_field
@@ -50,6 +50,8 @@ class AbstractBaseLookup:
     params: Dict[str, str] = {}
 
     entry: EntryType
+
+    connection_timeout: float = CONNECTION_TIMEOUT
 
     def get_headers(self) -> Dict[str, str]:
         """Return the headers used in an HTTPS request"""
@@ -103,7 +105,7 @@ class AbstractBaseLookup:
         logger.info(f"{request} {domain} {path}")
         logger.debug(f"{headers}")
         try:
-            connection = HTTPSConnection(domain, timeout=CONNECTION_TIMEOUT)
+            connection = HTTPSConnection(domain, timeout=self.connection_timeout)
             connection.request(
                 request,
                 path,
@@ -159,8 +161,12 @@ class AbstractMultipleLookup(AbstractBaseLookup):
     max_search_queries: int = 10
 
     def query(self) -> Optional[str]:
-        if has_field(self.entry, "title"):
-            self.title = self.entry["plain_title"].strip()
+        self.title = None
+        self.author = None
+        if not has_field(self.entry, "title"):
+            # No title, we can't compare entries
+            return None
+        self.title = self.entry["plain_title"].strip()
         if has_field(self.entry, "author"):
             authors = get_authors(self.entry["plain_author"])
             self.author = self.author_join.join(author.lastname for author in authors)
@@ -259,3 +265,6 @@ class AbstractLookup(AbstractMultipleLookup, AbstractJSONSearchLookup[Dict[str, 
     """Shortand for common inheritance"""
 
     pass
+
+
+LookupType = Callable[[EntryType], AbstractBaseLookup]
