@@ -3,7 +3,7 @@
 from typing import Any, Dict, Iterable, List, Optional
 from urllib.parse import quote_plus, urlencode
 
-from .abstractlookup import ADOITitleLookup, AJSONSearchLookup, ALookup
+from .abstractlookup import ADOITitleLookup, AJSONSearchLookup, ALookup, LookupType
 from .bibtex import Author
 from .defs import EMAIL, ResultType, extract_doi
 
@@ -13,6 +13,8 @@ class CrossrefLookup(ALookup):
     Uses the crossref REST API, documentated here:
     https://api.crossref.org/swagger-ui/index.html
     """
+
+    name = "crossref"
 
     domain = "api.crossref.org"
     path = "/works"
@@ -100,6 +102,8 @@ class DBLPLookup(ALookup):
     Uses the API documented here:
     https://dblp.org/faq/13501473.html"""
 
+    name = "dblp"
+
     domain = "dblp.org"
     path = "/search/publ/api"
 
@@ -160,6 +164,8 @@ class ResearchrLookup(ALookup):
     """Lookup for info on https://researchr.org/
     Uses the API documented here:
     https://researchr.org/about/api"""
+
+    name = "researchr"
 
     domain = "researchr.org"
     path = "/api/search/publication/"
@@ -223,6 +229,8 @@ class UnpaywallLookup(ADOITitleLookup, AJSONSearchLookup[Dict[str, Any]]):
     API documented at:
     https://unpaywall.org/products/api
     """
+
+    name = "unpaywall"
 
     domain = "api.unpaywall.org"
     path = "/v2/"
@@ -297,3 +305,13 @@ class UnpaywallLookup(ADOITitleLookup, AJSONSearchLookup[Dict[str, Any]]):
             "authors": self.get_authors(result.get("z_authors")),
         }
         return values
+
+
+# List of lookup to use, in the order they will be used
+LOOKUPS: List[LookupType] = [
+    CrossrefLookup,
+    DBLPLookup,
+    ResearchrLookup,
+    UnpaywallLookup,
+]
+LOOKUP_NAMES = [cls.name for cls in LOOKUPS]

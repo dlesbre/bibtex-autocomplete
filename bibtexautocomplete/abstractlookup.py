@@ -20,7 +20,7 @@
 
 from http.client import HTTPSConnection, socket  # type: ignore
 from json import JSONDecodeError, JSONDecoder
-from typing import Any, Callable, Dict, Generic, Iterable, Optional, TypeVar
+from typing import Any, Dict, Generic, Iterable, Optional, TypeVar
 from urllib.parse import urlencode
 
 from .bibtex import get_authors, has_field
@@ -50,6 +50,8 @@ class ABaseLookup:
     - query() -> Optional[ResultType]
         performs a single query, can be overridden for multiple queries
     """
+
+    name: str  # used to identify the lookup, also appears in help string
 
     domain: str
     host: Optional[str] = None  # specify when different to domain
@@ -328,4 +330,4 @@ class ALookup(AAuthorTitleLookup, AJSONSearchLookup[Dict[str, Any]]):
     pass
 
 
-LookupType = Callable[[EntryType], ABaseLookup]
+LookupType = type[ABaseLookup]

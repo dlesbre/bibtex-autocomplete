@@ -2,41 +2,38 @@ from argparse import ArgumentParser
 from sys import stdout
 from typing import List, Optional
 
-from .defs import NAME, VERSION
-
-LOOKUPS = ("crossref", "dblp", "researchr", "unpaywall")
+from .abstractlookup import ALookup
+from .defs import CONNECTION_TIMEOUT, NAME, VERSION, OnlyExclude
+from .lookup import LOOKUP_NAMES, LOOKUPS
 
 parser = ArgumentParser(prog=NAME, add_help=False)
 
 parser.add_argument(
-    "--dont-query", "-Q", nargs="?", action="appCOLOR_END", default=[], choices=LOOKUPS
+    "--dont-query", "-Q", nargs="?", action="append", default=[], choices=LOOKUP_NAMES
 )
 parser.add_argument(
-    "--only-query", "-q", nargs="?", action="appCOLOR_END", default=[], choices=LOOKUPS
+    "--only-query", "-q", nargs="?", action="append", default=[], choices=LOOKUP_NAMES
 )
 parser.add_argument(
     "--dont-complete",
     "-C",
     nargs="?",
-    action="appCOLOR_END",
+    action="append",
     default=[],
-    choices=LOOKUPS,
 )
 parser.add_argument(
     "--only-complete",
     "-c",
     nargs="?",
-    action="appCOLOR_END",
+    action="append",
     default=[],
-    choices=LOOKUPS,
 )
-parser.add_argument(
-    "--exclude-entry", "-E", nargs="?", action="appCOLOR_END", default=[]
-)
-parser.add_argument("--only-entry", "-e", nargs="?", action="appCOLOR_END", default=[])
+parser.add_argument("--exclude-entry", "-E", nargs="?", action="append", default=[])
+parser.add_argument("--only-entry", "-e", nargs="?", action="append", default=[])
 
 parser.add_argument("--force-overwrite", "-f", action="store_true")
 parser.add_argument("--inplace", "-i", action="store_true")
+parser.add_argument("--timeout", "-t", nargs=1, type=float, default=CONNECTION_TIMEOUT)
 parser.add_argument("--verbose", "-v", action="store_true")
 parser.add_argument("--silent", "-s", action="store_true")
 parser.add_argument("--no-color", "-n", action="store_true")
@@ -78,6 +75,7 @@ Optional arguments: can all be used multiple times
 Flags:
   {c}-i --inplace{e}          Modify input files inplace, overrides any specified output files
   {c}-f --force-overwrite{e}  Overwrite aldready present fields with data found online
+  {c}-t --timeout{e} {d}<float>{e}  set timeout on request, default: {TIMEOUT} s
 
   {c}-v --verbose{e}          print the commands called
   {c}-s --silent{e}           don't show progressbar (keeps tex output and error messages)
@@ -110,8 +108,9 @@ def bibtexautocomplete_main(argv: Optional[List[str]] = None) -> None:
             HELP_TEXT.format(
                 bopen="{",
                 bclose="}",
+                TIMEOUT=CONNECTION_TIMEOUT,
                 VERSION=VERSION,
-                LOOKUPS=LOOKUPS,
+                LOOKUPS=LOOKUP_NAMES,
                 NAME=NAME,
                 b=COLOR_YELLOW,
                 c=COLOR_ORANGE,
@@ -123,6 +122,15 @@ def bibtexautocomplete_main(argv: Optional[List[str]] = None) -> None:
     if args.version:
         print(f"{NAME} version {VERSION}")
         exit(0)
+
+    ALookup.connection_timeout = args.timeout
+    lookups = (
+        OnlyExclude[str]
+        .from_nonempty(args.only_query, args.dont_query)
+        .to_iterator(LOOKUPS, lambda x: x.name)
+    )
+    fields = OnlyExclude[str].from_nonempty(args.only_complete, args.dont_complete)
+    entries = OnlyExclude[str].from_nonempty(args.only_entry, args.exclude_entry)
 
 
 if __name__ == "__main__":
