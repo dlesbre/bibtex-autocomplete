@@ -40,7 +40,7 @@ class Base:
 
     def test_valid(self):
         a = self.Lookup(self.entry[0])
-        assert a.query() == self.entry[1]
+        assert a.query()["doi"] == self.entry[1]
 
     def test_junk(self):
         a = self.Lookup(entry_junk)
@@ -55,7 +55,7 @@ class Base:
         del entry["author"]
         del entry["plain_author"]
         a = self.Lookup(entry)
-        assert a.query() == self.entry[1]
+        assert a.query()["doi"] == self.entry[1]
 
     def test_no_title(self):
         entry = self.entry[0].copy()

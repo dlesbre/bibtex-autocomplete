@@ -22,6 +22,7 @@ USER_AGENT = f"{NAME}/{VERSION} ({URL}; mailto:{EMAIL})"
 DOI_REGEX = r"(10\.\d{4,5}\/[\S]+[^;,.\s])$"
 
 EntryType = Dict[str, str]  # Type of a bibtex entry
+ResultType = Dict[str, Optional[str]]  # Type of query results
 
 # =====================================================
 # Logger
