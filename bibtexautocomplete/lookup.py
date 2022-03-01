@@ -174,20 +174,47 @@ class ResearchrLookup(ALookup):
 
     def get_results_json(self, data) -> Optional[Iterable[Dict[str, Any]]]:
         """Return the result list"""
-        if "result" in data:
-            return data["result"]
-        return None
+        return data.get("result")
 
     def get_title(self, result: Dict[str, Any]) -> Optional[str]:
         """Get the title of a result"""
-        if "title" in result:
-            return result["title"]
+        return result.get("title")
+
+    @staticmethod
+    def get_authors(authors: Any) -> Optional[str]:
+        """Return a bibtex formatted list of authors"""
+        if isinstance(authors, list):
+            formatted = []
+            for author in authors:
+                alias = author.get("alias")
+                if isinstance(alias, dict):
+                    name = alias.get("name")
+                    if name is not None:
+                        formatted.append(name)
+            return " and ".join(formatted)
         return None
 
     def get_value(self, result: Dict[str, Any]) -> ResultType:
-        if "doi" in result:
-            return {"doi": extract_doi(result["doi"])}
-        return dict()
+        page_1 = result.get("firstpage")
+        page_n = result.get("lastpage")
+        values = {
+            "doi": extract_doi(result.get("doi")),
+            "booktitle": result.get("booktitle"),
+            "volume": result.get("volume"),
+            "number": result.get("number"),
+            "address": result.get("address"),
+            "organization": result.get("organization"),
+            "publisher": result.get("publisher"),
+            "year": result.get("year"),
+            "month": result.get("month"),
+            "title": result.get("title"),
+            "pages": f"{page_1}-{page_n}"
+            if page_1 is not None and page_n is not None
+            else None,
+            "authors": self.get_authors(result.get("authors")),
+            "editors": self.get_authors(result.get("editors")),
+        }
+        return values
 
 
 class UnpaywallLookup(ADOITitleLookup, AJSONSearchLookup[Dict[str, Any]]):
@@ -221,5 +248,52 @@ class UnpaywallLookup(ADOITitleLookup, AJSONSearchLookup[Dict[str, Any]]):
         return base + "search/" + params
 
     def get_results_json(self, data) -> Optional[Iterable[Dict[str, Any]]]:
-        print(data)
+        if self.doi is not None:
+            # doi based search
+            # single result if any
+            return [data]
+        return data.get("result")
+
+    def get_title(self, result: Dict[str, Any]) -> Optional[str]:
+        """Get the title of a result"""
+        return result.get("title")
+
+    def matches_entry(self, result: Dict[str, Any]) -> bool:
+        """Always true in DOI mode (single result)"""
+        return self.doi is not None or super().matches_entry(result)
+
+    @staticmethod
+    def get_authors(authors: Any) -> Optional[str]:
+        """Return a bibtex formatted list of authors"""
+        if isinstance(authors, list):
+            formatted = []
+            for author in authors:
+                family = author.get("family")
+                if family is not None:
+                    given = author.get("given")
+                    formatted.append(Author(family, given).to_bibtex())
+            return " and ".join(formatted)
         return None
+
+    def get_value(self, result: Dict[str, Any]) -> ResultType:
+        date = result.get("published_date")  # ISO format YYYY-MM-DD
+        year = str(result.get("year"))
+        month = None
+        if date is not None:
+            if year is None and len(date) >= 4:
+                year = date[0:4]
+            if len(date) >= 7:
+                month = date[5:7]
+
+        values = {
+            "doi": extract_doi(result.get("doi")),
+            "booktitle": result.get("journal_name"),
+            "publisher": result.get("publisher"),
+            "title": result.get("title"),
+            "year": year,
+            "month": month,
+            "url": result.get("best_oa_location"),
+            "issn": result.get("journal_issn_l"),
+            "authors": self.get_authors(result.get("z_authors")),
+        }
+        return values
