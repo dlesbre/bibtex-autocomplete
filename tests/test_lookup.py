@@ -1,8 +1,8 @@
 from logging import DEBUG
 
+from bibtexautocomplete.abstractlookup import LookupType
 from bibtexautocomplete.defs import logger
-from bibtexautocomplete.lookup import LookupType
-from bibtexautocomplete.lookup_doi import CrossrefLookup, DBLPLookup, ResearchrLookup
+from bibtexautocomplete.lookup import CrossrefLookup, DBLPLookup, ResearchrLookup
 
 logger.setLevel(DEBUG)
 

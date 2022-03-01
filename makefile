@@ -76,14 +76,14 @@ test: ## Tests all the apps with django's tests
 .PHONY: mypy
 mypy: ## Typecheck all file
 	$(call print,Running mypy)
-	$(MYPY) ./bibtexautocomplete/
+	$(MYPY) ./bibtexautocomplete/ ./tests/
 
 .PHONY: format
 format:
 	$(call print,Running black)
-	black .
+	black ./bibtexautocomplete/ ./tests/
 	$(call print,Running isort)
-	isort .
+	isort ./bibtexautocomplete/ ./tests/
 
 # =================================================
 # Installation
