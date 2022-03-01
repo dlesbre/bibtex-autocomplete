@@ -124,10 +124,36 @@ class DBLPLookup(ALookup):
             return result["info"]["title"]
         return None
 
+    @staticmethod
+    def get_authors(info: Any) -> Optional[str]:
+        """Return a bibtex formatted list of authors"""
+        authors = info.get("authors")
+        if authors is None:
+            return None
+        authors = authors.get("author")
+        if isinstance(authors, list):
+            formatted = []
+            for author in authors:
+                name = author.get("text")
+                if name is not None:
+                    formatted.append(name)
+            return " and ".join(formatted)
+        return None
+
     def get_value(self, result: Dict[str, Any]) -> ResultType:
-        if "info" in result and "doi" in result["info"]:
-            return {"doi": extract_doi(result["info"]["doi"])}
-        return dict()
+        values = dict()
+        if "info" in result:
+            info = result["info"]
+            values = {
+                "doi": extract_doi(info.get("doi")),
+                "title": info.get("title"),
+                "pages": info.get("pages"),
+                "volume": info.get("volume"),
+                "year": info.get("year"),
+                "author": self.get_authors(info),
+                "url": info.get("ee") if info.get("access") == "open" else None,
+            }
+        return values
 
 
 class ResearchrLookup(ALookup):
