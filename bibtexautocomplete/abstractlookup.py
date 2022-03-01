@@ -23,7 +23,7 @@ from json import JSONDecodeError, JSONDecoder
 from typing import Any, Dict, Generic, Iterable, Optional, TypeVar
 from urllib.parse import urlencode
 
-from .bibtex import get_authors, has_field
+from .bibtex import PLAIN_PREFIX, get_authors, has_field
 from .defs import (
     CONNECTION_TIMEOUT,
     EMAIL,
@@ -119,7 +119,7 @@ class ABaseLookup:
         path = self.get_path()
         headers = self.get_headers()
         logger.info(f"{request} {domain} {path}")
-        logger.debug(f"{headers}")
+        # logger.debug(f"{headers}")
         try:
             connection = HTTPSConnection(domain, timeout=self.connection_timeout)
             connection.request(
@@ -159,7 +159,7 @@ class ABaseLookup:
     def get_entry_field(self, field: str) -> Optional[str]:
         """Safe access to self.entry's fields"""
         if has_field(self.entry, field):
-            plain = "plain_" + field
+            plain = PLAIN_PREFIX + field
             if plain in self.entry:
                 return self.entry[plain].strip()
             return self.entry[field].strip()
@@ -192,7 +192,7 @@ class AAuthorTitleLookup(ABaseLookup):
             # No title, we can't compare entries
             return None
         if has_field(self.entry, "author"):
-            authors = get_authors(self.entry["plain_author"])
+            authors = get_authors(self.entry[PLAIN_PREFIX + "author"])
             self.author = self.author_join.join(author.lastname for author in authors)
         if self.title is None and self.author is None:
             # No query data available

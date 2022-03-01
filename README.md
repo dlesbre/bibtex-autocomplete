@@ -19,3 +19,17 @@ make setup
 ```
 
 This will install all dependencies required for running the script in `./venv/`. Optional dependencies used for development and testing can be installed by running `make setup-dev`.
+
+
+TODO
+- fix setup
+- read files
+- script
+- inplace flag
+- doi first search
+- tests
+- README
+- contributing
+- progressbar
+- pipable
+- __init__

@@ -292,7 +292,9 @@ class UnpaywallLookup(ADOITitleLookup, AJSONSearchLookup[Dict[str, Any]]):
                 year = date[0:4]
             if len(date) >= 7:
                 month = date[5:7]
-
+        oa = None
+        if result.get("best_oa_location") is not None:
+            oa = result["best_oa_location"].get("url_for_pdf")
         values = {
             "doi": extract_doi(result.get("doi")),
             "booktitle": result.get("journal_name"),
@@ -300,7 +302,7 @@ class UnpaywallLookup(ADOITitleLookup, AJSONSearchLookup[Dict[str, Any]]):
             "title": result.get("title"),
             "year": year,
             "month": month,
-            "url": result.get("best_oa_location"),
+            "url": oa,
             "issn": result.get("journal_issn_l"),
             "authors": self.get_authors(result.get("z_authors")),
         }

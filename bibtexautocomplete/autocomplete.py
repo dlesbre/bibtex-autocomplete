@@ -1,10 +1,11 @@
 from functools import reduce
+from pathlib import Path
 from typing import Container, Iterable, Iterator, List, Optional
 
 from bibtexparser.bibdatabase import BibDatabase
 
 from .abstractlookup import LookupType, ResultType
-from .bibtex import get_entries, has_field, write_to
+from .bibtex import get_entries, has_field, read, update_plain_fields, write_to
 from .defs import PROGRESS, EntryType, logger
 
 
@@ -12,7 +13,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
     """Main class used to dispatch calls to the relevant lookups"""
 
     bibdatabases: List[BibDatabase]
-    lookups: Iterable[LookupType]
+    lookups: List[LookupType]
     fields: Container[str]
     entries: Container[str]
     force_overwrite: bool
@@ -31,7 +32,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         force_overwrite: bool,
     ):
         self.bibdatabases = bibdatabases
-        self.lookups = lookups
+        self.lookups = list(lookups)
         self.fields = fields
         self.entries = entries
         self.force_overwrite = force_overwrite
@@ -53,6 +54,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         """Main function that does all the work
         Iterate through entries, performing all lookups"""
         for entry in self:
+            logger.debug(f"autocompleting {entry['ID']}")
             changed_fields = 0
             for lookup in self.lookups:
                 init = lookup(entry)
@@ -62,6 +64,11 @@ class BibtexAutocomplete(Iterable[EntryType]):
             if changed_fields != 0:
                 self.changed_entries += 1
                 self.changed_fields += changed_fields
+        logger.log(
+            PROGRESS,
+            f"Modified {self.changed_entries} / {self.count_entries()} entries"
+            f", added {self.changed_fields} fields",
+        )
 
     def combine(self, entry: EntryType, new_info: ResultType) -> int:
         """Adds the information in info to entry.
@@ -82,9 +89,11 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 logger.debug(f"{entry['ID']}.{field} := {svalue}")
                 changed += 1
                 entry[field] = svalue
+        if changed:
+            update_plain_fields(entry)
         return changed
 
-    def write(self, files: List[str]) -> None:
+    def write(self, files: List[Path]) -> None:
         """Writes the databases in self to the given files
         If not enough files, extra databases are written to stdout
         If too many files, extras are ignored"""
@@ -93,13 +102,26 @@ class BibtexAutocomplete(Iterable[EntryType]):
         for i, db in enumerate(self.bibdatabases):
             file = files[i] if i < length else None
             pretty_file = file if file is not None else "<stdout>"
-            logger.debug(f"Writing database {i} / {total} to {pretty_file}")
+            logger.debug(f"Writing database {i+1} / {total} to '{pretty_file}'")
             try:
                 write_to(file, db)
             except IOError:
-                logger.error(f"When writing database {i} / {total} to {pretty_file}")
+                logger.error(
+                    f"Error writing database {i+1} / {total} to '{pretty_file}'"
+                )
         logger.log(PROGRESS, f"Wrote {total} databases")
 
     @staticmethod
-    def read():
-        pass
+    def read(files: List[Path]) -> List[BibDatabase]:
+        length = len(files)
+        dbs = []
+        for i, file in enumerate(files):
+            logger.debug(f"Reading database {i+1} / {length} from '{file}'")
+            try:
+                dbs.append(read(file))
+            except IOError:
+                logger.error(f"Error reading database {i+1} / {length} from '{file}'")
+                exit(1)
+        nb_entries = sum(len(get_entries(db)) for db in dbs)
+        logger.log(PROGRESS, f"Read {length} databases, {nb_entries} entries")
+        return dbs

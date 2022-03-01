@@ -44,6 +44,7 @@ parser.add_argument("--version", action="store_true")
 parser.add_argument("--help", "-h", action="store_true")
 
 parser.add_argument("--output", "-o", nargs=1, type=Path, action="append", default=[])
+parser.add_argument("input", nargs="*", type=Path, action="append", default=[])
 
 HELP_TEXT = """{b}{NAME}{e} version {VERSION}
 Program to autocomplete bibtex entries by searching online databases.
@@ -131,6 +132,9 @@ def bibtexautocomplete_main(argv: Optional[List[str]] = None) -> None:
         args.verbose = -1
     set_logger_level(args.verbose)
 
+    if args.inplace:
+        args.output = args.input
+
     ALookup.connection_timeout = args.timeout
     lookups = (
         OnlyExclude[str]
@@ -140,9 +144,12 @@ def bibtexautocomplete_main(argv: Optional[List[str]] = None) -> None:
     fields = OnlyExclude[str].from_nonempty(args.only_complete, args.dont_complete)
     entries = OnlyExclude[str].from_nonempty(args.only_entry, args.exclude_entry)
 
-    completer = BibtexAutocomplete([], lookups, fields, entries, args.force_overwrite)
+    databases = BibtexAutocomplete.read(args.input[0])
+    completer = BibtexAutocomplete(
+        databases, lookups, fields, entries, args.force_overwrite
+    )
     completer.autocomplete()
-    completer.write(args.output)
+    completer.write(args.output[0])
 
 
 if __name__ == "__main__":

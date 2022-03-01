@@ -21,21 +21,24 @@ writer.add_trailing_comma = True
 writer.order_entries_by = ("author", "year", "title")
 writer.display_order = ("author", "title")
 
+PLAIN_PREFIX = "plain_"
+
+
+def remove_plain_fields(entry: EntryType) -> None:
+    """Removes the plain_ fields from an entry"""
+    to_delete = [field for field in entry if field.startswith(PLAIN_PREFIX)]
+    for to_del in to_delete:
+        del entry[to_del]
+
 
 def write(database: BibDatabase) -> str:
     """Transform the database to a bibtex string"""
     for entry in database.entries:
-        # Remove added plain entries
-        to_delete = [field for field in entry if field.startswith("plain_")]
-        for to_del in to_delete:
-            del entry[to_del]
-        # Merge author list into string
-        if entry.get("author") is not None:
-            entry["author"] = " and ".join(entry["author"])
-    return writer.write(database)
+        remove_plain_fields(entry)
+    return writer.write(database).strip()
 
 
-def write_to(filepath: Optional[str], database: BibDatabase) -> None:
+def write_to(filepath, database: BibDatabase) -> None:
     output = write(database)
     if filepath is None:
         print(output)
@@ -44,7 +47,7 @@ def write_to(filepath: Optional[str], database: BibDatabase) -> None:
             file.write(output)
 
 
-def read(filepath: str) -> BibDatabase:
+def read(filepath) -> BibDatabase:
     """reads the given file, parses and normalizes it"""
     # Read and parse the file
     with open(filepath, "r") as file:
@@ -55,11 +58,16 @@ def read(filepath: str) -> BibDatabase:
         customization.convert_to_unicode(entry)
         customization.doi(entry)
         customization.link(entry)
-        customization.author(entry)  # split author in list
         # adds plain_XXX for all fields, without nested braces
         customization.add_plaintext_fields(entry)
 
     return database
+
+
+def update_plain_fields(entry: EntryType) -> None:
+    """updates the plain fields on an entry"""
+    remove_plain_fields(entry)
+    customization.add_plaintext_fields(entry)
 
 
 class Author:
@@ -98,4 +106,4 @@ def has_field(entry: EntryType, field: str) -> bool:
 
 
 def get_entries(db: BibDatabase) -> List[EntryType]:
-    return db["entries"]
+    return db.entries
