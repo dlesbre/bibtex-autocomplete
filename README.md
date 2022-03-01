@@ -22,10 +22,6 @@ This will install all dependencies required for running the script in `./venv/`.
 
 
 TODO
-- fix setup
-- read files
-- script
-- inplace flag
 - doi first search
 - tests
 - README

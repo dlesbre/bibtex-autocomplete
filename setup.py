@@ -15,10 +15,10 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=["bibtexautocomplete"],
-    # scripts = [""],
+    scripts=["scripts/bibtexautocomplete"],
     install_requires=["bibtexparser"],
     extras_require={
-        "dev": ["pytest", "mypy"],
+        "dev": ["pre-commit", "pytest", "mypy", "black", "flake8", "isort"],
     },
     python_requires=">=3.6",
     license="MIT",

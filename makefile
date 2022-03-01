@@ -91,29 +91,27 @@ format:
 
 .PHONY: setup
 setup: ## Install dependencies
-	$(call print,Installing dependencies)
+	$(call print,Upgrading pip)
 	$(PIP) install --upgrade pip
-	$(PIP) install -r requirements.txt
-	$(call print,Installing package)
+	$(call print,Installing package and dependencies)
 	$(PIP) install $(DIR)
 
 .PHONY: setup-dev
 setup-dev: ## Install development dependencies
-	$(call print,Installing development dependencies)
+	$(call print,Upgrading pip)
 	$(PIP) install --upgrade pip
-	$(PIP) install -r requirements-dev.txt
+	$(call print,Installing package and development dependencies)
+	$(PIP) install -e $(DIR)[dev]
 	$(call print,Setting up pre-commit)
 	$(PRECOMMIT) install
-	$(call print,Installing package)
-	$(PIP) install -e $(DIR)
 
 .PHONY: clean
 clean: ## Remove package
 	$(call print,Removing package)
-	rm -r build bibtexautocomplete.egg-info
+	rm -rf build bibtexautocomplete.egg-info
 
 .PHONY: clean-all
 clean-all: ## Remove package and venv
-	$(call print,Removing package)
-	rm -r build bibtexautocomplete.egg-info
-	rm -r venv
+	$(call print,Removing package and dependencies and virtual environment)
+	rm -rf build bibtexautocomplete.egg-info
+	rm -rf venv
