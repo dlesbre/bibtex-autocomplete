@@ -1,2 +1,1 @@
 bibtexparser
-python-Levenshtein # approximate string compare

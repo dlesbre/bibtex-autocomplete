@@ -16,12 +16,13 @@ setup(
     long_description_content_type="text/markdown",
     packages=["bibtexautocomplete"],
     # scripts = [""],
-    install_requires=["bibtexparser", "python-Levenshtein"],
+    install_requires=["bibtexparser"],
     extras_require={
         "dev": ["pytest", "mypy"],
     },
     python_requires=">=3.6",
     license="MIT",
+    platforms=["any"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
