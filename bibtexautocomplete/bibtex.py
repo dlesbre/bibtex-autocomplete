@@ -9,7 +9,7 @@ from bibtexparser.bibdatabase import BibDatabase
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
 
-from .constants import EntryType
+from .defs import EntryType
 
 parser = BibTexParser()
 # Keep non standard entries if present

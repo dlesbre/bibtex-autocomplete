@@ -3,7 +3,7 @@ from typing import Callable, Iterator, List
 from bibtexparser.bibdatabase import BibDatabase
 
 from .bibtex import get_entries, has_field
-from .constants import EntryType, logger
+from .defs import EntryType, logger
 from .lookup import AbstractBaseLookup
 from .lookup_doi import CrossrefLookup, DBLPLookup
 
