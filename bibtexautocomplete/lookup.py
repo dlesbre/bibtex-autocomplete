@@ -1,3 +1,19 @@
+# This file contains the abstract classes used to wrap http queries
+# Inheritance structure:
+#
+#                 AbstractBaseLookup
+#                   (basic lookup)
+#                    |         |
+# AbstractSearchLookup        AbstractMultipleLookup
+#  parses result as             Make multiple queries
+#  a list of candidates         until one succeeds
+#           |                    |
+# AbstractJSONSearchLookup       |
+#  same as above                 |
+#  assumes data is JSON          |
+#                   |            |
+#                   AbstractLookup
+
 from http.client import HTTPSConnection, socket  # type: ignore
 from json import JSONDecodeError, JSONDecoder
 from typing import Any, Dict, Generic, Iterable, Optional, TypeVar
@@ -7,7 +23,7 @@ from .bibtex import get_authors, has_field
 from .constants import CONNECTION_TIMEOUT, USER_AGENT, EntryType, logger, str_similar
 
 
-class AbstractLookup:
+class AbstractBaseLookup:
     """Abstract class to wrap https queries:
     Initialized with the entry to query info about
     - lookup() -> Optional[str]
@@ -123,7 +139,7 @@ class AbstractLookup:
         self.entry = entry
 
 
-class AbstractMultipleLookup(AbstractLookup):
+class AbstractMultipleLookup(AbstractBaseLookup):
     """Attempts multiple lookups, stop at first success:
     Attempts lookups using in order:
     - All authors (last name) + title
@@ -180,7 +196,7 @@ class AbstractMultipleLookup(AbstractLookup):
 result = TypeVar("result")
 
 
-class AbstractSearchLookup(Generic[result], AbstractLookup):
+class AbstractSearchLookup(Generic[result], AbstractBaseLookup):
     """Searches through lookup results
     provides and implementation of handle_output() using the following
     methods to override:
@@ -239,13 +255,13 @@ class AbstractJSONSearchLookup(AbstractSearchLookup[result]):
         raise NotImplementedError("should be overridden in child class")
 
 
-class Lookup(AbstractMultipleLookup, AbstractJSONSearchLookup[Dict[str, Any]]):
+class AbstractLookup(AbstractMultipleLookup, AbstractJSONSearchLookup[Dict[str, Any]]):
     """Shortand for common inheritance"""
 
     pass
 
 
-class CrossrefLookup(Lookup):
+class CrossrefLookup(AbstractLookup):
     """Lookup info on https://www.crossref.org
     Uses the crossref REST API, documentated here:
     https://api.crossref.org/swagger-ui/index.html
@@ -280,7 +296,7 @@ class CrossrefLookup(Lookup):
         return None
 
 
-class DBLPLookup(Lookup):
+class DBLPLookup(AbstractLookup):
     """Lookup for info on https://dlbp.org
     Uses the API documented here:
     https://dblp.org/faq/13501473.html"""

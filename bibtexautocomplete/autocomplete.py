@@ -4,7 +4,8 @@ from bibtexparser.bibdatabase import BibDatabase
 
 from .bibtex import get_entries, has_field
 from .constants import EntryType, logger
-from .lookup import CrossrefLookup, Lookup
+from .lookup import AbstractBaseLookup
+from .lookup_doi import CrossrefLookup, DBLPLookup
 
 
 def memoize(attr_name: str):
@@ -24,7 +25,10 @@ class BibtexAutocomplete:
     progress_doi: float = 0.0
     progress_url: float = 0.0
 
-    DOI_lookups: List[Callable[[EntryType], Lookup]] = [CrossrefLookup]
+    DOI_lookups: List[Callable[[EntryType], AbstractBaseLookup]] = [
+        CrossrefLookup,
+        DBLPLookup,
+    ]
 
     def iter_entries(self) -> Iterator[EntryType]:
         """Iterate through entries"""
