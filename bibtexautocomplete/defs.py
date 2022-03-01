@@ -1,18 +1,7 @@
 # Constants, usefull functions...
-from __future__ import annotations
-
 import logging
 from re import search
-from typing import (
-    Callable,
-    Container,
-    Dict,
-    Iterable,
-    Iterator,
-    Optional,
-    Sized,
-    TypeVar,
-)
+from typing import Callable, Container, Dict, Iterable, Optional, Sized, TypeVar
 
 # =====================================================
 # Constants
@@ -128,7 +117,7 @@ class OnlyExclude(Container[T]):
     @classmethod
     def from_nonempty(
         cls, onlys: SizedContainer[T], nots: SizedContainer[T]
-    ) -> OnlyExclude[T]:
+    ) -> "OnlyExclude[T]":
         """A different initializer, which considers empty containers to be None"""
         o = onlys if len(onlys) > 0 else None
         n = nots if len(nots) > 0 else None
@@ -142,22 +131,5 @@ class OnlyExclude(Container[T]):
             return obj not in self.nots
         return True
 
-    def to_iterator(self, iterable: Iterable[Q], map: Callable[[Q], T]) -> Iterable[Q]:
-        class to_iterator(Iterable[Q]):
-            """this is a bit of an ugly way to define a new iterable,
-            but it is more generic, it returns an object that can be used in for loops
-            and not a function"""
-
-            iterable: Iterable[Q]
-
-            def __init__(nself, iterable: Iterable[Q], map: Callable[[Q], T]):
-                nself.iterable = iterable
-                nself.map = map
-
-            def __iter__(nself) -> Iterator[Q]:
-                for obj in nself.iterable:
-                    if nself.map(obj) in self:
-                        yield obj
-                raise StopIteration()
-
-        return to_iterator(iterable, map)
+    def filter(self, iterable: Iterable[Q], map: Callable[[Q], T]) -> Iterable[Q]:
+        return filter(lambda x: map(x) in self, iterable)

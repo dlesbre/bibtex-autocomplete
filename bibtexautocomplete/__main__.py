@@ -127,7 +127,7 @@ def bibtexautocomplete_main(argv: Optional[List[str]] = None) -> None:
     lookups = (
         OnlyExclude[str]
         .from_nonempty(args.only_query, args.dont_query)
-        .to_iterator(LOOKUPS, lambda x: x.name)
+        .filter(LOOKUPS, lambda x: x.name)
     )
     fields = OnlyExclude[str].from_nonempty(args.only_complete, args.dont_complete)
     entries = OnlyExclude[str].from_nonempty(args.only_entry, args.exclude_entry)
