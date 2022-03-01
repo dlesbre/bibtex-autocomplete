@@ -5,7 +5,7 @@ from bibtexparser.bibdatabase import BibDatabase
 from .abstractlookup import LookupType
 from .bibtex import get_entries, has_field
 from .defs import EntryType, logger
-from .lookup import CrossrefLookup, DBLPLookup, ResearchrLookup
+from .lookup import CrossrefLookup, DBLPLookup, ResearchrLookup, UnpaywallLookup
 
 
 def memoize(attr_name: str):
@@ -29,7 +29,11 @@ class BibtexAutocomplete:
         CrossrefLookup,
         DBLPLookup,
         ResearchrLookup,
+        UnpaywallLookup,
     ]
+
+    def iter_lookups(self) -> Iterator[LookupType]:
+        """"""
 
     def iter_entries(self) -> Iterator[EntryType]:
         """Iterate through entries"""
@@ -38,7 +42,7 @@ class BibtexAutocomplete:
                 yield entry
         raise StopIteration()
 
-    @memoize("_total")
+    @memoize("_total_entries")
     def count_entries(self) -> int:
         """count the number of entries"""
         count = 0
@@ -47,20 +51,7 @@ class BibtexAutocomplete:
             count += len(entries)
         return count
 
-    def count_missing(self, field: str) -> int:
-        """Counts the number of entries missing the given field"""
-        count = 0
-        for entry in self.iter_entries():
-            if not has_field(entry, field):
-                count += 1
-        return count
-
-    @memoize("_missing_dois")
-    def count_missing_dois(self) -> int:
-        """Counts the number of entries with missing dois"""
-        return self.count_missing("doi")
-
-    def get_dois(self) -> None:
+    def autocomplete(self) -> None:
         """Tries to find missing DOIs"""
         found = 0
         for entry in self.iter_entries():
@@ -71,6 +62,6 @@ class BibtexAutocomplete:
                 res = init.query()
                 if res is not None:
                     logger.info(f"Found DOI for {entry['ID']} : {res}")
-                    entry["doi"] = res
+                    # entry["doi"] = res
                     found += 1
                     break
