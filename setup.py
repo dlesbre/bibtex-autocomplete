@@ -16,7 +16,7 @@ setup(
     long_description_content_type="text/markdown",
     packages=["bibtexautocomplete"],
     scripts=["scripts/bibtexautocomplete"],
-    install_requires=["bibtexparser"],
+    install_requires=["bibtexparser", "alive-progress"],
     extras_require={
         "dev": ["pre-commit", "pytest", "mypy", "black", "flake8", "isort"],
     },
@@ -25,10 +25,10 @@ setup(
     platforms=["any"],
     classifiers=[
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Topic :: Utilities",

@@ -5,7 +5,15 @@ from typing import List, Optional
 
 from .abstractlookup import ALookup
 from .autocomplete import BibtexAutocomplete
-from .defs import CONNECTION_TIMEOUT, NAME, VERSION, OnlyExclude, set_logger_level
+from .defs import (
+    CONNECTION_TIMEOUT,
+    NAME,
+    PROGRESS,
+    VERSION,
+    OnlyExclude,
+    logger,
+    set_logger_level,
+)
 from .lookup import LOOKUP_NAMES, LOOKUPS
 
 parser = ArgumentParser(prog=NAME, add_help=False)
@@ -148,8 +156,11 @@ def bibtexautocomplete_main(argv: Optional[List[str]] = None) -> None:
     completer = BibtexAutocomplete(
         databases, lookups, fields, entries, args.force_overwrite
     )
-    completer.autocomplete()
-    completer.write(args.output[0])
+    try:
+        completer.autocomplete(args.verbose != 0)
+        completer.write(args.output[0])
+    except KeyboardInterrupt:
+        logger.log(PROGRESS, "Interrupted")
 
 
 if __name__ == "__main__":

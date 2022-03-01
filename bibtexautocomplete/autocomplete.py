@@ -2,6 +2,7 @@ from functools import reduce
 from pathlib import Path
 from typing import Container, Iterable, Iterator, List, Optional
 
+from alive_progress import alive_bar  # type: ignore
 from bibtexparser.bibdatabase import BibDatabase
 
 from .abstractlookup import LookupType, ResultType
@@ -50,20 +51,32 @@ class BibtexAutocomplete(Iterable[EntryType]):
             self._total_entries = reduce(lambda x, _y: x + 1, self, 0)
         return self._total_entries
 
-    def autocomplete(self) -> None:
+    def autocomplete(self, no_progressbar=False) -> None:
         """Main function that does all the work
         Iterate through entries, performing all lookups"""
-        for entry in self:
-            logger.debug(f"autocompleting {entry['ID']}")
-            changed_fields = 0
-            for lookup in self.lookups:
-                init = lookup(entry)
-                info = init.query()
-                if info is not None:
-                    changed_fields += self.combine(entry, info)
-            if changed_fields != 0:
-                self.changed_entries += 1
-                self.changed_fields += changed_fields
+        total = self.count_entries() * len(self.lookups)
+        with alive_bar(
+            total,
+            title="Querying databases:",
+            disable=no_progressbar,
+            enrich_print=False,
+            receipt_text=True,
+        ) as bar:
+            bar.title = "Querying databases:"
+            bar.text = f"found {self.changed_fields} new fields"
+            for entry in self:
+                logger.debug(f"autocompleting {entry['ID']}")
+                changed_fields = 0
+                for lookup in self.lookups:
+                    init = lookup(entry)
+                    info = init.query()
+                    if info is not None:
+                        changed_fields += self.combine(entry, info)
+                    bar()
+                if changed_fields != 0:
+                    self.changed_entries += 1
+                    self.changed_fields += changed_fields
+                bar.text = f"found {self.changed_fields} new fields"
         logger.log(
             PROGRESS,
             f"Modified {self.changed_entries} / {self.count_entries()} entries"
