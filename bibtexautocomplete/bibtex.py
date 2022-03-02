@@ -57,7 +57,9 @@ def read(filepath) -> BibDatabase:
         logger.critical(f"Error when reading '{str(filepath)}': {err}")
         exit(1)
     except UndefinedString as err:
-        logger.critical(f"Error when parsing bibtex '{str(filepath)}': {err}")
+        logger.critical(
+            f"Error when parsing bibtex '{str(filepath)}': undefined string '{err}'"
+        )
         exit(1)
 
     # Normalize bibliography

@@ -131,7 +131,9 @@ class BibtexAutocomplete(Iterable[EntryType]):
             try:
                 dbs.append(read(file))
             except IOError:
-                logger.error(f"Error reading database {i+1} / {length} from '{file}'")
+                logger.critical(
+                    f"Error reading database {i+1} / {length} from '{file}'"
+                )
                 exit(1)
         nb_entries = sum(len(get_entries(db)) for db in dbs)
         logger.log(PROGRESS, f"Read {length} databases, {nb_entries} entries")
