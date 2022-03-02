@@ -6,7 +6,7 @@ from alive_progress import alive_bar  # type: ignore
 from bibtexparser.bibdatabase import BibDatabase
 
 from .abstractlookup import LookupType, ResultType
-from .bibtex import get_entries, has_field, read, update_plain_fields, write_to
+from .bibtex import get_entries, has_field, read, write_to
 from .defs import PROGRESS, EntryType, logger
 
 
@@ -102,8 +102,6 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 logger.debug(f"{entry['ID']}.{field} := {svalue}")
                 changed += 1
                 entry[field] = svalue
-        if changed:
-            update_plain_fields(entry)
         return changed
 
     def write(self, files: List[Path]) -> None:

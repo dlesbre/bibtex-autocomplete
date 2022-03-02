@@ -16,6 +16,10 @@ The searches are performed using the entries' dois if present, title or author o
 
 ### Quick install
 
+Using `pip` NOT YET IMPLEMENTED
+
+### Manual install
+
 Using a [virtual environment](https://docs.python.org/3/tutorial/venv.html) (`python3 -m pip install venv`) :
 
 ```
@@ -99,3 +103,4 @@ Flags:
 - upload to PyPI ?
 - fix progressbar
 - what to put in `__init__.py` ?
+- sanify month

@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from pathlib import Path
 from sys import stdout
-from typing import List, Optional
+from typing import List, Optional, TypeVar
 
 from .abstractlookup import ALookup
 from .autocomplete import BibtexAutocomplete
@@ -97,8 +97,19 @@ Flags:
   {c}--version{e}             show version number
   {c}-h --help{e}             show this help"""
 
+T = TypeVar("T")
+
+
+def flatten(list_of_lists: List[List[T]]) -> List[T]:
+    """flatten a nested list"""
+    return [val for sublist in list_of_lists for val in sublist]
+
 
 def bibtexautocomplete_main(argv: Optional[List[str]] = None) -> None:
+    """The main function of bibtexautocomplete
+    Takes an argv like List as argument,
+    if none, uses sys.argv
+    see HELP_TEXT or bibtexautocomplete_main(["-h]) for details"""
     if argv is None:
         args = parser.parse_args()
     else:
@@ -152,13 +163,13 @@ def bibtexautocomplete_main(argv: Optional[List[str]] = None) -> None:
     fields = OnlyExclude[str].from_nonempty(args.only_complete, args.dont_complete)
     entries = OnlyExclude[str].from_nonempty(args.only_entry, args.exclude_entry)
 
-    databases = BibtexAutocomplete.read(args.input[0])
+    databases = BibtexAutocomplete.read(flatten(args.input))
     completer = BibtexAutocomplete(
         databases, lookups, fields, entries, args.force_overwrite
     )
     try:
         completer.autocomplete(args.verbose != 0)
-        completer.write(args.output[0])
+        completer.write(flatten(args.output))
     except KeyboardInterrupt:
         logger.log(PROGRESS, "Interrupted")
 

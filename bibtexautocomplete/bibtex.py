@@ -5,13 +5,13 @@ Functions to read/write/manipulate bibtex databases
 from typing import List, Optional
 
 from bibtexparser import customization
-from bibtexparser.bibdatabase import BibDatabase
+from bibtexparser.bibdatabase import BibDatabase, UndefinedString
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
 
-from .defs import EntryType
+from .defs import EntryType, logger
 
-parser = BibTexParser()
+parser = BibTexParser(common_strings=True)
 # Keep non standard entries if present
 parser.ignore_nonstandard_types = False
 
@@ -50,24 +50,31 @@ def write_to(filepath, database: BibDatabase) -> None:
 def read(filepath) -> BibDatabase:
     """reads the given file, parses and normalizes it"""
     # Read and parse the file
-    with open(filepath, "r") as file:
-        database = parser.parse_file(file)
+    try:
+        with open(filepath, "r") as file:
+            database = parser.parse_file(file)
+    except IOError as err:
+        logger.critical(f"Error when reading '{str(filepath)}': {err}")
+        exit(1)
+    except UndefinedString as err:
+        logger.critical(f"Error when parsing bibtex '{str(filepath)}': {err}")
+        exit(1)
 
     # Normalize bibliography
     for entry in database.entries:
         customization.convert_to_unicode(entry)
         customization.doi(entry)
-        customization.link(entry)
+        # customization.link(entry)
         # adds plain_XXX for all fields, without nested braces
-        customization.add_plaintext_fields(entry)
+        # customization.add_plaintext_fields(entry)
 
     return database
 
 
-def update_plain_fields(entry: EntryType) -> None:
-    """updates the plain fields on an entry"""
-    remove_plain_fields(entry)
-    customization.add_plaintext_fields(entry)
+def get_plain(entry: EntryType, field: str) -> Optional[str]:
+    if has_field(entry, field):
+        return entry[field].replace("{", "").replace("}", "").strip()
+    return None
 
 
 class Author:
