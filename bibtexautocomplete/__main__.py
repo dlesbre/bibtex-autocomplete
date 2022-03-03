@@ -3,7 +3,7 @@ from pathlib import Path
 from sys import stdout
 from typing import List, Optional, TypeVar
 
-from .abstractlookup import ALookup
+from .abstractlookup import ABaseLookup
 from .autocomplete import BibtexAutocomplete
 from .defs import (
     CONNECTION_TIMEOUT,
@@ -154,7 +154,9 @@ def bibtexautocomplete_main(argv: Optional[List[str]] = None) -> None:
     if args.inplace:
         args.output = args.input
 
-    ALookup.connection_timeout = args.timeout
+    if isinstance(args.timeout, list):
+        args.timeout = args.timeout[0]
+    ABaseLookup.connection_timeout = args.timeout
     lookups = (
         OnlyExclude[str]
         .from_nonempty(args.only_query, args.dont_query)

@@ -1,61 +1,158 @@
-# This file contains the abstract classes used to wrap http queries
-# Inheritance structure:
-#
-#                         ABaseLookup
-#                         basic lookup
-#                          |   |   |
-#       --------------------   |   -------------------
-#       |                      |                     |
-# ASearchLookup          AAuthorTitleLookup      ADOITitleLookup
-#  parses result as       Make multiple queries    mulitple queries
-#  a list of candidates   author and/or title      doi and/or title
-#       |                      |
-# AJSONSearchLookup            |
-#  same as above               |
-#  assumes data is JSON        |
-#       |                      |
-#       ----------   -----------
-#                |   |
-#               ALookup
+"""This file contains the abstract classes used to wrap http queries
+
+Lookups ==================================
+
+LookupProtocol(Protocol): duck-typing of lookups. They must have
+  - an attribute name : str
+  - a method query(self) -> Optional[ResultType]
+  - a method __init__(self, entry: Entry)
+
+ABCLookup(): abstract base class, defines abstract methods
+AMinimalLookup(ABCLookup): entry attribute and __init__
+ABaseLookup(AMinimalLookup): single https query using
+  attributes domain, headers, params... and matching methods
+  abstract handle_output method to process output
+
+JSONLookup(FieldConditionMixin, DATQueryMixin, DOITitleSearchMixin[SafeJSON], ABaseLookup):
+
+Mixins ==================================
+
+ConditionMixin(ABCLookup): query only if self.condition() holds
+FieldConditionMixin(ConditionMixin, AMinimalLookup):
+  query only if some fields in self.fields are not defined in self.entry
+
+MultipleQueryMixin(ABCLookup): perform multiple queries (using self.iter_queries)
+  stop at first valid result
+DOIQueryMixin(MultipleQueryMixin, AMinimalLookup):
+  if entry has doi, set self.doi, query, unset, call parent queries
+TitleQueryMixin(MultipleQueryMixin, AMinimalLookup):
+  if entry has title, set self.title, call parent queries, query, unset
+AuthorQueryMixin(MultipleQueryMixin, AMinimalLookup):
+  if entry has authors, set self.authors (to all last names),
+  call parent queries, query, query for each author individually, unset
+DATQueryMixin(TitleQueryMixin, AuthorQueryMixin, DOIQueryMixin):
+  queries in order:
+  - if doi, with doi, with title (if any), with all authors (if any)
+  - if authors, with all authors, with title (if any)
+  - if authors, with each author individually, with title (if any)
+  - if title, with title (if any)
+
+SearchResultMixin(Generic[T]): when returned data contains a list of candidates,
+  search through them until one matches
+DOITitleSearchMixin(SearchResultMixin[T], AMinimalLookup):
+  matches based on doi (if present on both) or title (with str_similar)
+"""
 
 from http.client import HTTPSConnection, socket  # type: ignore
-from json import JSONDecodeError, JSONDecoder
-from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Protocol,
+    Type,
+    TypeVar,
+)
 from urllib.parse import urlencode
 
-from .bibtex import Author, get_authors, get_plain
+from .bibtex import Author, get_authors, get_plain, has_field
 from .defs import (
     CONNECTION_TIMEOUT,
     EMAIL,
     USER_AGENT,
     EntryType,
     ResultType,
+    SafeJSON,
+    extract_doi,
     logger,
     str_similar,
 )
 
+# =================================================
+# § Lookups
+# =================================================
 
-class ABaseLookup:
-    """Abstract class to wrap https queries:
-    Initialized with the entry to query info about
-    - lookup() -> Optional[ResultType]
-        method that performs the queries
-    - different attributes and methods can be overridden to specify values
-        namely get_params() which specify parameters to add to the url.
-        the entry attribute can be used to initialize those parameters
-    - handle_output(data: bytes) -> Optional[ResultType]
-        must be overridden to process the output
-        it returns None if not found or the relevant info if found
-        Note that it MUST NOT change self.entry, only return the new values
-    - query() -> Optional[ResultType]
-        performs a single query, can be overridden for multiple queries
+
+class LookupProtocol(Protocol):
+    name: str  # used to identify the lookup, also appears in help string
+
+    def query(self) -> Optional[ResultType]:
+        """Performs one or more queries to try and obtain the result
+        VIRTUAL METHOD : must be overridden"""
+        raise NotImplementedError("should be overridden in child class")
+
+    def __init__(self, entry: EntryType) -> None:
+        pass
+
+
+LookupType = Type[LookupProtocol]
+
+
+class ABCLookup:
+    name: str  # used to identify the lookup, also appears in help string
+
+    def query(self) -> Optional[ResultType]:
+        """Performs one or more queries to try and obtain the result
+        VIRTUAL METHOD : must be overridden"""
+        raise NotImplementedError("should be overridden in child class")
+
+    def __init__(self, entry: EntryType) -> None:
+        super().__init__()
+
+
+class AMinimalLookup(ABCLookup):
+    """Abstract minimal lookup,
+    Implements simple __init__ putting the argument in self.entry
+
+    Virtual methods and attributes : (must be overridden in children):
+    - name : str
+    - query: Self -> Optional[ResultType]
     """
 
     name: str  # used to identify the lookup, also appears in help string
 
-    domain: str
-    host: Optional[str] = None  # specify when different to domain
+    def query(self) -> Optional[ResultType]:
+        """Performs one or more queries to try and obtain the result
+        VIRTUAL METHOD : must be overridden"""
+        raise NotImplementedError("should be overridden in child class")
+
+    def __init__(self, entry: EntryType) -> None:
+        super().__init__(entry)
+        self.entry = entry
+
+
+class ABaseLookup(AMinimalLookup):
+    """Abstract class to wrap https queries:
+    Initialized with the entry to query info about
+
+    Defines:
+    - lookup : Self -> Optional[bytes] - performs the queries and returns raw data
+    - query : Self -> Optional[ResultType] - performs single query, calls lookup and handle_output
+
+    - domain: str = "localhost" - the domain name e.g. api.crossref.org
+    - host : Optional[str] = None - host when different from domain
+    - path : str = "/" - the path component of the URL
+    - params : Dict[str, str] = {} - parameters to add to the URL
+
+    - request : str = "GET" - https request type
+    - default_headers : Dict[str, str] = ... default http header
+    - headers : Dict[str, str] = {} - headers to add, overrite default_headers
+
+    all of these have associated methods get_XX : Self -> Type[XX] that can be overridden
+    for finer behavior control
+
+    Virtual methods and attributes:
+    - handle_output : Self, bytes -> Optional[Result] - parses output into useful result
+    """
+
+    domain: str = "localhost"
+    host: Optional[str] = None
     path: str = "/"
+    params: Dict[str, str] = {}
+
     request: str = "GET"
     default_headers: Dict[str, str] = {
         "User-Agent": USER_AGENT,
@@ -63,9 +160,6 @@ class ABaseLookup:
         "Email": EMAIL,
     }
     headers: Dict[str, str] = {}
-    params: Dict[str, str] = {}
-
-    entry: EntryType
 
     connection_timeout: float = CONNECTION_TIMEOUT
 
@@ -110,7 +204,7 @@ class ABaseLookup:
         """Query body, can use self.entry to set them"""
         return None
 
-    def lookup(self) -> Optional[ResultType]:
+    def lookup(self) -> Optional[bytes]:
         """main lookup function
         returns true if the lookup succeeded in finding all info
         false otherwise"""
@@ -141,153 +235,222 @@ class ABaseLookup:
         except socket.gaierror as err:
             logger.warn(f"connection error: {err}")
             return None
-        return self.handle_output(data)
+        return data
 
     def handle_output(self, data: bytes) -> Optional[ResultType]:
-        """Should modify self.entry with data extracted from data here"""
+        """Should create a new entry with info extracted from data
+        Should NOT modify self.entry
+        VIRTUAL METHOD : must be overridden"""
         raise NotImplementedError("should be overridden in child class")
 
     def query(self) -> Optional[ResultType]:
         """Tries to complete an entry
         override this to make multiple requests
         (i.e. try different search terms)"""
-        return self.lookup()
-
-    def __init__(self, entry: EntryType) -> None:
-        self.entry = entry
+        data = self.lookup()
+        if data is not None:
+            return self.handle_output(data)
+        return None
 
     def get_entry_field(self, field: str) -> Optional[str]:
         """Safe access to self.entry's fields"""
         return get_plain(self.entry, field)
 
 
-class AAuthorTitleLookup(ABaseLookup):
-    """Attempts multiple lookups, stop at first success:
-    Attempts lookups using in order:
-    - All authors (last name) + title
-    - One author (last name) + title (for all authors, alphabetically)
-    - title
+# =================================================
+# § ConditionMixin
+# =================================================
 
-    This DOES NOT create smart queries, it just updates self.author and self.title
-    before each call to lookup(). Use these attributes in the relevant functions
-    to build the correct query (i.e. in get_params)
-    """
 
-    author_join: str = " "
-    author: Optional[str]
-    title: Optional[str]
+class ConditionMixin(ABCLookup):
+    """Mixin to query only if a condition holds,
 
-    # Politeness: avoid making too many queries when lots of authors
-    max_search_queries: int = 10
+    inherit from this before the base Lookup class
+    e.g. class MyLookup(..., ConditionMixin, ..., MyLookup):
+
+    Adds the condition : Self -> bool method (default always True)"""
+
+    def condition(self) -> bool:
+        """override this to check a condition before
+        performing any queries"""
+        return True
 
     def query(self) -> Optional[ResultType]:
-        self.title = self.get_entry_field("title")
-        self.author = None
-        if self.title is None:
-            # No title, we can't compare entries
-            return None
-        authors_str = self.get_entry_field("author")
+        """calls parent query only if condition is met"""
+        if self.condition():
+            return super().query()
+        return None
+
+
+class FieldConditionMixin(ConditionMixin, AMinimalLookup):
+    """Mixin used to query only if there exists a field in self.fields
+    that does not exists in self.entry
+
+    inherit from this before the base class
+    e.g. class MyLookup(..., FieldConditionMixin, ..., MyLookup):
+
+    Virtual attribute:
+    - fields : Iterable[str] - list of fields that can be added to an entry by this lookup
+    """
+
+    entry: EntryType
+
+    # list of fields that can be added to an entry by this lookup
+    fields: Iterable[str]
+
+    def condition(self):
+        """Only return True if there exists a field in self.fields
+        that is not in self.entry"""
+        for field in self.fields:
+            if not has_field(self.entry, field):
+                return True
+        return False
+
+
+# =================================================
+# § MultipleQueryMixin
+# =================================================
+
+
+class MultipleQueryMixin(ABCLookup):
+    """Mixin to perform multiple queries
+
+    Defines:
+    - iter_queries : Self -> Iterator[None] - empty iterator (should be overridden)
+    - query : Self -> Optional[ResultType] - call parent query as long as iter_query yields
+        stop a first valid (non None) value
+    """
+
+    def iter_queries(self) -> Iterator[None]:
+        """Used to iterate through the queries
+        The yielded result doesn't really matter.
+        This method should dynamically modify attributes (like self.title)
+        which are then used when constructing queries (i.e. in get_param())
+        Default behavior: no queries"""
+        return iter([])
+
+    def query(self) -> Optional[ResultType]:
+        """Performs queries as long as iter_query yields
+        Stops at first valid result found"""
+        for _ in self.iter_queries():
+            value = super().query()
+            if value is not None:
+                return value
+        return None
+
+
+class DOIQueryMixin(MultipleQueryMixin, AMinimalLookup):
+    """Performs one query setting self.doi if self.entry has a doi
+    then parent queries if any
+    """
+
+    doi: Optional[str] = None
+
+    def iter_queries(self) -> Iterator[None]:
+        self.doi = get_plain(self.entry, "doi")
+        if self.doi is not None:
+            yield None
+        # Perform more queries without doi
+        self.doi = None
+        for x in super().iter_queries():
+            yield x
+
+
+class TitleQueryMixin(MultipleQueryMixin, AMinimalLookup):
+    """Sets self.title if self.entry has a title
+    Performs parent queries if any
+    then perform a single query if self.title is set
+    """
+
+    title: Optional[str] = None
+
+    def iter_queries(self) -> Iterator[None]:
+        self.title = get_plain(self.entry, "title")
+        # Perform parent queries with title set
+        for x in super().iter_queries():
+            yield x
+        if self.title is not None:
+            yield None
+
+
+class AuthorQueryMixin(MultipleQueryMixin, AMinimalLookup):
+    """Sets self.author if self.entry has a authors to space separated list of lastnames
+    Performs parent queries if any
+    then performs a single query if self.author is not None
+    then performs a query per author (resetting self.author to just one author) if more than one author
+    then unsets self.author
+    """
+
+    entry: EntryType
+    author_join: str = " "
+    author: Optional[str] = None
+
+    def iter_queries(self) -> Iterator[None]:
+        # Find and format authors
+        authors_str = get_plain(self.entry, "author")
         authors: List[Author] = []
         if authors_str is not None:
             authors = get_authors(authors_str)
             self.author = self.author_join.join(author.lastname for author in authors)
-        if self.title is None and self.author is None:
-            # No query data available
-            return None
-
-        # Query all authors + title
-        lookup = self.lookup()
-        if lookup is not None:
-            return lookup
-
-        # Query one authors + title
-        if len(authors) > 1:
-            queries = 1
-            for author in authors:
-                self.author = author.lastname
-                lookup = self.lookup()
-                if lookup is not None:
-                    return lookup
-                queries += 1
-                if queries > self.max_search_queries:
-                    break
-
-        # Query title
+        # Perform parent queries
+        for x in super().iter_queries():
+            yield x
+        # Perform one query with all authors
+        yield None
+        if len(authors) == 1:
+            return
+        for author in authors:
+            # Perform one query per author
+            self.author = author.lastname
+            yield None
         self.author = None
-        if self.title is not None:
-            lookup = self.lookup()
-            return lookup
-        return None
 
 
-class ADOITitleLookup(ABaseLookup):
-    """Attempts multiple lookups, stop at first success:
-    Attempts lookups using in order:
-    - DOI + title
-    - title
+class DATQueryMixin(TitleQueryMixin, AuthorQueryMixin, DOIQueryMixin):
+    """DOI - Authors - Title Mixin
+    queries in order:
+    - if doi, with doi, with title (if any), with all authors (if any)
+    - if authors, with all authors, with title (if any)
+    - if authors, with each author individually, with title (if any)
+    - if title, with title (if any)"""
 
-    This DOES NOT create smart queries, it just updates self.doi and self.title
-    before each call to lookup(). Use these attributes in the relevant functions
-    to build the correct query (i.e. in get_params)
-    """
+    pass
 
-    doi: Optional[str]
-    title: Optional[str]
 
-    def query(self) -> Optional[ResultType]:
-        """Special query system
-        if DOI is known, query with doi
-        if fails or no doi, query with title"""
-        self.title = self.get_entry_field("title")
-        self.doi = self.get_entry_field("doi")
-        if self.doi is not None:
-            lookup = self.lookup()
-            if lookup is not None:
-                return lookup
-            self.doi = None
-        if self.title is not None:
-            return self.lookup()
-        return None
+# =================================================
+# § SearchResultMixin
+# =================================================
 
 
 result = TypeVar("result")
 
 
-class ASearchLookup(Generic[result], ABaseLookup):
-    """Searches through lookup results
-    provides and implementation of handle_output() using the following
-    methods to override:
-    - get_results(data: bytes) -> Optional[Iterable[result]]
+class SearchResultMixin(Generic[result]):
+    """Iterates through multiple results until a matching one is found
+
+    Defines:
+    - handle_output : bytes -> Optional[ResultType]
+
+    Virtual methods defined here:
+    - get_results : bytes -> Optional[Iterable[result]]
         process data into a list of results
-    - get_title(res: result) -> Optional[str]
         return a result's title, used to compare to entry
-    - get_value(res: result) -> Optional[ResultType]
-        return the found value
-    """
+    - matches_entry : result -> bool - does the result match self.entry ?
+    - get_value : result -> Optional[ResultType] - builds value from a matching result"""
 
     def get_results(self, data: bytes) -> Optional[Iterable[result]]:
         """Parse the data into a list of results to check
         Return None if no results/invalid data"""
         raise NotImplementedError("should be overridden in child class")
 
-    def get_title(self, res: result) -> Optional[str]:
-        """Returns a result's title, used to compare to reference entry"""
-        raise NotImplementedError("should be overridden in child class")
-
     def get_value(self, res: result) -> ResultType:
-        """Return the relevant value (e.g. DOI or URL)"""
+        """Return the relevant value (e.g. updated entry)"""
         raise NotImplementedError("should be overridden in child class")
 
     def matches_entry(self, res: result) -> bool:
         """Return true if the result matches self.entry
         By default matches titles, can be overridden for different behavior"""
-        res_title = self.get_title(res)
-        entry_title = self.get_entry_field("title")
-        return (
-            (res_title is not None)
-            and (entry_title is not None)
-            and str_similar(res_title, entry_title)
-        )
+        raise NotImplementedError("should be overridden in child class")
 
     def handle_output(self, data: bytes) -> Optional[ResultType]:
         results = self.get_results(data)
@@ -303,28 +466,43 @@ class ASearchLookup(Generic[result], ABaseLookup):
         return None
 
 
-class AJSONSearchLookup(ASearchLookup[result]):
-    """
-    Version of ASearchLookup for JSON outputs
-    replaces get_results(data: bytes) -> results
-    with get_results_json(data: JSON)
-    """
+class DOITitleSearchMixin(SearchResultMixin[result], AMinimalLookup):
+    """matches based on doi (if present on both) or title (with str_similar)
 
-    def get_results(self, data: bytes) -> Optional[Iterable[result]]:
-        try:
-            data = JSONDecoder().decode(data.decode())
-        except JSONDecodeError:
-            return None
-        return self.get_results_json(data)
+    Virtual methods:
+    - get_doi : result -> Optional[str]
+    - get_title : result -> Optional[str]"""
 
-    def get_results_json(self, data):
+    def get_doi(self, res: result) -> Optional[str]:
+        """Return the result's DOI if present"""
         raise NotImplementedError("should be overridden in child class")
 
+    def get_title(self, res: result) -> Optional[str]:
+        """Return the result's title if present"""
+        raise NotImplementedError("should be overridden in child class")
 
-class ALookup(AAuthorTitleLookup, AJSONSearchLookup[Dict[str, Any]]):
-    """Shortand for common inheritance"""
+    def matches_entry(self, res: result) -> bool:
+        res_doi = extract_doi(self.get_doi(res))
+        ent_doi = extract_doi(get_plain(self.entry, "doi"))
+        if res_doi is not None and ent_doi is not None and res_doi == ent_doi:
+            return True
+        res_title = self.get_title(res)
+        ent_title = get_plain(self.entry, "title")
+        return (
+            res_title is not None
+            and ent_title is not None
+            and str_similar(ent_title, res_title)
+        )
+
+
+# =================================================
+# §
+# =================================================
+
+
+class JSONLookup(
+    FieldConditionMixin, DATQueryMixin, DOITitleSearchMixin[SafeJSON], ABaseLookup
+):
+    """Bringing all mixins together"""
 
     pass
-
-
-LookupType = type[ABaseLookup]
