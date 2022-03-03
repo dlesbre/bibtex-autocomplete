@@ -97,17 +97,16 @@ Flags:
 
 ## TODO
 
-- doi first search WIP
 - tests for main options
+- TESTS TESTS TESTS TESTS
+- combine field lists with arguments
 - contributing
 - upload to PyPI ?
 - fix progressbar
 - what to put in `__init__.py` ?
-- sanify month
-- potential new field lists WIP
 - TEST on datadumps
 - search mode ?
 - output format
+- BibtexEntry sanify month
 - Match likeliness ?
 - parrallelize requests ?
-- safe JSON
