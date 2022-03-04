@@ -6,7 +6,7 @@ from http.client import HTTPSConnection, socket  # type: ignore
 from typing import Any, Optional
 from urllib.parse import urlencode
 
-from ..utils.constants import CONNECTION_TIMEOUT, EMAIL, USER_AGENT
+from ..utils.constants import CONNECTION_TIMEOUT, USER_AGENT
 from ..utils.logger import logger
 from .abstract_base import AbstractDataLookup
 
@@ -44,7 +44,6 @@ class HTTPSLookup(AbstractDataLookup):
     default_headers: dict[str, str] = {
         "User-Agent": USER_AGENT,
         "Accept": "application/json",
-        "Email": EMAIL,
     }
     headers: dict[str, str] = {}
 

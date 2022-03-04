@@ -6,14 +6,20 @@ from typing import Iterable, Optional
 
 from ..bibtex.author import Author
 from ..bibtex.entry import BibtexEntry, FieldNames
-from ..lookups.lookups import JSON_DAT_Lookup
+from ..lookups.lookups import JSON_AT_Lookup
 from ..utils.safe_json import SafeJSON
 
 
-class DBLPLookup(JSON_DAT_Lookup):
+class DBLPLookup(JSON_AT_Lookup):
     """Lookup for info on https://dlbp.org
     Uses the API documented here:
-    https://dblp.org/faq/13501473.html"""
+    https://dblp.org/faq/13501473.html
+
+    example URLs:
+    no DOI mode.
+    Author+title mode:
+    https://dblp.org/search/publ/api?format=json&h=3&q=Lamiraux+Reactive+Path+Deformation+for+Nonholonomic+Mobile+Robots
+    """
 
     name = "dblp"
 

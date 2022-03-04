@@ -17,6 +17,13 @@ class UnpaywallLookup(JSON_DT_Lookup):
     only if the entry has a known DOI
     API documented at:
     https://unpaywall.org/products/api
+
+    Example urls:
+    DOI mode:
+    https://api.unpaywall.org/v2/10.1109/tro.2004.829459?email=some.test%40gmail.com
+
+    Title mode:
+    https://api.unpaywall.org/v2/search/?email=some.test%40gmail.com&query=Reactive+Path+Deformation+for+Nonholonomic+Mobile+Robots
     """
 
     name = "unpaywall"

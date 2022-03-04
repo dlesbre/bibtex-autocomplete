@@ -14,12 +14,23 @@ class CrossrefLookup(JSON_DAT_Lookup):
     """Lookup info on https://www.crossref.org
     Uses the crossref REST API, documentated here:
     https://api.crossref.org/swagger-ui/index.html
+
+    example URLs:
+    DOI mode:
+    https://api.crossref.org/works/10.1109/tro.2004.829459
+    Author + title:
+    https://api.crossref.org/works?rows=3&query.title=Reactive+Path+Deformation+for+Nonholonomic+Mobile+Robots&query.author=Lamiraux
     """
 
     name = "crossref"
 
     domain = "api.crossref.org"
     path = "/works"
+
+    def get_path(self) -> str:
+        if self.doi is not None:
+            return self.path + "/" + self.doi
+        return super().get_path()
 
     def get_params(self) -> dict[str, str]:
         base = {"rows": "3"}
@@ -33,7 +44,10 @@ class CrossrefLookup(JSON_DAT_Lookup):
         """Return the result list"""
         json = SafeJSON.from_bytes(data)
         if json["status"].to_str() == "ok":
-            return json["message"]["items"].iter_list()
+            message = json["message"]
+            if self.doi is not None:
+                return [message]
+            return message["items"].iter_list()
         return None
 
     def get_title(self, result: SafeJSON) -> Optional[str]:

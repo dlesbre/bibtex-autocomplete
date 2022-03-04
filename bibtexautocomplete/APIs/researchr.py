@@ -7,14 +7,20 @@ from urllib.parse import quote_plus
 
 from ..bibtex.author import Author
 from ..bibtex.entry import BibtexEntry, FieldNames
-from ..lookups.lookups import JSON_DAT_Lookup
+from ..lookups.lookups import JSON_AT_Lookup
 from ..utils.safe_json import SafeJSON
 
 
-class ResearchrLookup(JSON_DAT_Lookup):
+class ResearchrLookup(JSON_AT_Lookup):
     """Lookup for info on https://researchr.org/
     Uses the API documented here:
-    https://researchr.org/about/api"""
+    https://researchr.org/about/api
+
+    Example urls:
+    No doi mode.
+    Author title mode:
+    https://researchr.org/api/search/publication/Lamiraux+Reactive+Path+Deformation+for+Nonholonomic+Mobile+Robots
+    """
 
     name = "researchr"
 
