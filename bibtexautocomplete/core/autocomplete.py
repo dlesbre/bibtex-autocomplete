@@ -1,3 +1,8 @@
+"""
+Bibtexautocomplete
+main class used to manage calls to different lookups
+"""
+
 from functools import reduce
 from pathlib import Path
 from typing import Container, Iterable, Iterator, List, Optional
@@ -5,9 +10,12 @@ from typing import Container, Iterable, Iterator, List, Optional
 from alive_progress import alive_bar  # type: ignore
 from bibtexparser.bibdatabase import BibDatabase
 
-from .abstractlookup import LookupType
-from .bibtex import BibtexEntry, get_entries, has_field, read, write_to
-from .defs import PROGRESS, EntryType, logger
+from ..bibtex.entry import BibtexEntry
+from ..bibtex.io import file_read, file_write, get_entries
+from ..bibtex.normalize import has_field
+from ..lookups.abstract_base import LookupType
+from ..utils.constants import EntryType
+from ..utils.logger import PROGRESS, logger
 
 
 class BibtexAutocomplete(Iterable[EntryType]):
@@ -110,17 +118,13 @@ class BibtexAutocomplete(Iterable[EntryType]):
         If too many files, extras are ignored"""
         length = len(files)
         total = len(self.bibdatabases)
+        wrote = 0
         for i, db in enumerate(self.bibdatabases):
             file = files[i] if i < length else None
             pretty_file = file if file is not None else "<stdout>"
             logger.debug(f"Writing database {i+1} / {total} to '{pretty_file}'")
-            try:
-                write_to(file, db)
-            except IOError:
-                logger.error(
-                    f"Error writing database {i+1} / {total} to '{pretty_file}'"
-                )
-        logger.log(PROGRESS, f"Wrote {total} databases")
+            wrote += file_write(file, db)
+        logger.log(PROGRESS, f"Wrote {wrote} databases")
 
     @staticmethod
     def read(files: List[Path]) -> List[BibDatabase]:
@@ -128,13 +132,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         dbs = []
         for i, file in enumerate(files):
             logger.debug(f"Reading database {i+1} / {length} from '{file}'")
-            try:
-                dbs.append(read(file))
-            except IOError:
-                logger.critical(
-                    f"Error reading database {i+1} / {length} from '{file}'"
-                )
-                exit(1)
+            dbs.append(file_read(file))
         nb_entries = sum(len(get_entries(db)) for db in dbs)
         logger.log(PROGRESS, f"Read {length} databases, {nb_entries} entries")
         return dbs
