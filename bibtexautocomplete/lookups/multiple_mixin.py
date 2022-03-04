@@ -87,6 +87,8 @@ class TitleAuthorQueryMixin(MultipleQueryMixin, AbstractEntryLookup):
     title: Optional[str] = None
     author: Optional[str] = None
 
+    max_author_queries: int = 10
+
     def iter_queries(self) -> Iterator[None]:
         # Find and format authors
         self.title = self.entry.title
@@ -102,8 +104,10 @@ class TitleAuthorQueryMixin(MultipleQueryMixin, AbstractEntryLookup):
         yield None
         if len(authors) == 1:
             return
-        for author in authors:
-            # Perform one query per author
+        for ii, author in enumerate(authors):
+            # Perform one query per author, with at most 10 queries
+            if ii > self.max_author_queries:
+                break
             self.author = author.lastname
             yield None
         self.author = None
