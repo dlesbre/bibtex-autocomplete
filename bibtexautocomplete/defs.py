@@ -19,7 +19,7 @@ from typing import (
 )
 
 # =====================================================
-# Constants
+# § Constants
 # =====================================================
 
 NAME = "bibtexautocomplete"
@@ -39,7 +39,7 @@ EntryType = Dict[str, str]  # Type of a bibtex entry
 ResultType = Dict[str, Optional[str]]  # Type of query results
 
 # =====================================================
-# Logger
+# § Logger
 # =====================================================
 
 
@@ -100,7 +100,7 @@ def set_logger_level(level: int) -> None:
 set_logger_level(0)
 
 # =====================================================
-# Utility functions
+# § Utility functions
 # =====================================================
 
 
@@ -133,7 +133,7 @@ def extract_doi(doi_or_url: Optional[str]) -> Optional[str]:
 
 
 # =====================================================
-# Utility functions
+# § OnlyExclude container
 # =====================================================
 
 T = TypeVar("T")
@@ -190,8 +190,12 @@ class OnlyExclude(Container[T]):
         return filter(lambda x: map(x) in self, iterable)
 
 
-JSONType = Union[Dict[str, Any], List[Any], int, float, str, bool, None]
+# =====================================================
+# § SafeJSON wrapper
+# =====================================================
 
+
+JSONType = Union[Dict[str, Any], List[Any], int, float, str, bool, None]
 S = TypeVar("S", bound=JSONType)
 
 

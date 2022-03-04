@@ -16,7 +16,10 @@ setup(
     long_description_content_type="text/markdown",
     packages=["bibtexautocomplete"],
     scripts=["scripts/bibtexautocomplete"],
-    install_requires=["bibtexparser", "alive-progress"],
+    install_requires=[
+        "bibtexparser",
+        "git+https://github.com/dlesbre/alive-progress.git",
+    ],
     extras_require={
         "dev": ["pre-commit", "pytest", "mypy", "black", "flake8", "isort"],
     },

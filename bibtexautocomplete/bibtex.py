@@ -11,6 +11,11 @@ from bibtexparser.bwriter import BibTexWriter
 
 from .defs import EntryType, logger
 
+# =================================================
+# § Bibtexparser wrappers
+# =================================================
+
+
 parser = BibTexParser(common_strings=True)
 # Keep non standard entries if present
 parser.ignore_nonstandard_types = False
@@ -116,3 +121,34 @@ def has_field(entry: EntryType, field: str) -> bool:
 
 def get_entries(db: BibDatabase) -> List[EntryType]:
     return db.entries
+
+
+class FieldNames:
+    """constants for bibtex field names"""
+
+    ADDRESS = "address"
+    ANNOTE = "annote"
+    AUTHOR = "author"
+    BOOKTITLE = "booktitle"
+    CHAPTER = "chapter"
+    DOI = "doi"
+    EDITION = "edition"
+    EDITOR = "editor"
+    HOWPUBLISHED = "howpublished"
+    INSTITUTION = "institution"
+    ISSN = "issn"
+    ISBN = "isbn"
+    JOURNAL = "journal"
+    MONTH = "month"
+    NOTE = "note"
+    NUMBER = "number"
+    ORGANIZATION = "organization"
+    PAGES = "pages"
+    PUBLISHER = "publisher"
+    SCHOOL = "school"
+    SERIES = "series"
+    TITLE = "title"
+    TYPE = "type"
+    URL = "url"
+    VOLUME = "volume"
+    YEAR = "year"

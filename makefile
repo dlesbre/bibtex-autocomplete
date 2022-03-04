@@ -78,6 +78,12 @@ mypy: ## Typecheck all file
 	$(call print,Running mypy)
 	$(MYPY) ./bibtexautocomplete/ ./tests/
 
+.PHONY: flake8
+flake8: ## Run flake8 on all files
+	$(call print,Running flake8)
+	find bibtexautocomplete -type f -name "*.py" -exec flake8 {} ';'
+	find tests -type f -name "*.py" -exec flake8 {} ';'
+
 .PHONY: format
 format:
 	$(call print,Running black)
