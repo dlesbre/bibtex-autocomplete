@@ -1,8 +1,14 @@
 from logging import DEBUG
 
 from bibtexautocomplete.abstractlookup import LookupType
+from bibtexautocomplete.bibtex import BibtexEntry
 from bibtexautocomplete.defs import logger
-from bibtexautocomplete.lookup import CrossrefLookup, DBLPLookup, ResearchrLookup
+from bibtexautocomplete.lookup import (
+    CrossrefLookup,
+    DBLPLookup,
+    ResearchrLookup,
+    UnpaywallLookup,
+)
 
 logger.setLevel(DEBUG)
 
@@ -39,29 +45,29 @@ class Base:
     entry = (entry2, doi2)
 
     def test_valid(self):
-        a = self.Lookup(self.entry[0])
+        a = self.Lookup(BibtexEntry(self.entry[0]))
         assert a.query()["doi"] == self.entry[1]
 
     def test_junk(self):
-        a = self.Lookup(entry_junk)
+        a = self.Lookup(BibtexEntry(entry_junk))
         assert a.query() is None
 
     def test_invalid(self):
-        a = CrossrefLookup(entry_invalid)
+        a = CrossrefLookup(BibtexEntry(entry_invalid))
         assert a.query() is None
 
     def test_no_author(self):
         entry = self.entry[0].copy()
         del entry["author"]
         del entry["plain_author"]
-        a = self.Lookup(entry)
+        a = self.Lookup(BibtexEntry(entry))
         assert a.query()["doi"] == self.entry[1]
 
     def test_no_title(self):
         entry = self.entry[0].copy()
         del entry["title"]
         del entry["plain_title"]
-        a = self.Lookup(entry)
+        a = self.Lookup(BibtexEntry(entry))
         assert a.query() is None
 
 
@@ -76,3 +82,7 @@ class TestDBLP(Base):
 
 class TestResearchr(Base):
     Lookup = ResearchrLookup
+
+
+class TestUnpaywall(Base):
+    Lookup = UnpaywallLookup

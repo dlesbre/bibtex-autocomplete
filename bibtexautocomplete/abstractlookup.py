@@ -4,7 +4,7 @@ Lookups ==================================
 
 LookupProtocol(Protocol): duck-typing of lookups. They must have
   - an attribute name : str
-  - a method query(self) -> Optional[ResultType]
+  - a method query(self) -> Optional[BibtexEntry]
   - a method __init__(self, entry: Entry)
 
 ABCLookup(): abstract base class, defines abstract methods
@@ -50,7 +50,6 @@ from typing import (
     Generic,
     Iterable,
     Iterator,
-    List,
     Optional,
     Protocol,
     Type,
@@ -58,13 +57,11 @@ from typing import (
 )
 from urllib.parse import urlencode
 
-from .bibtex import Author, get_authors, get_plain, has_field
+from .bibtex import BibtexEntry, has_field
 from .defs import (
     CONNECTION_TIMEOUT,
     EMAIL,
     USER_AGENT,
-    EntryType,
-    ResultType,
     SafeJSON,
     extract_doi,
     logger,
@@ -79,12 +76,12 @@ from .defs import (
 class LookupProtocol(Protocol):
     name: str  # used to identify the lookup, also appears in help string
 
-    def query(self) -> Optional[ResultType]:
+    def query(self) -> Optional[BibtexEntry]:
         """Performs one or more queries to try and obtain the result
         VIRTUAL METHOD : must be overridden"""
         raise NotImplementedError("should be overridden in child class")
 
-    def __init__(self, entry: EntryType) -> None:
+    def __init__(self, entry: BibtexEntry) -> None:
         pass
 
 
@@ -94,12 +91,12 @@ LookupType = Type[LookupProtocol]
 class ABCLookup:
     name: str  # used to identify the lookup, also appears in help string
 
-    def query(self) -> Optional[ResultType]:
+    def query(self) -> Optional[BibtexEntry]:
         """Performs one or more queries to try and obtain the result
         VIRTUAL METHOD : must be overridden"""
         raise NotImplementedError("should be overridden in child class")
 
-    def __init__(self, entry: EntryType) -> None:
+    def __init__(self, entry: BibtexEntry) -> None:
         super().__init__()
 
 
@@ -109,17 +106,12 @@ class AMinimalLookup(ABCLookup):
 
     Virtual methods and attributes : (must be overridden in children):
     - name : str
-    - query: Self -> Optional[ResultType]
+    - query: Self -> Optional[BibtexEntry]
     """
 
-    name: str  # used to identify the lookup, also appears in help string
+    entry: BibtexEntry
 
-    def query(self) -> Optional[ResultType]:
-        """Performs one or more queries to try and obtain the result
-        VIRTUAL METHOD : must be overridden"""
-        raise NotImplementedError("should be overridden in child class")
-
-    def __init__(self, entry: EntryType) -> None:
+    def __init__(self, entry: BibtexEntry) -> None:
         super().__init__(entry)
         self.entry = entry
 
@@ -130,7 +122,7 @@ class ABaseLookup(AMinimalLookup):
 
     Defines:
     - lookup : Self -> Optional[bytes] - performs the queries and returns raw data
-    - query : Self -> Optional[ResultType] - performs single query, calls lookup and handle_output
+    - query : Self -> Optional[BibtexEntry] - performs single query, calls lookup and handle_output
 
     - domain: str = "localhost" - the domain name e.g. api.crossref.org
     - host : Optional[str] = None - host when different from domain
@@ -237,13 +229,13 @@ class ABaseLookup(AMinimalLookup):
             return None
         return data
 
-    def handle_output(self, data: bytes) -> Optional[ResultType]:
+    def handle_output(self, data: bytes) -> Optional[BibtexEntry]:
         """Should create a new entry with info extracted from data
         Should NOT modify self.entry
         VIRTUAL METHOD : must be overridden"""
         raise NotImplementedError("should be overridden in child class")
 
-    def query(self) -> Optional[ResultType]:
+    def query(self) -> Optional[BibtexEntry]:
         """Tries to complete an entry
         override this to make multiple requests
         (i.e. try different search terms)"""
@@ -251,10 +243,6 @@ class ABaseLookup(AMinimalLookup):
         if data is not None:
             return self.handle_output(data)
         return None
-
-    def get_entry_field(self, field: str) -> Optional[str]:
-        """Safe access to self.entry's fields"""
-        return get_plain(self.entry, field)
 
 
 # =================================================
@@ -275,7 +263,7 @@ class ConditionMixin(ABCLookup):
         performing any queries"""
         return True
 
-    def query(self) -> Optional[ResultType]:
+    def query(self) -> Optional[BibtexEntry]:
         """calls parent query only if condition is met"""
         if self.condition():
             return super().query()
@@ -293,7 +281,7 @@ class FieldConditionMixin(ConditionMixin, AMinimalLookup):
     - fields : Iterable[str] - list of fields that can be added to an entry by this lookup
     """
 
-    entry: EntryType
+    entry: BibtexEntry
 
     # list of fields that can be added to an entry by this lookup
     fields: Iterable[str]
@@ -317,7 +305,7 @@ class MultipleQueryMixin(ABCLookup):
 
     Defines:
     - iter_queries : Self -> Iterator[None] - empty iterator (should be overridden)
-    - query : Self -> Optional[ResultType] - call parent query as long as iter_query yields
+    - query : Self -> Optional[BibtexEntry] - call parent query as long as iter_query yields
         stop a first valid (non None) value
     """
 
@@ -329,7 +317,7 @@ class MultipleQueryMixin(ABCLookup):
         Default behavior: no queries"""
         return iter([])
 
-    def query(self) -> Optional[ResultType]:
+    def query(self) -> Optional[BibtexEntry]:
         """Performs queries as long as iter_query yields
         Stops at first valid result found"""
         for _ in self.iter_queries():
@@ -347,7 +335,7 @@ class DOIQueryMixin(MultipleQueryMixin, AMinimalLookup):
     doi: Optional[str] = None
 
     def iter_queries(self) -> Iterator[None]:
-        self.doi = get_plain(self.entry, "doi")
+        self.doi = self.entry.doi
         if self.doi is not None:
             yield None
         # Perform more queries without doi
@@ -365,7 +353,7 @@ class TitleQueryMixin(MultipleQueryMixin, AMinimalLookup):
     title: Optional[str] = None
 
     def iter_queries(self) -> Iterator[None]:
-        self.title = get_plain(self.entry, "title")
+        self.title = self.entry.title
         # Perform parent queries with title set
         for x in super().iter_queries():
             yield x
@@ -381,16 +369,14 @@ class AuthorQueryMixin(MultipleQueryMixin, AMinimalLookup):
     then unsets self.author
     """
 
-    entry: EntryType
+    entry: BibtexEntry
     author_join: str = " "
     author: Optional[str] = None
 
     def iter_queries(self) -> Iterator[None]:
         # Find and format authors
-        authors_str = get_plain(self.entry, "author")
-        authors: List[Author] = []
-        if authors_str is not None:
-            authors = get_authors(authors_str)
+        authors = self.entry.author
+        if authors:
             self.author = self.author_join.join(author.lastname for author in authors)
         # Perform parent queries
         for x in super().iter_queries():
@@ -429,21 +415,21 @@ class SearchResultMixin(Generic[result]):
     """Iterates through multiple results until a matching one is found
 
     Defines:
-    - handle_output : bytes -> Optional[ResultType]
+    - handle_output : bytes -> Optional[BibtexEntry]
 
     Virtual methods defined here:
     - get_results : bytes -> Optional[Iterable[result]]
         process data into a list of results
         return a result's title, used to compare to entry
     - matches_entry : result -> bool - does the result match self.entry ?
-    - get_value : result -> Optional[ResultType] - builds value from a matching result"""
+    - get_value : result -> Optional[BibtexEntry] - builds value from a matching result"""
 
     def get_results(self, data: bytes) -> Optional[Iterable[result]]:
         """Parse the data into a list of results to check
         Return None if no results/invalid data"""
         raise NotImplementedError("should be overridden in child class")
 
-    def get_value(self, res: result) -> ResultType:
+    def get_value(self, res: result) -> BibtexEntry:
         """Return the relevant value (e.g. updated entry)"""
         raise NotImplementedError("should be overridden in child class")
 
@@ -452,7 +438,7 @@ class SearchResultMixin(Generic[result]):
         By default matches titles, can be overridden for different behavior"""
         raise NotImplementedError("should be overridden in child class")
 
-    def handle_output(self, data: bytes) -> Optional[ResultType]:
+    def handle_output(self, data: bytes) -> Optional[BibtexEntry]:
         results = self.get_results(data)
         if results is None:
             logger.debug("no results")
@@ -483,11 +469,11 @@ class DOITitleSearchMixin(SearchResultMixin[result], AMinimalLookup):
 
     def matches_entry(self, res: result) -> bool:
         res_doi = extract_doi(self.get_doi(res))
-        ent_doi = extract_doi(get_plain(self.entry, "doi"))
+        ent_doi = self.entry.doi
         if res_doi is not None and ent_doi is not None and res_doi == ent_doi:
             return True
         res_title = self.get_title(res)
-        ent_title = get_plain(self.entry, "title")
+        ent_title = self.entry.title
         return (
             res_title is not None
             and ent_title is not None

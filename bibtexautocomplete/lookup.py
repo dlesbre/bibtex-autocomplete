@@ -1,11 +1,11 @@
 # Explicit lookups for DOI searches
 
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Dict, Iterable, List, Optional, Tuple
 from urllib.parse import quote_plus, urlencode
 
 from .abstractlookup import JSONLookup, LookupType
-from .bibtex import Author
-from .defs import EMAIL, ResultType, SafeJSON, extract_doi
+from .bibtex import Author, BibtexEntry
+from .defs import EMAIL, SafeJSON, extract_doi
 
 
 class CrossrefLookup(JSONLookup):
@@ -43,18 +43,16 @@ class CrossrefLookup(JSONLookup):
         return result["DOI"].to_str()
 
     @staticmethod
-    def get_authors(authors: Any) -> Optional[str]:
+    def get_authors(authors: SafeJSON) -> List[Author]:
         """Parses JSON output into bibtex formatted author list"""
-        if isinstance(authors, list):
-            formatted = []
-            for author in authors:
-                if not isinstance(author, dict):
-                    continue
-                lastname = author.get("family")
-                if lastname is not None:
-                    formatted.append(Author(lastname, author.get("given")).to_bibtex())
-            return " and ".join(formatted)
-        return None
+        formatted = []
+        for author in authors.iter_list():
+            if not isinstance(author, dict):
+                continue
+            lastname = author["family"].to_str()
+            if lastname is not None:
+                formatted.append(Author(lastname, author["given"].to_str()))
+        return formatted
 
     @staticmethod
     def get_date(result: SafeJSON) -> Tuple[Optional[str], Optional[str]]:
@@ -73,22 +71,21 @@ class CrossrefLookup(JSONLookup):
                 return year, month
         return None, None
 
-    def get_value(self, result: SafeJSON) -> ResultType:
+    def get_value(self, result: SafeJSON) -> BibtexEntry:
         """Extract bibtex data from JSON output"""
         year, month = self.get_date(result)
-        values = {
-            "doi": extract_doi(self.get_doi(result)),
-            "issn": result["ISSN"][0].to_str(),
-            "isbn": result["ISBN"][0].to_str(),
-            "title": self.get_title(result),
-            "author": self.get_authors(result["author"].to_str()),
-            "booktitle": result["container-title"][0].to_str(),
-            "volume": result["volume"].to_str(),
-            "pages": result["page"].to_str(),
-            "publisher": result["publisher"].to_str(),
-            "year": year,
-            "month": month,
-        }
+        values = BibtexEntry()
+        values.doi = extract_doi(self.get_doi(result))
+        values.issn = result["ISSN"][0].to_str()
+        values.isbn = result["ISBN"][0].to_str()
+        values.title = self.get_title(result)
+        values.author = self.get_authors(result["author"])
+        values.booktitle = result["container-title"][0].to_str()
+        values.volume = result["volume"].to_str()
+        values.pages = result["page"].to_str()
+        values.publisher = result["publisher"].to_str()
+        values.year = year
+        values.month = month
         return values
 
     fields = (
@@ -138,27 +135,26 @@ class DBLPLookup(JSONLookup):
         return result["info"]["doi"].to_str()
 
     @staticmethod
-    def get_authors(info: SafeJSON) -> Optional[str]:
+    def get_authors(info: SafeJSON) -> List[Author]:
         """Return a bibtex formatted list of authors"""
         authors = info["authors"]["author"]
         formatted = []
         for author in authors.iter_list():
-            name = author["text"].to_str()
-            if name is not None:
-                formatted.append(name)
-        return " and ".join(formatted)
+            aut = Author.from_name(author["text"].to_str())
+            if aut is not None:
+                formatted.append(aut)
+        return formatted
 
-    def get_value(self, result: SafeJSON) -> ResultType:
+    def get_value(self, result: SafeJSON) -> BibtexEntry:
         info = result["info"]
-        values = {
-            "doi": extract_doi(self.get_doi(result)),
-            "title": info["title"].to_str(),
-            "pages": info["pages"].to_str(),
-            "volume": info["volume"].to_str(),
-            "year": info["year"].to_str(),
-            "author": self.get_authors(info),
-            "url": info["ee"].to_str() if info["access"].to_str() == "open" else None,
-        }
+        values = BibtexEntry()
+        values.doi = extract_doi(self.get_doi(result))
+        values.title = info["title"].to_str()
+        values.pages = info["pages"].to_str()
+        values.volume = info["volume"].to_str()
+        values.year = info["year"].to_str()
+        values.author = self.get_authors(info)
+        values.url = info["ee"].to_str() if info["access"].to_str() == "open" else None
         return values
 
     fields = ("doi", "title", "pages", "volume", "year", "author", "url")
@@ -195,37 +191,34 @@ class ResearchrLookup(JSONLookup):
         return result["doi"].to_str()
 
     @staticmethod
-    def get_authors(authors: SafeJSON) -> Optional[str]:
+    def get_authors(authors: SafeJSON) -> List[Author]:
         """Return a bibtex formatted list of authors"""
         formatted = []
         for author in authors.iter_list():
-            name = author["alias"]["name"].to_str()
-            if name is not None:
-                formatted.append(name)
-        if formatted:
-            return " and ".join(formatted)
-        return None
+            aut = Author.from_name(author["alias"]["name"].to_str())
+            if aut is not None:
+                formatted.append(aut)
+        return formatted
 
-    def get_value(self, result: SafeJSON) -> ResultType:
+    def get_value(self, result: SafeJSON) -> BibtexEntry:
         page_1 = result["firstpage"].to_str()
         page_n = result["lastpage"].to_str()
-        values = {
-            "doi": extract_doi(self.get_doi(result)),
-            "booktitle": result["booktitle"].to_str(),
-            "volume": result["volume"].to_str(),
-            "number": result["number"].to_str(),
-            "address": result["address"].to_str(),
-            "organization": result["organization"].to_str(),
-            "publisher": result["publisher"].to_str(),
-            "year": result["year"].to_str(),
-            "month": result["month"].to_str(),
-            "title": result["title"].to_str(),
-            "pages": f"{page_1}-{page_n}"
-            if page_1 is not None and page_n is not None
-            else None,
-            "author": self.get_authors(result["authors"]),
-            "editor": self.get_authors(result["editors"]),
-        }
+        values = BibtexEntry()
+        values.doi = extract_doi(self.get_doi(result))
+        values.booktitle = result["booktitle"].to_str()
+        values.volume = result["volume"].to_str()
+        values.number = result["number"].to_str()
+        values.address = result["address"].to_str()
+        values.organization = result["organization"].to_str()
+        values.publisher = result["publisher"].to_str()
+        values.year = result["year"].to_str()
+        values.month = result["month"].to_str()
+        values.title = result["title"].to_str()
+        values.pages = (
+            f"{page_1}-{page_n}" if page_1 is not None and page_n is not None else None
+        )
+        values.author = self.get_authors(result["authors"])
+        values.editor = self.get_authors(result["editors"])
         return values
 
     fields = (
@@ -281,8 +274,7 @@ class UnpaywallLookup(JSONLookup):
 
     def get_results_json(self, data) -> Optional[Iterable[SafeJSON]]:
         if self.doi is not None:
-            # doi based search
-            # single result if any
+            # doi based search, single result if any
             return [data]
         return data.get("result")
 
@@ -295,19 +287,17 @@ class UnpaywallLookup(JSONLookup):
         return self.doi is not None or super().matches_entry(result)
 
     @staticmethod
-    def get_authors(authors: SafeJSON) -> Optional[str]:
+    def get_authors(authors: SafeJSON) -> List[Author]:
         """Return a bibtex formatted list of authors"""
         formatted = []
         for author in authors.iter_list():
             family = author["family"].to_str()
             if family is not None:
                 given = author["given"].to_str()
-                formatted.append(Author(family, given).to_bibtex())
-        if formatted:
-            return " and ".join(formatted)
-        return None
+                formatted.append(Author(family, given))
+        return formatted
 
-    def get_value(self, result: SafeJSON) -> ResultType:
+    def get_value(self, result: SafeJSON) -> BibtexEntry:
         date = result["published_date"].to_str()  # ISO format YYYY-MM-DD
         year = str(result["year"].to_int())
         month = None
@@ -316,17 +306,16 @@ class UnpaywallLookup(JSONLookup):
                 year = date[0:4]
             if len(date) >= 7:
                 month = date[5:7]
-        values = {
-            "doi": extract_doi(result["doi"].to_str()),
-            "booktitle": result["journal_name"].to_str(),
-            "publisher": result["publisher"].to_str(),
-            "title": result["title"].to_str(),
-            "year": year,
-            "month": month,
-            "url": result["best_oa_location"]["url_for_pdf"].to_str(),
-            "issn": result["journal_issn_l"].to_str(),
-            "author": self.get_authors(result["z_authors"]),
-        }
+        values = BibtexEntry()
+        values.doi = extract_doi(result["doi"].to_str())
+        values.booktitle = result["journal_name"].to_str()
+        values.publisher = result["publisher"].to_str()
+        values.title = result["title"].to_str()
+        values.year = year
+        values.month = month
+        values.url = result["best_oa_location"]["url_for_pdf"].to_str()
+        values.issn = result["journal_issn_l"].to_str()
+        values.author = self.get_authors(result["z_authors"])
         return values
 
     fields = (

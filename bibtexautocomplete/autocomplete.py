@@ -5,8 +5,8 @@ from typing import Container, Iterable, Iterator, List, Optional
 from alive_progress import alive_bar  # type: ignore
 from bibtexparser.bibdatabase import BibDatabase
 
-from .abstractlookup import LookupType, ResultType
-from .bibtex import get_entries, has_field, read, write_to
+from .abstractlookup import LookupType
+from .bibtex import BibtexEntry, get_entries, has_field, read, write_to
 from .defs import PROGRESS, EntryType, logger
 
 
@@ -68,7 +68,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 logger.debug(f"autocompleting {entry['ID']}")
                 changed_fields = 0
                 for lookup in self.lookups:
-                    init = lookup(entry)
+                    init = lookup(BibtexEntry(entry))
                     info = init.query()
                     if info is not None:
                         changed_fields += self.combine(entry, info)
@@ -83,12 +83,12 @@ class BibtexAutocomplete(Iterable[EntryType]):
             f", added {self.changed_fields} fields",
         )
 
-    def combine(self, entry: EntryType, new_info: ResultType) -> int:
+    def combine(self, entry: EntryType, new_info: BibtexEntry) -> int:
         """Adds the information in info to entry.
         Does not overwrite unless self.force_overwrite is True
         only acts on fields contained in self.fields"""
         changed = 0
-        for field, value in new_info.items():
+        for field, value in new_info:
             if field not in self.fields:
                 continue
             # Does the field actually contain any value
