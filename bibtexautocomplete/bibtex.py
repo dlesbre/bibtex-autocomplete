@@ -333,7 +333,7 @@ class BibtexEntry:
         """Performs checks when returning Bibtex fields"""
         if attr_name in FieldNamesSet:
             if attr_name in SpecialFields:
-                return getattr(self, "get_" + attr_name)()
+                return super().__getattribute__("get_" + attr_name)()
             return get_plain(self._entry, attr_name)
         return super().__getattribute__(attr_name)
 
@@ -341,16 +341,16 @@ class BibtexEntry:
         """Performs checks when returning Bibtex fields"""
         if attr_name in FieldNamesSet:
             if attr_name in SpecialFields:
-                return getattr(self, "set_" + attr_name)(value)
+                return super().__getattribute__("set_" + attr_name)(value)
             else:
-                self.entry[attr_name] = value
+                self._entry[attr_name] = value
             return None
         return super().__setattr__(attr_name, value)
 
     def __delattr__(self, attr_name: str) -> None:
         if attr_name in FieldNamesSet:
-            if attr_name in self.entry:
-                del self.entry[attr_name]
+            if attr_name in self._entry:
+                del self._entry[attr_name]
             return
         return super().__delattr__(attr_name)
 

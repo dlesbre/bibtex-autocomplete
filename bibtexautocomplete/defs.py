@@ -128,7 +128,7 @@ def extract_doi(doi_or_url: Optional[str]) -> Optional[str]:
     if doi_or_url is not None:
         match = search(DOI_REGEX, doi_or_url)
         if match is not None:
-            return match.group(1)
+            return match.group(1).lower()  # DOI's are case insensitive
     return None
 
 

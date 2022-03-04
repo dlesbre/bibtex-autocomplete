@@ -27,7 +27,7 @@ entry2 = {
     "author": "Carl-Johan H Seger",
     "ID": "Cephalopode",
 }
-doi2 = "10.1109/MEMOCODE51338.2020.9315094"
+doi2 = "10.1109/memocode51338.2020.9315094"
 
 entry_junk = {
     "plain_title": "156231.0649 404 nonexistant",
@@ -46,7 +46,9 @@ class Base:
 
     def test_valid(self):
         a = self.Lookup(BibtexEntry(self.entry[0]))
-        assert a.query()["doi"] == self.entry[1]
+        res = a.query()
+        assert res is not None
+        assert res.doi == self.entry[1]
 
     def test_junk(self):
         a = self.Lookup(BibtexEntry(entry_junk))
@@ -61,7 +63,9 @@ class Base:
         del entry["author"]
         del entry["plain_author"]
         a = self.Lookup(BibtexEntry(entry))
-        assert a.query()["doi"] == self.entry[1]
+        res = a.query()
+        assert res is not None
+        assert res.doi == self.entry[1]
 
     def test_no_title(self):
         entry = self.entry[0].copy()

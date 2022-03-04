@@ -57,7 +57,7 @@ from typing import (
 )
 from urllib.parse import urlencode
 
-from .bibtex import BibtexEntry, has_field
+from .bibtex import BibtexEntry
 from .defs import (
     CONNECTION_TIMEOUT,
     EMAIL,
@@ -290,7 +290,7 @@ class FieldConditionMixin(ConditionMixin, AMinimalLookup):
         """Only return True if there exists a field in self.fields
         that is not in self.entry"""
         for field in self.fields:
-            if not has_field(self.entry, field):
+            if field not in self.entry:
                 return True
         return False
 
@@ -362,25 +362,33 @@ class TitleQueryMixin(MultipleQueryMixin, AMinimalLookup):
 
 
 class AuthorQueryMixin(MultipleQueryMixin, AMinimalLookup):
-    """Sets self.author if self.entry has a authors to space separated list of lastnames
+    """
+    Sets self.title to entry title if any
+    Sets self.author if self.entry has a authors to space separated list of lastnames
     Performs parent queries if any
-    then performs a single query if self.author is not None
-    then performs a query per author (resetting self.author to just one author) if more than one author
-    then unsets self.author
+    if self.title:
+      performs a single query if self.author is not None
+      performs a query per author (resetting self.author to just one author) if more than one author
+      unsets self.author
+      performs a single query
     """
 
     entry: BibtexEntry
     author_join: str = " "
+    title: Optional[str] = None
     author: Optional[str] = None
 
     def iter_queries(self) -> Iterator[None]:
         # Find and format authors
+        self.title = self.entry.title
         authors = self.entry.author
         if authors:
             self.author = self.author_join.join(author.lastname for author in authors)
         # Perform parent queries
         for x in super().iter_queries():
             yield x
+        if self.title is None:
+            return None
         # Perform one query with all authors
         yield None
         if len(authors) == 1:
@@ -390,6 +398,7 @@ class AuthorQueryMixin(MultipleQueryMixin, AMinimalLookup):
             self.author = author.lastname
             yield None
         self.author = None
+        yield None
 
 
 class DATQueryMixin(TitleQueryMixin, AuthorQueryMixin, DOIQueryMixin):

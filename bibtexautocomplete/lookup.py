@@ -272,19 +272,19 @@ class UnpaywallLookup(JSONLookup):
             return base + self.doi + params
         return base + "search/" + params
 
-    def get_results_json(self, data) -> Optional[Iterable[SafeJSON]]:
+    def get_results(self, data) -> Optional[Iterable[SafeJSON]]:
+        json = SafeJSON.from_bytes(data)
         if self.doi is not None:
             # doi based search, single result if any
-            return [data]
-        return data.get("result")
+            return [json]
+        return json["results"].iter_list()
 
     def get_title(self, result: SafeJSON) -> Optional[str]:
         """Get the title of a result"""
-        return result["title"].to_str()
+        return result["response"]["title"].to_str()
 
-    def matches_entry(self, result: SafeJSON) -> bool:
-        """Always true in DOI mode (single result)"""
-        return self.doi is not None or super().matches_entry(result)
+    def get_doi(self, result: SafeJSON) -> Optional[str]:
+        return extract_doi(result["doi"].to_str())
 
     @staticmethod
     def get_authors(authors: SafeJSON) -> List[Author]:
@@ -298,6 +298,7 @@ class UnpaywallLookup(JSONLookup):
         return formatted
 
     def get_value(self, result: SafeJSON) -> BibtexEntry:
+        result = result["response"]
         date = result["published_date"].to_str()  # ISO format YYYY-MM-DD
         year = str(result["year"].to_int())
         month = None

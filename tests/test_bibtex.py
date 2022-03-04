@@ -34,6 +34,15 @@ def test_get_authors():
         assert bibtex.Author.from_namelist(author) == res
 
 
+def test_BibtexEntry_normal():
+    a = bibtex.BibtexEntry()
+    for field in bibtex.FieldNamesSet - bibtex.SpecialFields:
+        assert getattr(a, field) is None
+        setattr(a, field, field)
+    for field in bibtex.FieldNamesSet - bibtex.SpecialFields:
+        assert getattr(a, field) == field
+
+
 def test_BibtexEntry_special():
     a = bibtex.BibtexEntry({})
     for field in bibtex.SpecialFields:
