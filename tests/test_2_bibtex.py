@@ -21,6 +21,7 @@ def test_normalize_str():
         ("a  b\tc\nd", "a b c d"),
         ("ABC", "abc"),
         ("12 +*-/#.?:$%", "12"),
+        ("àbcéèçôêâû+ÏÖÜÉÀÈÇÉ#!;§", "abceecoeau ioueaece"),
     ]
     for inp, out in tests:
         assert normalize_str(inp) == out
