@@ -121,4 +121,7 @@ class HTTPSLookup(AbstractDataLookup):
         except socket.gaierror as err:
             logger.warn(f"connection error: {err}")
             return None
+        except OSError as err:
+            logger.warn(f"connection error: {err}")
+            return None
         return data
