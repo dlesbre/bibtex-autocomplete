@@ -108,8 +108,9 @@ Flags:
 - TEST on datadumps
 - search mode ?
 - output format
-- Match likeliness ? combine field lists with arguments
+- combine field lists with arguments
 - parrallelize requests ?
+- ~~Match likeliness ?~~
 - ~~accented string~~
 - ~~fix progressbar~~ - waiting for merge
 - ~~SafeJSON~~

@@ -102,16 +102,16 @@ class TitleAuthorQueryMixin(MultipleQueryMixin, AbstractEntryLookup):
             return None
         # Perform one query with all authors
         yield None
-        if len(authors) == 1:
-            return
-        for ii, author in enumerate(authors):
-            # Perform one query per author, with at most 10 queries
-            if ii > self.max_author_queries:
-                break
-            self.author = author.lastname
-            yield None
+        if len(authors) > 1:
+            for ii, author in enumerate(authors):
+                # Perform one query per author, with at most 10 queries
+                if ii > self.max_author_queries:
+                    break
+                self.author = author.lastname
+                yield None
         self.author = None
-        yield None
+        if authors:
+            yield None
 
 
 class DATQueryMixin(TitleAuthorQueryMixin, DOIQueryMixin):
@@ -126,7 +126,7 @@ class DATQueryMixin(TitleAuthorQueryMixin, DOIQueryMixin):
 
 
 class DTQueryMixin(TitleAuthorQueryMixin, DOIQueryMixin):
-    """DOI- Title Mixin
+    """DOI - Title Mixin
     queries in order:
     - if doi, with doi, with title (if any)
     - if title, with title (if any)"""
