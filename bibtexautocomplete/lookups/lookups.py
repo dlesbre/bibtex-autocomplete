@@ -6,17 +6,17 @@ from ..utils.safe_json import SafeJSON
 from .condition_mixin import FieldConditionMixin
 from .https import HTTPSLookup
 from .multiple_mixin import DATQueryMixin, DTQueryMixin, TitleAuthorQueryMixin
-from .search_mixin import DOITitleSearchMixin
+from .search_mixin import EntryMatchSearchMixin
 
 
 class JSON_DAT_Lookup(
-    FieldConditionMixin, DATQueryMixin, DOITitleSearchMixin[SafeJSON], HTTPSLookup
+    FieldConditionMixin, DATQueryMixin, EntryMatchSearchMixin[SafeJSON], HTTPSLookup
 ):
     pass
 
 
 class JSON_DT_Lookup(
-    FieldConditionMixin, DTQueryMixin, DOITitleSearchMixin[SafeJSON], HTTPSLookup
+    FieldConditionMixin, DTQueryMixin, EntryMatchSearchMixin[SafeJSON], HTTPSLookup
 ):
     pass
 
@@ -24,7 +24,7 @@ class JSON_DT_Lookup(
 class JSON_AT_Lookup(
     FieldConditionMixin,
     TitleAuthorQueryMixin,
-    DOITitleSearchMixin[SafeJSON],
+    EntryMatchSearchMixin[SafeJSON],
     HTTPSLookup,
 ):
     pass

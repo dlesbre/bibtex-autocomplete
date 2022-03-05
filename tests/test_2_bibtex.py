@@ -11,14 +11,28 @@ from bibtexautocomplete.bibtex.normalize import (
     normalize_doi,
     normalize_month,
     normalize_str,
+    normalize_str_weak,
 )
+
+
+def test_normalize_str_weak():
+    tests = [
+        ("abc", "abc"),
+        ("a.b.c", "a.b.c"),
+        ("a  b\t\n\rc\nd", "a b c d"),
+        ("ABC", "abc"),
+        ("12 +*-/#.?:$%", "12 +*-/#.?:$%"),
+        ("àbcéèçôêâû+ÏÖÜÉÀÈÇÉ#!;§", "abceecoeau+ioueaece#!;§"),
+    ]
+    for inp, out in tests:
+        assert normalize_str_weak(inp) == out
 
 
 def test_normalize_str():
     tests = [
         ("abc", "abc"),
         ("a.b.c", "a b c"),
-        ("a  b\tc\nd", "a b c d"),
+        ("a  b\t\n\rc\nd", "a b c d"),
         ("ABC", "abc"),
         ("12 +*-/#.?:$%", "12"),
         ("àbcéèçôêâû+ÏÖÜÉÀÈÇÉ#!;§", "abceecoeau ioueaece"),

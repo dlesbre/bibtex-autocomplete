@@ -4,7 +4,7 @@ Functions used to normalize bibtex fields
 
 import unicodedata
 from datetime import date
-from re import search
+from re import search, sub
 from typing import Optional
 
 from ..utils.constants import EntryType
@@ -31,6 +31,14 @@ def strip_accents(s):
     return "".join(
         c for c in unicodedata.normalize("NFD", s) if unicodedata.category(c) != "Mn"
     )
+
+
+def normalize_str_weak(string: str) -> str:
+    """Converts to lower case, strips accents,
+    replace tabs and newline with spaces,
+    removes duplicate spaces"""
+    string = strip_accents(string).lower()
+    return sub(r"\s+", " ", string)
 
 
 def normalize_str(string: str) -> str:

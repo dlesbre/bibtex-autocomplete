@@ -11,7 +11,7 @@ New virtual methods:
 from typing import Generic, Iterable, Optional, TypeVar
 
 from ..bibtex.entry import BibtexEntry
-from ..bibtex.normalize import normalize_doi, normalize_str
+from ..bibtex.matching import ENTRY_CERTAIN_MATCH, ENTRY_NO_MATCH, match_score
 from ..utils.logger import logger
 from .abstract_base import AbstractEntryLookup
 
@@ -22,13 +22,16 @@ class SearchResultMixin(Generic[result]):
     """Iterates through multiple results until a matching one is found
 
     Defines:
-    - handle_output : bytes -> Optional[BibtexEntry]
+    - process_data : bytes -> Optional[BibtexEntry]
 
     Virtual methods defined here:
     - get_results : bytes -> Optional[Iterable[result]]
         process data into a list of results
-    - matches_entry : result -> bool - does the result match self.entry ?
-    - get_value : result -> Optional[BibtexEntry] - builds value from a result"""
+    - get_value : result -> Optional[BibtexEntry] - builds value from a result
+    - match_score : entry -> result -> int - matching score
+        between the entry and our search term
+        value between ENTRY_NO_MATCH and ENTRY_CERTAIN_MATCH (included)
+    """
 
     def get_results(self, data: bytes) -> Optional[Iterable[result]]:
         """Parse the data into a list of results to check
@@ -39,10 +42,15 @@ class SearchResultMixin(Generic[result]):
         """Return the relevant value (e.g. updated entry)"""
         raise NotImplementedError("should be overridden in child class")
 
-    def matches_entry(self, res: result) -> bool:
-        """Return true if the result matches self.entry
-        By default matches titles, can be overridden for different behavior"""
+    def match_score(self, entry: BibtexEntry, res: result) -> int:
+        """
+        Assign a score between ENTRY_NO_MATCH and ENTRY_CERTAIN_MATCH (included)
+        representing how likely the given entries matches our search term
+        - entry:BibtexEntry is self.get_value(res)
+        - res:result is also passed in case get_value forgets some data.
+        """
         raise NotImplementedError("should be overridden in child class")
+        return match_score(self.entry, entry)
 
     def process_data(self, data: bytes) -> Optional[BibtexEntry]:
         """Iterate through results until one matches"""
@@ -50,39 +58,21 @@ class SearchResultMixin(Generic[result]):
         if results is None:
             logger.debug("no results")
             return None
+        max_score = ENTRY_NO_MATCH
+        max_entry: Optional[BibtexEntry] = None
         for res in results:
-            if self.matches_entry(res):
-                # We found a match,
-                # No need to keep searching or querying this database
-                # even if the match is empty
-                return self.get_value(res)
-        return None
+            entry = self.get_value(res)
+            score = self.match_score(entry, res)
+            if score >= ENTRY_CERTAIN_MATCH:
+                return entry
+            if score > max_score:
+                max_score = score
+                max_entry = entry
+        return max_entry
 
 
-class DOITitleSearchMixin(SearchResultMixin[result], AbstractEntryLookup):
-    """matches based on doi (if present on both) or title (with str_similar)
+class EntryMatchSearchMixin(SearchResultMixin[result], AbstractEntryLookup):
+    """Uses the bibtex entry matcher to get match score"""
 
-    Virtual methods:
-    - get_doi : result -> Optional[str]
-    - get_title : result -> Optional[str]"""
-
-    def get_doi(self, res: result) -> Optional[str]:
-        """Return the result's DOI if present"""
-        raise NotImplementedError("should be overridden in child class")
-
-    def get_title(self, res: result) -> Optional[str]:
-        """Return the result's title if present"""
-        raise NotImplementedError("should be overridden in child class")
-
-    def matches_entry(self, res: result) -> bool:
-        res_doi = normalize_doi(self.get_doi(res))
-        ent_doi = self.entry.doi
-        if res_doi is not None and ent_doi is not None and res_doi == ent_doi:
-            return True
-        res_title = self.get_title(res)
-        ent_title = self.entry.title
-        return (
-            res_title is not None
-            and ent_title is not None
-            and normalize_str(ent_title) == normalize_str(res_title)
-        )
+    def match_score(self, entry: BibtexEntry, _res: result) -> int:
+        return match_score(self.entry, entry)
