@@ -98,15 +98,22 @@ Flags:
 ## TODO
 
 - tests for main options
+- error code
+- print changes + source
+- colors
 - TESTS TESTS TESTS TESTS
-- combine field lists with arguments
+- query rate monitor
 - contributing
 - upload to PyPI ?
-- fix progressbar
-- what to put in `__init__.py` ?
 - TEST on datadumps
 - search mode ?
 - output format
-- BibtexEntry sanify month
-- Match likeliness ?
+- Match likeliness ? combine field lists with arguments
 - parrallelize requests ?
+- ~~accented string~~
+- ~~fix progressbar~~ - waiting for merge
+- ~~SafeJSON~~
+- ~~BibtexEntry sanify~~
+- ~~DOI first search~~
+- ~~init.py~~
+- ~~search depth limit~~
