@@ -58,13 +58,6 @@ class UnpaywallLookup(JSON_DT_Lookup):
             return [json]
         return json["results"].iter_list()
 
-    def get_title(self, result: SafeJSON) -> Optional[str]:
-        """Get the title of a result"""
-        return result["response"]["title"].to_str()
-
-    def get_doi(self, result: SafeJSON) -> Optional[str]:
-        return result["doi"].to_str()
-
     @staticmethod
     def get_authors(authors: SafeJSON) -> list[Author]:
         """Return a bibtex formatted list of authors"""

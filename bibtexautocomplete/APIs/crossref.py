@@ -50,14 +50,6 @@ class CrossrefLookup(JSON_DAT_Lookup):
             return message["items"].iter_list()
         return None
 
-    def get_title(self, result: SafeJSON) -> Optional[str]:
-        """Get the title of a result"""
-        return result["title"][0].to_str()
-
-    def get_doi(self, result: SafeJSON) -> Optional[str]:
-        """Get the DOI of a result"""
-        return result["DOI"].to_str()
-
     @staticmethod
     def get_authors(authors: SafeJSON) -> list[Author]:
         """Parses JSON output into bibtex formatted author list"""
@@ -93,13 +85,13 @@ class CrossrefLookup(JSON_DAT_Lookup):
         values = BibtexEntry()
         values.author = self.get_authors(result["author"])
         values.booktitle = result["container-title"][0].to_str()
-        values.doi = self.get_doi(result)
+        values.doi = result["DOI"].to_str()
         values.issn = result["ISSN"][0].to_str()
         values.isbn = result["ISBN"][0].to_str()
         values.month = month
         values.pages = result["page"].to_str()
         values.publisher = result["publisher"].to_str()
-        values.title = self.get_title(result)
+        values.title = result["title"][0].to_str()
         values.volume = result["volume"].to_str()
         values.year = year
         return values

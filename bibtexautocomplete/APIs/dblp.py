@@ -2,7 +2,7 @@
 Lookup info from https://dlbp.org
 """
 
-from typing import Iterable, Optional
+from typing import Iterable
 
 from ..bibtex.author import Author
 from ..bibtex.entry import BibtexEntry, FieldNames
@@ -38,14 +38,6 @@ class DBLPLookup(JSON_AT_Lookup):
         """Return the result list"""
         return SafeJSON.from_bytes(data)["result"]["hits"]["hit"].iter_list()
 
-    def get_title(self, result: SafeJSON) -> Optional[str]:
-        """Get the title of a result"""
-        return result["info"]["title"].to_str()
-
-    def get_doi(self, result: SafeJSON) -> Optional[str]:
-        """Get the DOI of a result"""
-        return result["info"]["doi"].to_str()
-
     @staticmethod
     def get_authors(info: SafeJSON) -> list[Author]:
         """Return a bibtex formatted list of authors"""
@@ -61,7 +53,7 @@ class DBLPLookup(JSON_AT_Lookup):
         info = result["info"]
         values = BibtexEntry()
         values.author = self.get_authors(info)
-        values.doi = self.get_doi(result)
+        values.doi = info["doi"].to_str()
         values.pages = info["pages"].to_str()
         values.title = info["title"].to_str()
         values.volume = info["volume"].to_str()

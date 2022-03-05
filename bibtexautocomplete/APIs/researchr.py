@@ -2,7 +2,7 @@
 Lookup info from https://researchr.org/
 """
 
-from typing import Iterable, Optional
+from typing import Iterable
 from urllib.parse import quote_plus
 
 from ..bibtex.author import Author
@@ -39,14 +39,6 @@ class ResearchrLookup(JSON_AT_Lookup):
         """Return the result list"""
         return SafeJSON.from_bytes(data)["result"].iter_list()
 
-    def get_title(self, result: SafeJSON) -> Optional[str]:
-        """Get the title of a result"""
-        return result["title"].to_str()
-
-    def get_doi(self, result: SafeJSON) -> Optional[str]:
-        """Get the DOI of a result"""
-        return result["doi"].to_str()
-
     @staticmethod
     def get_authors(authors: SafeJSON) -> list[Author]:
         """Return a bibtex formatted list of authors"""
@@ -64,7 +56,7 @@ class ResearchrLookup(JSON_AT_Lookup):
         values.address = result["address"].to_str()
         values.author = self.get_authors(result["authors"])
         values.booktitle = result["booktitle"].to_str()
-        values.doi = self.get_doi(result)
+        values.doi = result["doi"].to_str()
         values.editor = self.get_authors(result["editors"])
         values.month = result["month"].to_str()
         values.number = result["number"].to_str()
