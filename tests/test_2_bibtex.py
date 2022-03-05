@@ -6,6 +6,11 @@ from bibtexautocomplete.bibtex.entry import (
     SpecialFields,
 )
 from bibtexautocomplete.bibtex.io import file_read, write
+from bibtexautocomplete.bibtex.matching import (
+    ENTRY_CERTAIN_MATCH,
+    ENTRY_NO_MATCH,
+    match_score,
+)
 from bibtexautocomplete.bibtex.normalize import (
     EN_MONTHS,
     normalize_doi,
@@ -139,3 +144,23 @@ def test_BibtexEntry_editor_set():
         b = BibtexEntry()
         b.editor = res
         assert b.editor == res
+
+
+def test_matching():
+    assert match_score(BibtexEntry(), BibtexEntry()) == ENTRY_NO_MATCH
+    doi1 = BibtexEntry({"doi": "10.1234/12345"})
+    doi2 = BibtexEntry({"doi": "10.1234/different.12345"})
+    assert match_score(doi1, doi1) == ENTRY_CERTAIN_MATCH
+    assert match_score(doi1, doi2) == ENTRY_NO_MATCH
+    title1 = BibtexEntry({"title": "My\tawesome paper!"})
+    title1_v = BibtexEntry({"title": "My Awesome Paper"})
+    title2 = BibtexEntry({"title": "My book, volume 1"})
+    title2_v = BibtexEntry({"title": "My book, volume 2"})
+    titles = [title1, title1_v, title2, title2_v]
+    for title in titles:
+        for t in titles:
+            assert match_score(title, title) >= match_score(title, t)
+            assert match_score(t, title) == match_score(title, t)
+        assert match_score(title, title) > ENTRY_NO_MATCH
+    assert match_score(title1, title1_v) > ENTRY_NO_MATCH
+    assert match_score(title2, title2_v) == ENTRY_NO_MATCH
