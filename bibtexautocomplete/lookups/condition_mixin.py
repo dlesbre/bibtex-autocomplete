@@ -2,9 +2,9 @@
 Mixin to check if a condition holds before performing queries
 """
 
-from typing import Iterable, Optional
+from typing import Optional
 
-from ..bibtex.entry import BibtexEntry
+from ..bibtex.entry import BibtexEntry, SearchedFields
 from .abstract_base import AbstractEntryLookup, AbstractLookup
 
 
@@ -40,12 +40,14 @@ class FieldConditionMixin(ConditionMixin, AbstractEntryLookup):
     """
 
     # list of fields that can be added to an entry by this lookup
-    fields: Iterable[str]
+    fields: set[str]
+
+    fields_to_complete: set[str] = SearchedFields
 
     def condition(self):
         """Only return True if there exists a field in self.fields
         that is not in self.entry"""
-        for field in self.fields:
+        for field in self.fields.intersection(self.fields_to_complete):
             if field not in self.entry:
                 return True
         return False

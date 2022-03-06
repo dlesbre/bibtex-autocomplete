@@ -48,6 +48,9 @@ FieldNamesSet: set[str] = {
     if isinstance(value, str) and "_" not in attr and attr.upper() == attr
 }
 
+# Fields actually searched for
+SearchedFields = FieldNamesSet.copy()
+
 # Set of fields with sanitized inputs
 SpecialFields: set[str] = {
     "author",

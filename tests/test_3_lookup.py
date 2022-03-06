@@ -1,7 +1,8 @@
 from typing import Optional
 
-from bibtexautocomplete.bibtex.entry import BibtexEntry
+from bibtexautocomplete.bibtex.entry import BibtexEntry, FieldNames
 from bibtexautocomplete.lookups.abstract_base import AbstractLookup
+from bibtexautocomplete.lookups.condition_mixin import FieldConditionMixin
 from bibtexautocomplete.lookups.multiple_mixin import DATQueryMixin, DTQueryMixin
 
 
@@ -179,3 +180,102 @@ class TestDTQuery:
             # {"doi":None, "title": title},
         ]
         self.make_query(expected, entry)
+
+
+class ConditionEval(AbstractLookup):
+    queried: bool
+
+    def __init__(self, entry: BibtexEntry):
+        self.queried = False
+        super().__init__(entry)
+
+    def query(self):
+        self.queried = True
+        return None
+
+
+class TestCondition:
+    class parent(FieldConditionMixin, ConditionEval):
+        fields = {
+            FieldNames.DOI,
+            FieldNames.TITLE,
+            FieldNames.AUTHOR,
+        }
+
+    def run(self, entry: dict[str, str], expected: bool):
+        p = self.parent(BibtexEntry(entry))
+        p.query()
+        assert p.queried == expected
+
+    def test_empty(self):
+        self.run({}, True)
+        self.run({"junk": "junk", "more junk": "more junk"}, True)
+
+    def test_full(self):
+        self.run(
+            {"doi": "10.1234/1234", "title": "A Title", "author": "John Jones"}, False
+        )
+
+    def test_partial(self):
+        self.run(
+            {
+                # "doi":"10.1234/1234",
+                "title": "A Title",
+                "author": "John Jones",
+            },
+            True,
+        )
+        self.run(
+            {
+                "doi": "10.1234/1234",
+                # "title":"A Title",
+                "author": "John Jones",
+            },
+            True,
+        )
+        self.run(
+            {
+                "doi": "10.1234/1234",
+                "title": "A Title",
+                # "author":"John Jones"
+            },
+            True,
+        )
+
+    def test_invalid(self):
+        self.run({"doi": "", "title": "A Title", "author": "John Jones"}, True)
+        self.run({"doi": "10.1234/1234", "title": "A Title", "author": "{}"}, True)
+        self.run(
+            {"doi": "10.1234/1234", "title": "A Title", "author": "{{}{{}}}"}, True
+        )
+
+    def test_filter(self):
+        old = self.parent.fields_to_complete
+        self.parent.fields_to_complete = {
+            FieldNames.DOI,
+        }
+        self.run(
+            {
+                # "doi":"10.1234/1234",
+                "title": "A Title",
+                "author": "John Jones",
+            },
+            True,
+        )
+        self.run(
+            {
+                "doi": "10.1234/1234",
+                # "title":"A Title",
+                "author": "John Jones",
+            },
+            False,
+        )
+        self.run(
+            {
+                "doi": "10.1234/1234",
+                "title": "A Title",
+                # "author":"John Jones"
+            },
+            False,
+        )
+        self.parent.fields_to_complete = old

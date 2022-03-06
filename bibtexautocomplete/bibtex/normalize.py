@@ -10,19 +10,19 @@ from typing import Optional
 from ..utils.constants import EntryType
 
 
-def has_field(entry: EntryType, field: str) -> bool:
-    """Check if a given entry has non empty field"""
-    return field in entry and entry[field] != ""
-
-
 def get_field(entry: EntryType, field: str) -> Optional[str]:
     """Check if given field exists and is non-empty
     if so, removes braces and returns it"""
-    if has_field(entry, field):
+    if field in entry:
         plain = entry[field].replace("{", "").replace("}", "").strip()
         if plain:
             return plain
     return None
+
+
+def has_field(entry: EntryType, field: str) -> bool:
+    """Check if a given entry has non empty field"""
+    return get_field(entry, field) is not None
 
 
 def strip_accents(s):

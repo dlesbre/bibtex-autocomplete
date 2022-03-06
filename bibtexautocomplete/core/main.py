@@ -2,6 +2,7 @@ from sys import stdout
 from typing import Optional
 
 from ..APIs import LOOKUP_NAMES, LOOKUPS
+from ..lookups.condition_mixin import FieldConditionMixin
 from ..lookups.https import HTTPSLookup
 from ..utils.constants import CONNECTION_TIMEOUT, NAME, VERSION_STR
 from ..utils.logger import PROGRESS, logger, set_logger_level
@@ -67,6 +68,10 @@ def main(argv: Optional[list[str]] = None) -> None:
     )
     fields = OnlyExclude[str].from_nonempty(args.only_complete, args.dont_complete)
     entries = OnlyExclude[str].from_nonempty(args.only_entry, args.exclude_entry)
+
+    FieldConditionMixin.fields_to_complete = set(
+        fields.filter(FieldConditionMixin.fields_to_complete, lambda x: x)
+    )
 
     databases = BibtexAutocomplete.read(flatten(args.input))
     completer = BibtexAutocomplete(

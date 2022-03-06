@@ -105,11 +105,11 @@ Flags:
 - query rate monitor
 - contributing
 - upload to PyPI ?
-- TEST on datadumps
+- TEST on data-dumps
 - search mode ?
 - output format
 - combine field lists with arguments
-- parrallelize requests ?
+- parallelize requests ?
 - ~~Match likeliness ?~~
 - ~~accented string~~
 - ~~fix progressbar~~ - waiting for merge

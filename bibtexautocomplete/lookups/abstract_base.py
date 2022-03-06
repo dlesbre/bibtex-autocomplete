@@ -50,7 +50,7 @@ class AbstractLookup:
         raise NotImplementedError("should be overridden in child class")
 
     def __init__(self, entry: BibtexEntry) -> None:
-        super().__init__()
+        pass
 
 
 class AbstractEntryLookup(AbstractLookup):
