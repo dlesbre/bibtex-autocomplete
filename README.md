@@ -1,7 +1,14 @@
 # Bibtex Autocomplete
 
-This repository contains a python package to autocomplete bibliographies by finding missing DOIs and URLs.
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg)](https://github.com/dlesbre/bibtex-autocomplete/graphs/commit-activity)
+[![PyPI version](https://img.shields.io/pypi/v/bibtexautocomplete.svg)](https://pypi.python.org/pypi/bibtexautocomplete/)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/bibtexautocomplete.svg)](https://pypi.python.org/pypi/bibtexautocomplete/)
+[![License](https://img.shields.io/pypi/l/bibtexautocomplete.svg)](https://github.com/dlesbre/bibtex-autocomplete/blob/master/LICENSE)
+[![PyPI status](https://img.shields.io/pypi/status/bibtexautocomplete.svg)](https://pypi.python.org/pypi/bibtexautocomplete/)
+[![Downloads](https://pepy.tech/badge/bibtexautocomplete)](https://pepy.tech/project/bibtexautocomplete)
 
+
+This repository contains a python package to autocomplete bibtex bibliographies.
 It is inspired and expanding on the solution provided by [thando](https://tex.stackexchange.com/users/182467/thando) in this [tex stackexchange post](https://tex.stackexchange.com/questions/6810/automatically-adding-doi-fields-to-a-hand-made-bibliography).
 
 It attempts to complete a bibtex file by querying the following domains:
@@ -10,7 +17,14 @@ It attempts to complete a bibtex file by querying the following domains:
 - [researchr.org](https://researchr.org/)
 - [unpaywall.org](https://unpaywall.org/)
 
-The searches are performed using the entries' dois if present, title or author otherwise. The titles are compared excluding punctuation and case. Make sure your titles are correct to get matches.
+The searches are performed using the entries' dois if present, title or author otherwise. Titles are compared excluding punctuation and case, so make sure to include the full title to get matches.
+
+There is no guarantee that this script will find matches for your entries, or that the websites will have any data to add to your entries.
+
+The script will not overwrite any user given non-empty fields, unless the `-f/--force-overwrite` flag is given.
+
+The script is designed to minimize the chance of false positive - that is adding data from another similar-ish entry to your entry. If you find any such false positive please report them using the [issue tracker](https://github.com/dlesbre/bibtex-autocomplete/issues).
+
 
 ## Installation
 
