@@ -20,10 +20,6 @@ Can be installed with [pip](https://pypi.org/project/pip/) :
 pip install bibtexautocomplete
 ```
 
-### Quick install
-
-Using `pip` NOT YET IMPLEMENTED
-
 You should now be able to run the script using either commands:
 
 ```
