@@ -5,6 +5,7 @@ __pycache__
 build
 .mypy_cache
 .pytest_cache
+dist/
 
 # Virtual environement
 venv
