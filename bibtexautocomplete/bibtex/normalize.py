@@ -13,7 +13,7 @@ from ..utils.constants import EntryType
 def get_field(entry: EntryType, field: str) -> Optional[str]:
     """Check if given field exists and is non-empty
     if so, removes braces and returns it"""
-    if field in entry:
+    if field in entry and entry[field] is not None:
         plain = entry[field].replace("{", "").replace("}", "").strip()
         if plain:
             return plain
