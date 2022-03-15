@@ -14,34 +14,26 @@ The searches are performed using the entries' dois if present, title or author o
 
 ## Installation
 
+Can be installed with [pip](https://pypi.org/project/pip/) :
+
+```
+pip install bibtexautocomplete
+```
+
 ### Quick install
 
 Using `pip` NOT YET IMPLEMENTED
-
-### Manual install
-
-Using a [virtual environment](https://docs.python.org/3/tutorial/venv.html) (`python3 -m pip install venv`) :
-
-```
-git clone https://github.com/dlesbre/bibtex-autocomplete.git &&
-cd bibtex-autocomplete &&
-python3 -m venv venv &&
-source venv/bin/activate &&
-make setup
-```
 
 You should now be able to run the script using either commands:
 
 ```
 python3 -m bibtexautocomplete --version
-bibtexautocomplete --version
+btac --version
 ```
-
-This will install all dependencies required for running the script in `./venv/`. Optional dependencies used for development and testing can be installed by running `make setup-dev`.
 
 ### Dependencies
 
-This package has two dependencies (automatically installed if using [quick-install](#quick-install)) :
+This package has two dependencies (automatically installed by pip) :
 
 - [bibtexparser](https://bibtexparser.readthedocs.io/)
 - [alive_progress](https://github.com/rsalmei/alive-progress) for the fancy progressbar
