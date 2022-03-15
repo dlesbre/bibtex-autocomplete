@@ -45,6 +45,7 @@ endef
 # =================================================
 
 default: mypy
+.PHONY: default
 
 # =================================================
 # Special Targets
@@ -69,12 +70,12 @@ precommit-all: ## run precommit on all files
 	$(PRECOMMIT) run --all-files
 
 .PHONY: test
-test: ## Tests all the apps with django's tests
+test: ## Run all tests
 	$(call print,Running pytest)
 	$(PYTEST)
 
 .PHONY: mypy
-mypy: ## Typecheck all file
+mypy: ## Typecheck all files
 	$(call print,Running mypy)
 	$(MYPY) ./bibtexautocomplete/ ./tests/
 
@@ -121,3 +122,12 @@ clean-all: ## Remove package and venv
 	$(call print,Removing package and dependencies and virtual environment)
 	rm -rf build bibtexautocomplete.egg-info
 	rm -rf venv
+
+.PHONY: deploy
+deploy: ## Build and deploys the package
+	$(call print,Removing previous dist)
+	rm -rf dist/*
+	$(call print,Building package)
+	$(PYTHON) setup.py bdist
+	$(call print,Deploying package)
+	twine upload dist/*
