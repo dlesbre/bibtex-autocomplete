@@ -4,6 +4,7 @@ from typing import Callable, Optional
 from ..bibtex.entry import BibtexEntry
 from ..lookups.abstract_base import LookupType
 from ..utils.constants import EntryType
+from ..utils.logger import logger
 
 
 class LookupThread(Thread):
@@ -34,10 +35,11 @@ class LookupThread(Thread):
         self.nb_entries = len(entries)
         self.result = []
         self.bar = bar
-        super().__init__(name=lookup.name)
+        super().__init__(name=lookup.name, daemon=True)
 
     def run(self) -> None:
         """Starts querying for entries"""
+        logger.debug(f"Starting thread {self.lookup.name}")
         self.condition.acquire()
         while self.position < self.nb_entries:
             lookup = self.lookup(BibtexEntry(self.entries[self.position]))
