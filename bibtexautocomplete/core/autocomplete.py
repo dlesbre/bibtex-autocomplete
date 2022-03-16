@@ -5,6 +5,7 @@ main class used to manage calls to different lookups
 
 from functools import reduce
 from pathlib import Path
+from threading import Condition
 from typing import Container, Iterable, Iterator, List, Optional
 
 from alive_progress import alive_bar  # type: ignore
@@ -16,6 +17,7 @@ from ..bibtex.normalize import has_field
 from ..lookups.abstract_base import LookupType
 from ..utils.constants import EntryType
 from ..utils.logger import PROGRESS, logger
+from .threads import LookupThread
 
 
 class BibtexAutocomplete(Iterable[EntryType]):
@@ -63,6 +65,9 @@ class BibtexAutocomplete(Iterable[EntryType]):
         """Main function that does all the work
         Iterate through entries, performing all lookups"""
         total = self.count_entries() * len(self.lookups)
+        entries = list(self)
+        condition = Condition()
+        threads: list[LookupThread] = []
         with alive_bar(
             total,
             title="Querying databases:",
@@ -70,21 +75,33 @@ class BibtexAutocomplete(Iterable[EntryType]):
             enrich_print=False,
             receipt_text=True,
         ) as bar:
-            bar.title = "Querying databases:"
-            bar.text = f"found {self.changed_fields} new fields"
-            for entry in self:
-                logger.debug(f"autocompleting {entry['ID']}")
-                changed_fields = 0
-                for lookup in self.lookups:
-                    init = lookup(BibtexEntry(entry))
-                    info = init.query()
-                    if info is not None:
-                        changed_fields += self.combine(entry, info)
-                    bar()
-                if changed_fields != 0:
-                    self.changed_entries += 1
-                    self.changed_fields += changed_fields
-                bar.text = f"found {self.changed_fields} new fields"
+            # Create all threads
+            for lookup in self.lookups:
+                threads.append(LookupThread(lookup, entries, condition, bar))
+            condition.acquire()
+            # Start all threads
+            for thread in threads:
+                thread.start()
+            position = 0
+            while position < self.count_entries():
+                # Check if all threads have resolved the current entry
+                for thread in threads:
+                    if position >= thread.position:
+                        # if not wait - release and reaquires lock
+                        condition.wait()
+                        break
+                else:
+                    # else update entry with the results
+                    changed_fields = 0
+                    for thread in threads:
+                        result = thread.result[position]
+                        if result is not None:
+                            changed_fields += self.combine(entries[position], result)
+                    if changed_fields != 0:
+                        self.changed_entries += 1
+                        self.changed_fields += changed_fields
+                    bar.text = f"found {self.changed_fields} new fields"
+                    position += 1
         logger.log(
             PROGRESS,
             f"Modified {self.changed_entries} / {self.count_entries()} entries"
