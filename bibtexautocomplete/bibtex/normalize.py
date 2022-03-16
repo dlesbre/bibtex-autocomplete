@@ -10,19 +10,32 @@ from typing import Optional
 from ..utils.constants import EntryType
 
 
+def make_plain(value: Optional[str]) -> Optional[str]:
+    """Returns a plain version of the field (remove redundant braces)
+    returns None if the field is None or empty string"""
+    if value is not None:
+        plain = value.replace("{", "").replace("}", "").strip()
+        if plain != "" and not plain.isspace():
+            return plain
+    return None
+
+
+def has_data(value: Optional[str]) -> bool:
+    """Return true if the given value contains data, false otherwise"""
+    return make_plain(value) is not None
+
+
 def get_field(entry: EntryType, field: str) -> Optional[str]:
     """Check if given field exists and is non-empty
     if so, removes braces and returns it"""
-    if field in entry and entry[field] is not None:
-        plain = entry[field].replace("{", "").replace("}", "").strip()
-        if plain:
-            return plain
+    if field in entry:
+        return make_plain(entry[field])
     return None
 
 
 def has_field(entry: EntryType, field: str) -> bool:
     """Check if a given entry has non empty field"""
-    return get_field(entry, field) is not None
+    return has_data(get_field(entry, field))
 
 
 def strip_accents(s):

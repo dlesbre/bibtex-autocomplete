@@ -7,7 +7,7 @@ from typing import Iterator, Optional
 
 from ..utils.constants import EntryType
 from .author import Author
-from .normalize import get_field, has_field, normalize_doi, normalize_month
+from .normalize import get_field, has_data, has_field, normalize_doi, normalize_month
 
 
 class FieldNames:
@@ -107,9 +107,6 @@ class BibtexEntry:
     volume: Optional[str]
     year: Optional[str]
 
-    _author: list[Author]
-    _editor: list[Author]
-
     _entry: EntryType
 
     def __init__(self, entry: Optional[EntryType] = None):
@@ -132,6 +129,10 @@ class BibtexEntry:
         if attr_name in FieldNamesSet:
             if attr_name in SpecialFields:
                 return super().__getattribute__("set_" + attr_name)(value)
+            elif not has_data(value):
+                # Delete attribute
+                if attr_name in self._entry:
+                    del self._entry[attr_name]
             else:
                 self._entry[attr_name] = value
             return None
@@ -150,9 +151,10 @@ class BibtexEntry:
 
     def __iter__(self) -> Iterator[tuple[str, str]]:
         """Iterates through the fields of self"""
-        for key, val in self._entry.items():
-            if key in FieldNamesSet:
-                yield key, val
+        return filter(
+            lambda pair: pair[0] in FieldNamesSet and has_data(pair[1]),
+            self._entry.items(),
+        )
 
     def get_author(self) -> list[Author]:
         """Formats entry['author'] into Author list"""
