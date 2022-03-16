@@ -128,6 +128,6 @@ deploy: ## Build and deploys the package
 	$(call print,Removing previous dist)
 	rm -rf dist/*
 	$(call print,Building package)
-	$(PYTHON) setup.py bdist
+	$(PYTHON) setup.py sdist bdist_wheel
 	$(call print,Deploying package)
 	twine upload dist/*
