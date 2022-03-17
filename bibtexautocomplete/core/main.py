@@ -5,7 +5,7 @@ from ..APIs import LOOKUP_NAMES, LOOKUPS
 from ..lookups.condition_mixin import FieldConditionMixin
 from ..lookups.https import HTTPSLookup
 from ..utils.constants import CONNECTION_TIMEOUT, NAME, VERSION_STR
-from ..utils.logger import PROGRESS, logger, set_logger_level
+from ..utils.logger import logger
 from ..utils.only_exclude import OnlyExclude
 from .autocomplete import BibtexAutocomplete
 from .parser import HELP_TEXT, flatten, parser
@@ -52,8 +52,8 @@ def main(argv: Optional[list[str]] = None) -> None:
         exit(0)
 
     if args.silent:
-        args.verbose = -1
-    set_logger_level(args.verbose)
+        args.verbose = -args.silent
+    logger.set_verbosity(args.verbose)
 
     if args.inplace:
         args.output = args.input
@@ -81,4 +81,4 @@ def main(argv: Optional[list[str]] = None) -> None:
         completer.autocomplete(args.verbose != 0)
         completer.write(flatten(args.output))
     except KeyboardInterrupt:
-        logger.log(PROGRESS, "Interrupted")
+        logger.info("Interrupted")

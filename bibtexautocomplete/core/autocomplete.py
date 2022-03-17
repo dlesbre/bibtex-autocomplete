@@ -16,7 +16,7 @@ from ..bibtex.io import file_read, file_write, get_entries
 from ..bibtex.normalize import has_field
 from ..lookups.abstract_base import LookupType
 from ..utils.constants import EntryType
-from ..utils.logger import PROGRESS, logger
+from ..utils.logger import logger
 from .threads import LookupThread
 
 
@@ -93,19 +93,27 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 else:
                     # else update entry with the results
                     changed_fields = 0
+                    entry = entries[position]
                     for thread in threads:
                         result = thread.result[position]
                         if result is not None:
-                            changed_fields += self.combine(entries[position], result)
+                            changed_fields += self.combine(entry, result)
                     if changed_fields != 0:
                         self.changed_entries += 1
                         self.changed_fields += changed_fields
+                    logger.verbose_info(
+                        " * {entry} found {nb} new fields",
+                        entry=entry["ID"].rjust(15),
+                        nb=changed_fields,
+                    )
                     bar.text = f"found {self.changed_fields} new fields"
                     position += 1
-        logger.log(
-            PROGRESS,
-            f"Modified {self.changed_entries} / {self.count_entries()} entries"
-            f", added {self.changed_fields} fields",
+        logger.info(
+            "Modified {changed_entries} / {count_entries} entries"
+            ", added {changed_fields} fields",
+            changed_entries=self.changed_entries,
+            count_entries=self.count_entries(),
+            changed_fields=self.changed_fields,
         )
 
     def combine(self, entry: EntryType, new_info: BibtexEntry) -> int:
@@ -119,14 +127,19 @@ class BibtexAutocomplete(Iterable[EntryType]):
             # Does the field actually contain any value
             if value is None:
                 continue
-            svalue = str(value)
-            if svalue.strip() == "":
+            s_value = str(value)
+            if s_value.strip() == "":
                 continue
             # Is it present on entry
             if self.force_overwrite or (not has_field(entry, field)):
-                logger.debug(f"{entry['ID']}.{field} := {svalue}")
+                logger.verbose_debug(
+                    "{ID}.{field} := {value}",
+                    ID=entry["ID"],
+                    field=field,
+                    value=s_value,
+                )
                 changed += 1
-                entry[field] = svalue
+                entry[field] = s_value
         return changed
 
     def write(self, files: List[Path]) -> None:
@@ -139,17 +152,31 @@ class BibtexAutocomplete(Iterable[EntryType]):
         for i, db in enumerate(self.bibdatabases):
             file = files[i] if i < length else None
             pretty_file = file if file is not None else "<stdout>"
-            logger.debug(f"Writing database {i+1} / {total} to '{pretty_file}'")
+            logger.verbose_info(
+                "Writing database {id} / {total} to '{file}'",
+                id=i + 1,
+                total=total,
+                file=pretty_file,
+            )
             wrote += file_write(file, db)
-        logger.log(PROGRESS, f"Wrote {wrote} databases")
+        logger.info("Wrote {total} databases", total=wrote)
 
     @staticmethod
     def read(files: List[Path]) -> List[BibDatabase]:
         length = len(files)
         dbs = []
         for i, file in enumerate(files):
-            logger.debug(f"Reading database {i+1} / {length} from '{file}'")
+            logger.debug(
+                "Reading database {id} / {length} from '{file}'",
+                id=i + 1,
+                length=length,
+                file=file,
+            )
             dbs.append(file_read(file))
         nb_entries = sum(len(get_entries(db)) for db in dbs)
-        logger.log(PROGRESS, f"Read {length} databases, {nb_entries} entries")
+        logger.info(
+            "Read {nb_entries} entries from {total} files",
+            total=length,
+            nb_entries=nb_entries,
+        )
         return dbs

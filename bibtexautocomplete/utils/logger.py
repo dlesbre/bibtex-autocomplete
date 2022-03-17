@@ -4,7 +4,9 @@ Defining and configuring the logger
 
 import logging
 from sys import stderr, stdout
+from threading import current_thread, main_thread
 
+from .ansi import ansi_format
 from .constants import NAME
 
 
@@ -21,51 +23,115 @@ class LevelFilter(logging.Filter):
 
 
 # custom level
-PROGRESS = logging.INFO + 2
-DEBUGLOW = logging.DEBUG - 2
-logging.addLevelName(PROGRESS, "PROGRESS")
-logging.addLevelName(DEBUGLOW, "DEBUGLOW")
+VERBOSE_INFO = logging.INFO - 2
+VERBOSE_DEBUG = logging.DEBUG - 2
+logging.addLevelName(VERBOSE_INFO, "VERBOSE_INFO")
+logging.addLevelName(VERBOSE_DEBUG, "VERBOSE_DEBUG")
 
-DEFAULT_LEVEL = PROGRESS
-
-# create logger
-logger = logging.getLogger(NAME)
-error_handler = logging.StreamHandler(stderr)
-error_handler.addFilter(LevelFilter(logging.WARN, logging.CRITICAL))
-error_handler.setFormatter(logging.Formatter("%(levelname)s - %(message)s"))
-logger.addHandler(error_handler)
-info_handler = logging.StreamHandler(stdout)
-info_handler.addFilter(LevelFilter(0, logging.WARN - 1))
-logger.addHandler(info_handler)
+DEFAULT_LEVEL = logging.INFO
 
 
-def set_logger_level(level: int) -> None:
-    """Translate my program levels into logger levels
-    -1 = silent => logging.ERROR
-    0 = default => PROGRESS
-    1 = verbose => logging.INFO
-    2 = very verbose => logging.DEBUG
-    3 = very very verbose => DEBUGLOW"""
-    if level < 0:
-        formatter_str = "%(message)s"
-        logger.setLevel(logging.ERROR)
-    elif level == 0:
-        formatter_str = "%(message)s"
-        logger.setLevel(PROGRESS)
-    elif level == 1:
-        formatter_str = "%(asctime)s - %(message)s"
-        logger.setLevel(logging.INFO)
-    elif level == 2:
-        formatter_str = "%(asctime)s - %(levelname)s - %(message)s"
-        logger.setLevel(logging.DEBUG)
-    else:
-        formatter_str = "%(asctime)s - %(levelname)s - %(message)s"
-        logger.setLevel(DEBUGLOW)
-    formatter = logging.Formatter(
-        formatter_str,
-        datefmt="%H:%M:%S",
-    )
-    info_handler.setFormatter(formatter)
+class Logger:
+
+    logger: logging.Logger
+    error_handler: logging.StreamHandler
+    info_handler: logging.StreamHandler
+
+    def __init__(self):
+        # create logger
+        self.logger = logging.getLogger(NAME)
+        # Errors got to STDERR
+        self.error_handler = logging.StreamHandler(stderr)
+        self.error_handler.addFilter(LevelFilter(logging.WARN, logging.CRITICAL))
+        self.error_handler.setFormatter(logging.Formatter("%(message)s"))
+        self.logger.addHandler(self.error_handler)
+        # Everything else goes to STDOUT
+        self.info_handler = logging.StreamHandler(stdout)
+        self.info_handler.addFilter(LevelFilter(0, logging.WARN - 1))
+        self.info_handler.setFormatter(logging.Formatter("%(message)s"))
+        self.logger.addHandler(self.info_handler)
+
+        self.logger.setLevel(DEFAULT_LEVEL)
+
+    @staticmethod
+    def add_thread_info(message: str) -> str:
+        """Add thread name to message if not in main thread"""
+        current = current_thread()
+        if current is not main_thread():
+            message = "[{FgBlue}" + current.name + "{FgReset}] " + message
+        return message
+
+    def to_logger(self, level: int, prefix: str, message: str, *args, **kwargs) -> None:
+        """Formats a message (with given args and ansi colors)
+        and sends it to the logger with the given level"""
+        message = ansi_format(prefix + self.add_thread_info(message), *args, **kwargs)
+        self.logger.log(level=level, msg=message)
+
+    def warn(self, message: str, *args, **kwargs) -> None:
+        """Issue a warning, extra arguments are formatter options"""
+        self.to_logger(
+            logging.WARN, "{FgYellow}WARNING:{FgReset} ", message, *args, **kwargs
+        )
+
+    def error(self, message: str, *args, **kwargs) -> None:
+        """Issue an error, extra arguments are formatter options"""
+        self.to_logger(
+            logging.ERROR, "{FgRed}ERROR:{FgReset} ", message, *args, **kwargs
+        )
+
+    def critical(self, message: str, *args, **kwargs) -> None:
+        """Issue a critical error, extra arguments are formatter options"""
+        self.to_logger(
+            logging.CRITICAL,
+            "{FgRed}CRITICAL ERROR:{FgReset} ",
+            message,
+            *args,
+            **kwargs
+        )
+
+    def info(self, message: str, *args, **kwargs) -> None:
+        """Show info, extra arguments are formatter options"""
+        self.to_logger(logging.INFO, "", message, *args, **kwargs)
+
+    def verbose_info(self, message: str, *args, **kwargs) -> None:
+        """Show info when verbose, extra arguments are formatter options"""
+        self.to_logger(VERBOSE_INFO, "", message, *args, **kwargs)
+
+    def debug(self, message: str, *args, **kwargs) -> None:
+        """Show debug info, extra arguments are formatter options"""
+        self.to_logger(logging.DEBUG, "", message, *args, **kwargs)
+
+    def verbose_debug(self, message: str, *args, **kwargs) -> None:
+        """Show very verbose debug info, extra arguments are formatter options"""
+        self.to_logger(VERBOSE_DEBUG, "", message, *args, **kwargs)
+
+    def set_level(self, level: int) -> None:
+        """Set the logger's level, using logging's level values"""
+        self.logger.setLevel(level)
+
+    verbosity = {
+        -4: logging.CRITICAL + 10,
+        -3: logging.CRITICAL,
+        -2: logging.ERROR,
+        -1: logging.WARN,
+        0: logging.INFO,
+        1: VERBOSE_INFO,
+        2: logging.DEBUG,
+        3: VERBOSE_DEBUG,
+    }
+
+    def set_verbosity(self, verbosity: int) -> None:
+        """Set verbosity:
+        0 is default
+        1, 2, 3, 4 show more and more info
+        -1, -2, -3, -4 show less and less (warning, error, critical errors, then nothing)"""
+        maxi = max(self.verbosity)
+        mini = min(self.verbosity)
+        if verbosity > maxi:
+            verbosity = maxi
+        if verbosity < mini:
+            verbosity = mini
+        self.set_level(self.verbosity[verbosity])
 
 
-set_logger_level(0)
+logger = Logger()

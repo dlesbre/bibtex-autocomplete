@@ -1,5 +1,3 @@
-from logging import DEBUG
-
 from bibtexautocomplete.APIs import (
     CrossrefLookup,
     DBLPLookup,
@@ -10,7 +8,7 @@ from bibtexautocomplete.bibtex.entry import BibtexEntry
 from bibtexautocomplete.lookups.abstract_base import LookupType
 from bibtexautocomplete.utils.logger import logger
 
-logger.setLevel(DEBUG)
+logger.set_verbosity(4)
 
 entry1 = {
     "plain_title": "Reactive Path Deformation for Nonholonomic Mobile Robots",

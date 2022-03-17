@@ -3,12 +3,15 @@ Lookup for HTTPS queries
 """
 
 from http.client import HTTPSConnection, socket  # type: ignore
+from time import time
 from typing import Any, Optional
 from urllib.parse import urlencode
 
 from ..utils.constants import CONNECTION_TIMEOUT, USER_AGENT
 from ..utils.logger import logger
 from .abstract_base import AbstractDataLookup
+
+HTTP_CODE_OK = 200
 
 
 class HTTPSLookup(AbstractDataLookup):
@@ -98,8 +101,14 @@ class HTTPSLookup(AbstractDataLookup):
         request = self.get_request()
         path = self.get_path()
         headers = self.get_headers()
-        logger.info(f"{request} https://{domain}{path}")
-        # logger.debug(f"{headers}")
+        logger.debug(
+            "{request} https://{domain}{path}",
+            request=request,
+            domain=domain,
+            path=path,
+        )
+        logger.verbose_debug("headers: {headers}", headers=headers)
+        start = time()
         try:
             connection = HTTPSConnection(domain, timeout=self.connection_timeout)
             connection.request(
@@ -109,19 +118,37 @@ class HTTPSLookup(AbstractDataLookup):
                 headers,
             )
             response = connection.getresponse()
-            logger.info(f"response: {response.status} {response.reason}")
-            if response.status != 200:
+            delay = round(time() - start, 3)
+            if response.status != HTTP_CODE_OK:
+                logger.warn(
+                    "response: {FgYellow}{status} {reason}{FgReset} in {delay}s",
+                    status=response.status,
+                    reason=response.reason,
+                    delay=delay,
+                )
+                logger.verbose_debug(
+                    "response headers: {headers}", headers=response.headers
+                )
                 connection.close()
                 return None
+            logger.debug(
+                "response: {status} {reason} in {delay}s",
+                status=response.status,
+                reason=response.reason,
+                delay=delay,
+            )
+            logger.verbose_debug(
+                "response headers: {headers}", headers=response.headers
+            )
             data = response.read()
             connection.close()
         except socket.timeout:
             logger.warn("connection timeout")
             return None
         except socket.gaierror as err:
-            logger.warn(f"connection error: {err}")
+            logger.warn("connection error: {err}", err=err)
             return None
         except OSError as err:
-            logger.warn(f"connection error: {err}")
+            logger.warn("connection error: {err}", err=err)
             return None
         return data

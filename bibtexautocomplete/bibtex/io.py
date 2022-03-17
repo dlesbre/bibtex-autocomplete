@@ -32,7 +32,11 @@ def read(bibtex: str, src: str = "") -> BibDatabase:
         database = parser.parse(bibtex)
     except UndefinedString as err:
         src = " '" + src + "'" if src else ""
-        logger.critical(f"Failed to parse bibtex{src}: undefined string '{err}'")
+        logger.critical(
+            "Failed to parse bibtex{src}: {FgPurple}undefined string{FgReset} '{err}'",
+            src=src,
+            err=err,
+        )
         exit(1)
     for entry in database.entries:
         convert_to_unicode(entry)
@@ -49,7 +53,11 @@ def file_write(filepath, database: BibDatabase) -> bool:
         with open(filepath, "w") as file:
             file.write(output)
     except IOError as err:
-        logger.error(f"Failed to write to {str(filepath)} : {err}")
+        logger.error(
+            "Failed to write to '{filepath}' : {FgPurple}{err}{FgReset}",
+            filepath=str(filepath),
+            err=err,
+        )
         return False
     return True
 
@@ -61,7 +69,11 @@ def file_read(filepath) -> BibDatabase:
         with open(filepath, "r") as file:
             bibtex = file.read()
     except IOError as err:
-        logger.critical(f"Failed to read '{str(filepath)}': {err}")
+        logger.critical(
+            "Failed to read '{filepath}': {FgPurple}{err}{FgReset}",
+            filepath=str(filepath),
+            err=err,
+        )
         exit(1)
     return read(bibtex)
 
