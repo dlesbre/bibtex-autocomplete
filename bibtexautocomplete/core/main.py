@@ -4,6 +4,7 @@ from typing import Optional
 from ..APIs import LOOKUP_NAMES, LOOKUPS
 from ..lookups.condition_mixin import FieldConditionMixin
 from ..lookups.https import HTTPSLookup
+from ..utils.ansi import ANSICodes, ansi_format
 from ..utils.constants import CONNECTION_TIMEOUT, NAME, VERSION_STR
 from ..utils.logger import logger
 from ..utils.only_exclude import OnlyExclude
@@ -21,29 +22,16 @@ def main(argv: Optional[list[str]] = None) -> None:
     else:
         args = parser.parse_args(argv)
 
-    if stdout.isatty() and not args.no_color:
-        # use_color = True
-        COLOR_YELLOW = "\033[33;1m"  # "\033[34;1m"
-        COLOR_ORANGE = "\033[33m"
-        COLOR_GREEN = "\033[32m"
-        COLOR_END = "\033[0m"
-    else:
-        COLOR_YELLOW = ""
-        COLOR_ORANGE = ""
-        COLOR_GREEN = ""
-        COLOR_END = ""
+    ANSICodes.use_ansi = stdout.isatty() and not args.no_color
 
     if args.help:
         print(
-            HELP_TEXT.format(
+            ansi_format(
+                HELP_TEXT,
                 TIMEOUT=CONNECTION_TIMEOUT,
                 VERSION=VERSION_STR,
                 LOOKUPS=LOOKUP_NAMES,
                 NAME=NAME,
-                b=COLOR_YELLOW,
-                c=COLOR_ORANGE,
-                d=COLOR_GREEN,
-                e=COLOR_END,
             )
         )
         exit(0)

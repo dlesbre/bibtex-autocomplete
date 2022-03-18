@@ -55,45 +55,45 @@ parser.add_argument("--help", "-h", action="store_true")
 parser.add_argument("--output", "-o", nargs=1, type=Path, action="append", default=[])
 parser.add_argument("input", nargs="*", type=Path, action="append", default=[])
 
-HELP_TEXT = """{b}{NAME}{e} version {VERSION}
+HELP_TEXT = """{StBold}{FgYellow}{NAME}{StBoldOff}{FgReset} version {VERSION}
 Program to autocomplete bibtex entries by searching online databases.
 Polls the following databases:
   {LOOKUPS}
 
 Usage:
-  {b}{NAME}{e} {c}[--flags] <input_files>{e}
+  {StBold}{FgYellow}{NAME}{StBoldOff}{FgReset} {FgYellow}[--flags] <input_files>{FgReset}
 
 Example:
-  {b}{NAME}{e} {c}my_bib.bib{e}         print to stdout
-  {b}{NAME}{e} {c}-i my_bib.bib{e}      inplace modify
-  {b}{NAME}{e} {c}a.bib -o b.bib c.bib -o d.bib{e}
+  {StBold}{FgYellow}{NAME}{StBoldOff}{FgReset} {FgYellow}my_bib.bib{FgReset}         print to stdout
+  {StBold}{FgYellow}{NAME}{StBoldOff}{FgReset} {FgYellow}-i my_bib.bib{FgReset}      inplace modify
+  {StBold}{FgYellow}{NAME}{StBoldOff}{FgReset} {FgYellow}a.bib -o b.bib c.bib -o d.bib{FgReset}
       writes completed a.bib in b.bib and c.bib in d.bib
 
 Optional arguments: can all be used multiple times
-  {c}-o --output{e} {d}<file>{e}          Write output to given file
+  {FgYellow}-o --output{FgReset} {FgGreen}<file>{FgReset}          Write output to given file
             With multiple input/outputs they are mapped in appearance order
             Extra inputs are dumped on stdout
 
-  {c}-q --only-query{e} {d}<site>{e}      Only query the given sites
-  {c}-Q --dont-query{e} {d}<site>{e}      Don't query the given sites
+  {FgYellow}-q --only-query{FgReset} {FgGreen}<site>{FgReset}      Only query the given sites
+  {FgYellow}-Q --dont-query{FgReset} {FgGreen}<site>{FgReset}      Don't query the given sites
             Site must be one of: {LOOKUPS}
 
-  {c}-e --only-entry{e}    {d}<id>{e}     Only perform lookup these entries
-  {c}-E --exclude-entry{e} {d}<id>{e}     Don't perform lookup these entries
+  {FgYellow}-e --only-entry{FgReset}    {FgGreen}<id>{FgReset}     Only perform lookup these entries
+  {FgYellow}-E --exclude-entry{FgReset} {FgGreen}<id>{FgReset}     Don't perform lookup these entries
             ID is the identifier in bibtex (e.g. @inproceedings{{<id> ... }})
 
-  {c}-c --only-complete{e} {d}<field>{e}  Only complete the given fields
-  {c}-C --dont-complete{e} {d}<field>{e}  Don't complete the given fields
+  {FgYellow}-c --only-complete{FgReset} {FgGreen}<field>{FgReset}  Only complete the given fields
+  {FgYellow}-C --dont-complete{FgReset} {FgGreen}<field>{FgReset}  Don't complete the given fields
             Field is a bibtex field (e.g. 'author', 'doi',...)
 
 Flags:
-  {c}-i --inplace{e}          Modify input files inplace, overrides any specified output files
-  {c}-f --force-overwrite{e}  Overwrite aldready present fields with data found online
-  {c}-t --timeout{e} {d}<float>{e}  set timeout on request, default: {TIMEOUT} s
+  {FgYellow}-i --inplace{FgReset}          Modify input files inplace, overrides any specified output files
+  {FgYellow}-f --force-overwrite{FgReset}  Overwrite aldready present fields with data found online
+  {FgYellow}-t --timeout{FgReset} {FgGreen}<float>{FgReset}  set timeout on request, default: {TIMEOUT} s
 
-  {c}-v --verbose{e}          print the commands called
-  {c}-s --silent{e}           don't show progressbar (keeps tex output and error messages)
-  {c}-n --no-color{e}         don't color output
+  {FgYellow}-v --verbose{FgReset}          print the commands called
+  {FgYellow}-s --silent{FgReset}           don't show progressbar (keeps tex output and error messages)
+  {FgYellow}-n --no-color{FgReset}         don't color output
 
-  {c}--version{e}             show version number
-  {c}-h --help{e}             show this help"""
+  {FgYellow}--version{FgReset}             show version number
+  {FgYellow}-h --help{FgReset}             show this help"""
