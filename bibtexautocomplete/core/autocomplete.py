@@ -61,10 +61,19 @@ class BibtexAutocomplete(Iterable[EntryType]):
             self._total_entries = reduce(lambda x, _y: x + 1, self, 0)
         return self._total_entries
 
+    def get_id_padding(self) -> int:
+        """Return the max length of entries' ID
+        to use for pretty printing"""
+        max_id_padding = 40
+        return min(
+            max((len(entry["ID"]) + 1 for entry in self), default=0), max_id_padding
+        )
+
     def autocomplete(self, no_progressbar=False) -> None:
         """Main function that does all the work
         Iterate through entries, performing all lookups"""
         total = self.count_entries() * len(self.lookups)
+        padding = self.get_id_padding()
         entries = list(self)
         condition = Condition()
         threads: list[LookupThread] = []
@@ -102,8 +111,8 @@ class BibtexAutocomplete(Iterable[EntryType]):
                         self.changed_entries += 1
                         self.changed_fields += changed_fields
                     logger.verbose_info(
-                        " * {entry} found {nb} new fields",
-                        entry=entry["ID"].rjust(15),
+                        " {FgBlue}{StBold}*{StBoldOff}{FgReset} {StBold}{entry}{StBoldOff} {nb} new fields",
+                        entry=entry["ID"].ljust(padding),
                         nb=changed_fields,
                     )
                     bar.text = f"found {self.changed_fields} new fields"

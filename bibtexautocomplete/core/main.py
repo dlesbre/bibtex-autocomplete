@@ -78,7 +78,7 @@ def main(argv: Optional[list[str]] = None) -> None:
         databases, lookups, fields, entries, args.force_overwrite
     )
     try:
-        completer.autocomplete(args.verbose != 0)
+        completer.autocomplete(args.verbose < 0)
         completer.write(flatten(args.output))
     except KeyboardInterrupt:
         logger.info("Interrupted")

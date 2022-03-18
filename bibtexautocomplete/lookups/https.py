@@ -121,9 +121,9 @@ class HTTPSLookup(AbstractDataLookup):
             delay = round(time() - start, 3)
             if response.status != HTTP_CODE_OK:
                 logger.warn(
-                    "response: {FgYellow}{status} {reason}{FgReset} in {delay}s",
+                    "response: {FgYellow}{status}{reason}{FgReset} in {delay}s",
                     status=response.status,
-                    reason=response.reason,
+                    reason=" " + response.reason if response.reason else "",
                     delay=delay,
                 )
                 logger.verbose_debug(
@@ -143,7 +143,9 @@ class HTTPSLookup(AbstractDataLookup):
             data = response.read()
             connection.close()
         except socket.timeout:
-            logger.warn("connection timeout")
+            logger.warn(
+                "connection timeout ({timeout}s)", timeout=self.connection_timeout
+            )
             return None
         except socket.gaierror as err:
             logger.warn("connection error: {err}", err=err)
