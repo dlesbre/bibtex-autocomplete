@@ -48,7 +48,7 @@ def main(argv: Optional[list[str]] = None) -> None:
         )
         exit(0)
     if args.version:
-        print(f"{NAME} version {VERSION_STR}")
+        print("{NAME} version {VERSION}".format(NAME=NAME, VERSION=VERSION_STR))
         exit(0)
 
     if args.silent:

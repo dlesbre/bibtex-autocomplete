@@ -72,6 +72,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
     def autocomplete(self, no_progressbar=False) -> None:
         """Main function that does all the work
         Iterate through entries, performing all lookups"""
+        logger.header("Completing entries")
         total = self.count_entries() * len(self.lookups)
         padding = self.get_id_padding()
         entries = list(self)
@@ -155,6 +156,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         """Writes the databases in self to the given files
         If not enough files, extra databases are written to stdout
         If too many files, extras are ignored"""
+        logger.header("Writing files")
         length = len(files)
         total = len(self.bibdatabases)
         wrote = 0
@@ -172,6 +174,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
 
     @staticmethod
     def read(files: List[Path]) -> List[BibDatabase]:
+        logger.header("Reading files")
         length = len(files)
         dbs = []
         for i, file in enumerate(files):

@@ -37,6 +37,8 @@ class Logger:
     error_handler: logging.StreamHandler
     info_handler: logging.StreamHandler
 
+    has_written: bool = False
+
     def __init__(self):
         # create logger
         self.logger = logging.getLogger(NAME)
@@ -66,6 +68,7 @@ class Logger:
         and sends it to the logger with the given level"""
         message = ansi_format(self.add_thread_info(message), *args, **kwargs)
         self.logger.log(level=level, msg=message)
+        self.has_written = True
 
     def warn(self, message: str, *args, **kwargs) -> None:
         """Issue a warning, extra arguments are formatter options"""
@@ -122,7 +125,7 @@ class Logger:
     def set_verbosity(self, verbosity: int) -> None:
         """Set verbosity:
         0 is default
-        1, 2, 3, 4 show more and more info
+        1, 2, 3 show more and more info
         -1, -2, -3, -4 show less and less (warning, error, critical errors, then nothing)"""
         maxi = max(self.verbosity)
         mini = min(self.verbosity)
@@ -131,6 +134,18 @@ class Logger:
         if verbosity < mini:
             verbosity = mini
         self.set_level(self.verbosity[verbosity])
+
+    def header(self, title: str) -> None:
+        """Shows a pretty header"""
+        self.info("")  # newline
+        title = (
+            "{FgBlue}===={FgReset} {StBold}"
+            + title
+            + "{StBoldOff} {FgBlue}"
+            + ("=" * (74 - len(title)))
+            + "{FgReset}"
+        )
+        self.info(title)
 
 
 logger = Logger()
