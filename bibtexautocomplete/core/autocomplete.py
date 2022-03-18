@@ -192,8 +192,10 @@ class BibtexAutocomplete(Iterable[EntryType]):
             dbs.append(file_read(file))
         nb_entries = sum(len(get_entries(db)) for db in dbs)
         logger.info(
-            "Read {nb_entries} entries from {total} files",
+            "Read {nb_entries} {entry} from {total} {file}",
             total=length,
             nb_entries=nb_entries,
+            entry="entries" if nb_entries != 1 else "entry",
+            file="files" if length != 1 else "file",
         )
         return dbs

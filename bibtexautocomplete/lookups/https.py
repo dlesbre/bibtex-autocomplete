@@ -132,9 +132,9 @@ class HTTPSLookup(AbstractDataLookup):
                 connection.close()
                 return None
             logger.debug(
-                "response: {status} {reason} in {delay}s",
+                "response: {status}{reason} in {delay}s",
                 status=response.status,
-                reason=response.reason,
+                reason=" " + response.reason if response.reason else "",
                 delay=delay,
             )
             logger.verbose_debug(
