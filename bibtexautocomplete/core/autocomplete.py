@@ -15,6 +15,7 @@ from ..bibtex.entry import BibtexEntry
 from ..bibtex.io import file_read, file_write, get_entries
 from ..bibtex.normalize import has_field
 from ..lookups.abstract_base import LookupType
+from ..utils.ansi import ansi_format
 from ..utils.constants import EntryType
 from ..utils.logger import logger
 from .threads import LookupThread
@@ -80,10 +81,14 @@ class BibtexAutocomplete(Iterable[EntryType]):
         threads: list[LookupThread] = []
         with alive_bar(
             total,
-            title="Querying databases:",
+            title=ansi_format("{FgBlue}Querying databases:{FgReset}"),
             disable=no_progressbar,
             enrich_print=False,
             receipt_text=True,
+            monitor=ansi_format("[{FgBlue}{{percent:.0%}}{FgReset}]"),
+            monitor_end=ansi_format("[ {FgBlue}{{percent:.0%}}{FgReset}]"),
+            stats="(eta: {eta})",
+            stats_end="",
         ) as bar:
             # Create all threads
             for lookup in self.lookups:

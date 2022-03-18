@@ -136,7 +136,7 @@ class Logger:
         self.set_level(self.verbosity[verbosity])
 
     def header(self, title: str) -> None:
-        """Shows a pretty header"""
+        """Shows a pretty header, 100% inspired by opam's output"""
         self.info("")  # newline
         title = (
             "{FgBlue}===={FgReset} {StBold}"
