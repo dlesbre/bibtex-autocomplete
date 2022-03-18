@@ -61,49 +61,48 @@ class Logger:
             message = "[{FgBlue}" + current.name + "{FgReset}] " + message
         return message
 
-    def to_logger(self, level: int, prefix: str, message: str, *args, **kwargs) -> None:
+    def to_logger(self, level: int, message: str, *args, **kwargs) -> None:
         """Formats a message (with given args and ansi colors)
         and sends it to the logger with the given level"""
-        message = ansi_format(prefix + self.add_thread_info(message), *args, **kwargs)
+        message = ansi_format(self.add_thread_info(message), *args, **kwargs)
         self.logger.log(level=level, msg=message)
 
     def warn(self, message: str, *args, **kwargs) -> None:
         """Issue a warning, extra arguments are formatter options"""
         self.to_logger(
-            logging.WARN, "{FgYellow}WARNING:{FgReset} ", message, *args, **kwargs
+            logging.WARN, "{FgPurple}WARNING:{FgReset} " + message, *args, **kwargs
         )
 
     def error(self, message: str, *args, **kwargs) -> None:
         """Issue an error, extra arguments are formatter options"""
         self.to_logger(
-            logging.ERROR, "{FgRed}ERROR:{FgReset} ", message, *args, **kwargs
+            logging.ERROR, "{FgRed}ERROR:{FgReset} " + message, *args, **kwargs
         )
 
     def critical(self, message: str, *args, **kwargs) -> None:
         """Issue a critical error, extra arguments are formatter options"""
         self.to_logger(
             logging.CRITICAL,
-            "{FgRed}CRITICAL ERROR:{FgReset} ",
-            message,
+            "{FgRed}CRITICAL ERROR:{FgReset} " + message,
             *args,
             **kwargs
         )
 
     def info(self, message: str, *args, **kwargs) -> None:
         """Show info, extra arguments are formatter options"""
-        self.to_logger(logging.INFO, "", message, *args, **kwargs)
+        self.to_logger(logging.INFO, message, *args, **kwargs)
 
     def verbose_info(self, message: str, *args, **kwargs) -> None:
         """Show info when verbose, extra arguments are formatter options"""
-        self.to_logger(VERBOSE_INFO, "", message, *args, **kwargs)
+        self.to_logger(VERBOSE_INFO, message, *args, **kwargs)
 
     def debug(self, message: str, *args, **kwargs) -> None:
         """Show debug info, extra arguments are formatter options"""
-        self.to_logger(logging.DEBUG, "", message, *args, **kwargs)
+        self.to_logger(logging.DEBUG, message, *args, **kwargs)
 
     def verbose_debug(self, message: str, *args, **kwargs) -> None:
         """Show very verbose debug info, extra arguments are formatter options"""
-        self.to_logger(VERBOSE_DEBUG, "", message, *args, **kwargs)
+        self.to_logger(VERBOSE_DEBUG, message, *args, **kwargs)
 
     def set_level(self, level: int) -> None:
         """Set the logger's level, using logging's level values"""
