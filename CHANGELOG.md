@@ -1,5 +1,9 @@
 # Change Log
 
+## Version 1.0.1 - 2022-03-19
+
+- Add direct url to svg so that it can show up on PyPi
+
 ## Version 1.0.0 - 2022-03-19
 
 - Multi-threading requests (one thread per website) vastly improves performance

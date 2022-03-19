@@ -17,7 +17,7 @@ It attempts to complete a bibtex file by querying the following domains:
 - [researchr.org](https://researchr.org/)
 - [unpaywall.org](https://unpaywall.org/)
 
-![demo](./imgs/demo.svg)
+![demo.svg](https://raw.githubusercontent.com/dlesbre/bibtex-autocomplete/master/imgs/demo.svg)
 
 ## Disclaimers
 
@@ -55,7 +55,7 @@ This package has two dependencies (automatically installed by pip) :
 The command line tool can be used as follows:
 
 ```
-btac version 1.0.0
+btac version 1.0.1
 Program to autocomplete bibtex entries by searching online databases.
 Polls the following databases:
   ['crossref', 'dblp', 'researchr', 'unpaywall']
