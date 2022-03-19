@@ -7,7 +7,8 @@ from pathlib import Path
 from typing import TypeVar
 
 from ..APIs import LOOKUP_NAMES
-from ..utils.constants import CONNECTION_TIMEOUT, NAME
+from ..utils.constants import BTAC_FILENAME, CONNECTION_TIMEOUT, NAME
+from ..utils.logger import logger
 
 T = TypeVar("T")
 
@@ -15,6 +16,32 @@ T = TypeVar("T")
 def flatten(list_of_lists: list[list[T]]) -> list[T]:
     """flatten a nested list"""
     return [val for sublist in list_of_lists for val in sublist]
+
+
+def make_output_name(input: Path) -> Path:
+    """Returns the new renamed path
+    e.g. example.bib -> example.btac.bib"""
+    ext = input.suffix
+    name = input.name[: -len(ext)]
+    return Path(input.root, BTAC_FILENAME.format(name=name, suffix=ext))
+
+
+def make_output_names(inputs: list[Path], outputs: list[Path]) -> list[Path]:
+    """Returns output names
+    - the first ones are taken from outputs
+    - if outputs < inputs, uses inputs with renaming xxx.bib -> xxx.btac.bib
+    - if inputs < outputs, issues a warning"""
+    len_inputs = len(inputs)
+    len_outputs = len(outputs)
+    if len_outputs > len_inputs:
+        logger.warn(
+            "Too many output files specified: got {outs} for {ins} input files",
+            outs=len_outputs,
+            ins=len_inputs,
+        )
+    for ii in range(len_outputs, len_inputs, 1):
+        outputs.append(make_output_name(inputs[ii]))
+    return outputs
 
 
 parser = ArgumentParser(prog=NAME, add_help=False)

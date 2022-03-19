@@ -215,7 +215,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         for i, db in enumerate(self.bibdatabases):
             file = files[i] if i < length else None
             pretty_file = file if file is not None else "<stdout>"
-            logger.verbose_info(
+            logger.info(
                 "Writing database {id} / {total} to '{file}'",
                 id=i + 1,
                 total=total,

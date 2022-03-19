@@ -9,14 +9,14 @@ from ..utils.constants import CONNECTION_TIMEOUT, NAME, VERSION_STR
 from ..utils.logger import logger
 from ..utils.only_exclude import OnlyExclude
 from .autocomplete import BibtexAutocomplete
-from .parser import HELP_TEXT, flatten, parser
+from .parser import HELP_TEXT, flatten, make_output_names, parser
 
 
 def main(argv: Optional[list[str]] = None) -> None:
     """The main function of bibtexautocomplete
     Takes an argv like List as argument,
     if none, uses sys.argv
-    see HELP_TEXT or main(["-h]) for details"""
+    see HELP_TEXT or main(["-h"]) for details"""
     if argv is None:
         args = parser.parse_args()
     else:
@@ -45,6 +45,9 @@ def main(argv: Optional[list[str]] = None) -> None:
 
     if args.inplace:
         args.output = args.input
+    args.input = flatten(args.input)
+    args.output = flatten(args.output)
+    args.output = make_output_names(args.input, args.output)
 
     if isinstance(args.timeout, list):
         args.timeout = args.timeout[0]
@@ -61,13 +64,13 @@ def main(argv: Optional[list[str]] = None) -> None:
         fields.filter(FieldConditionMixin.fields_to_complete, lambda x: x)
     )
 
-    databases = BibtexAutocomplete.read(flatten(args.input))
+    databases = BibtexAutocomplete.read(args.input)
     completer = BibtexAutocomplete(
         databases, lookups, fields, entries, args.force_overwrite
     )
     try:
         completer.autocomplete(args.verbose < 0)
         completer.print_changes()
-        completer.write(flatten(args.output))
+        completer.write(args.output)
     except KeyboardInterrupt:
-        logger.info("Interrupted")
+        logger.warn("Interrupted")

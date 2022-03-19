@@ -17,8 +17,8 @@ parser.ignore_nonstandard_types = False
 writer = BibTexWriter()
 writer.indent = "\t"
 writer.add_trailing_comma = True
-writer.order_entries_by = ("author", "year", "title")
-writer.display_order = ("author", "title")
+writer.order_entries_by = None  # preserve order
+writer.display_order = ("title", "author")
 
 
 def write(database: BibDatabase) -> str:
