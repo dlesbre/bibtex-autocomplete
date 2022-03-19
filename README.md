@@ -17,13 +17,15 @@ It attempts to complete a bibtex file by querying the following domains:
 - [researchr.org](https://researchr.org/)
 - [unpaywall.org](https://unpaywall.org/)
 
+![demo](./imgs/demo.svg)
+
+## Disclaimers
+
 The searches are performed using the entries' dois if present, title or author otherwise. Titles are compared excluding punctuation and case, so make sure to include the full title to get matches.
 
 There is no guarantee that this script will find matches for your entries, or that the websites will have any data to add to your entries.
 
-The script will not overwrite any user given non-empty fields, unless the `-f/--force-overwrite` flag is given.
-
-The script is designed to minimize the chance of false positive - that is adding data from another similar-ish entry to your entry. If you find any such false positive please report them using the [issue tracker](https://github.com/dlesbre/bibtex-autocomplete/issues).
+The script will not overwrite any user given non-empty fields, unless the `-f/--force-overwrite` flag is given. It is designed to minimize the chance of false positive - that is adding data from another similar-ish entry to your entry. If you find any such false positive please report them using the [issue tracker](https://github.com/dlesbre/bibtex-autocomplete/issues).
 
 
 ## Installation
