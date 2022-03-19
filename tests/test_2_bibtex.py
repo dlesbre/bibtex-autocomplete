@@ -1,3 +1,5 @@
+import pytest
+
 from bibtexautocomplete.bibtex.author import Author
 from bibtexautocomplete.bibtex.entry import (
     BibtexEntry,
@@ -19,31 +21,34 @@ from bibtexautocomplete.bibtex.normalize import (
     normalize_str_weak,
 )
 
-
-def test_normalize_str_weak():
-    tests = [
-        ("abc", "abc"),
-        ("a.b.c", "a.b.c"),
-        ("a  b\t\n\rc\nd", "a b c d"),
-        ("ABC", "abc"),
-        ("12 +*-/#.?:$%", "12 +*-/#.?:$%"),
-        ("àbcéèçôêâû+ÏÖÜÉÀÈÇÉ#!;§", "abceecoeau+ioueaece#!;§"),
-    ]
-    for inp, out in tests:
-        assert normalize_str_weak(inp) == out
+tests = [
+    ("abc", "abc"),
+    ("a.b.c", "a.b.c"),
+    ("a  b\t\n\rc\nd", "a b c d"),
+    ("ABC", "abc"),
+    ("12 +*-/#.?:$%", "12 +*-/#.?:$%"),
+    ("àbcéèçôêâû+ÏÖÜÉÀÈÇÉ#!;§", "abceecoeau+ioueaece#!;§"),
+]
 
 
-def test_normalize_str():
-    tests = [
-        ("abc", "abc"),
-        ("a.b.c", "a b c"),
-        ("a  b\t\n\rc\nd", "a b c d"),
-        ("ABC", "abc"),
-        ("12 +*-/#.?:$%", "12"),
-        ("àbcéèçôêâû+ÏÖÜÉÀÈÇÉ#!;§", "abceecoeau ioueaece"),
-    ]
-    for inp, out in tests:
-        assert normalize_str(inp) == out
+@pytest.mark.parametrize(("inp", "out"), tests)
+def test_normalize_str_weak(inp, out):
+    assert normalize_str_weak(inp) == out
+
+
+tests = [
+    ("abc", "abc"),
+    ("a.b.c", "a b c"),
+    ("a  b\t\n\rc\nd", "a b c d"),
+    ("ABC", "abc"),
+    ("12 +*-/#.?:$%", "12"),
+    ("àbcéèçôêâû+ÏÖÜÉÀÈÇÉ#!;§", "abceecoeau ioueaece"),
+]
+
+
+@pytest.mark.parametrize(("inp", "out"), tests)
+def test_normalize_str(inp, out):
+    assert normalize_str(inp) == out
 
 
 def test_normalize_doi():
@@ -94,9 +99,9 @@ authors = [
 ]
 
 
-def test_get_authors():
-    for author, res in authors:
-        assert Author.from_namelist(author) == res
+@pytest.mark.parametrize(("author", "res"), authors)
+def test_get_authors(author, res):
+    assert Author.from_namelist(author) == res
 
 
 def test_BibtexEntry_normal():
@@ -120,30 +125,31 @@ def test_BibtexEntry_special():
             setattr(a, field, None)
 
 
-def test_BibtexEntry_author_get():
-    for author, res in authors:
-        b = BibtexEntry({FieldNames.AUTHOR: author})
-        assert b.author == res
+@pytest.mark.parametrize(("author", "res"), authors)
+def test_BibtexEntry_author_get(author, res):
+    b = BibtexEntry({FieldNames.AUTHOR: author})
+    assert b.author == res
 
 
-def test_BibtexEntry_editor_get():
-    for author, res in authors:
-        b = BibtexEntry({FieldNames.EDITOR: author})
-        assert b.editor == res
+@pytest.mark.parametrize(("author", "res"), authors)
+def test_BibtexEntry_editor_get(author, res):
+
+    b = BibtexEntry({FieldNames.EDITOR: author})
+    assert b.editor == res
 
 
-def test_BibtexEntry_author_set():
-    for author, res in authors:
-        b = BibtexEntry()
-        b.author = res
-        assert b.author == res
+@pytest.mark.parametrize(("author", "res"), authors)
+def test_BibtexEntry_author_set(author, res):
+    b = BibtexEntry()
+    b.author = res
+    assert b.author == res
 
 
-def test_BibtexEntry_editor_set():
-    for author, res in authors:
-        b = BibtexEntry()
-        b.editor = res
-        assert b.editor == res
+@pytest.mark.parametrize(("author", "res"), authors)
+def test_BibtexEntry_editor_set(author, res):
+    b = BibtexEntry()
+    b.editor = res
+    assert b.editor == res
 
 
 def test_matching():

@@ -21,9 +21,13 @@ def flatten(list_of_lists: list[list[T]]) -> list[T]:
 def make_output_name(input: Path) -> Path:
     """Returns the new renamed path
     e.g. example.bib -> example.btac.bib"""
-    ext = input.suffix
-    name = input.name[: -len(ext)]
-    return Path(input.root, BTAC_FILENAME.format(name=name, suffix=ext))
+    name = input.name
+    suffix = ""
+    if "." in name:
+        split = name.split(".")
+        suffix = "." + split.pop()
+        name = ".".join(split)
+    return Path(input.root, BTAC_FILENAME.format(name=name, suffix=suffix))
 
 
 def make_output_names(inputs: list[Path], outputs: list[Path]) -> list[Path]:

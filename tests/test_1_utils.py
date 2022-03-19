@@ -1,35 +1,56 @@
 """Tests for functions/classes in bibtexautcomplete/defs"""
 
+import pytest
+
 from bibtexautocomplete.utils.only_exclude import OnlyExclude
 from bibtexautocomplete.utils.safe_json import SafeJSON
 
+tests = [
+    [[1, 2, 3], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]],
+    [[], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]],
+    [[1, 2, 3, 4, 5, 6, 7, 8, 9], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]],
+    [[1, 2, 3], []],
+]
 
-def test_OnlyExclude_only():
-    test = [1, 2, 3]
+
+@pytest.mark.parametrize(("test", "glob"), tests)
+def test_OnlyExclude_only(test, glob):
     a = OnlyExclude(test, None)
     b = OnlyExclude.from_nonempty(test, [])
-    for i in range(10):
+    for i in glob + test:
         if i in test:
             assert i in a
             assert i in b
         else:
             assert i not in a
-            assert i not in b
-    assert list(a.filter(range(10), lambda x: x)) == test
+            if test == []:
+                assert i in b
+            else:
+                assert i not in b
+    res = []
+    for x in glob:
+        if x in test:
+            res.append(x)
+    assert list(a.filter(glob, lambda x: x)) == res
 
 
-def test_OnlyExclude_exclude():
-    test = [1, 2, 3]
+@pytest.mark.parametrize(("test", "glob"), tests)
+def test_OnlyExclude_exclude(test, glob):
     a = OnlyExclude(None, test)
     b = OnlyExclude.from_nonempty([], test)
-    for i in range(10):
+    for i in glob + test:
         if i in test:
             assert i not in a
             assert i not in b
         else:
             assert i in a
             assert i in b
-    assert list(a.filter(range(10), lambda x: x)) == [0, 4, 5, 6, 7, 8, 9]
+    res = []
+    for x in glob:
+        if x not in test:
+            res.append(x)
+    # Only valid if glob contains test
+    assert list(a.filter(glob, lambda x: x)) == res
 
 
 def test_SafeJSON():
