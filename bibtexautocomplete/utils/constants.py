@@ -22,3 +22,5 @@ CONNECTION_TIMEOUT = 10.0  # seconds
 USER_AGENT = f"{NAME}/{VERSION_STR} ({URL}; mailto:{EMAIL})"
 
 EntryType = dict[str, str]  # Type of a bibtex entry
+
+MAX_THREAD_NB = 8  # Max number of threads

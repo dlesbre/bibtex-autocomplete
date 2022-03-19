@@ -16,7 +16,7 @@ from ..bibtex.io import file_read, file_write, get_entries
 from ..bibtex.normalize import has_field
 from ..lookups.abstract_base import LookupType
 from ..utils.ansi import ansi_format
-from ..utils.constants import EntryType
+from ..utils.constants import MAX_THREAD_NB, EntryType
 from ..utils.logger import logger
 from .threads import LookupThread
 
@@ -78,6 +78,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         padding = self.get_id_padding()
         entries = list(self)
         condition = Condition()
+        assert len(self.lookups) < MAX_THREAD_NB
         threads: list[LookupThread] = []
         with alive_bar(
             total,
