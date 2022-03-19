@@ -51,31 +51,29 @@ def make_output_names(inputs: list[Path], outputs: list[Path]) -> list[Path]:
 parser = ArgumentParser(prog=SCRIPT_NAME, add_help=False)
 
 parser.add_argument(
-    "--dont-query", "-Q", nargs=1, action="append", default=[], choices=LOOKUP_NAMES
+    "--dont-query", "-Q", action="append", default=[], choices=LOOKUP_NAMES
 )
 parser.add_argument(
-    "--only-query", "-q", nargs=1, action="append", default=[], choices=LOOKUP_NAMES
+    "--only-query", "-q", action="append", default=[], choices=LOOKUP_NAMES
 )
 parser.add_argument(
     "--dont-complete",
     "-C",
-    nargs=1,
     action="append",
     default=[],
 )
 parser.add_argument(
     "--only-complete",
     "-c",
-    nargs=1,
     action="append",
     default=[],
 )
-parser.add_argument("--exclude-entry", "-E", nargs=1, action="append", default=[])
-parser.add_argument("--only-entry", "-e", nargs=1, action="append", default=[])
+parser.add_argument("--exclude-entry", "-E", action="append", default=[])
+parser.add_argument("--only-entry", "-e", action="append", default=[])
 
 parser.add_argument("--force-overwrite", "-f", action="store_true")
 parser.add_argument("--inplace", "-i", action="store_true")
-parser.add_argument("--timeout", "-t", nargs=1, type=float, default=CONNECTION_TIMEOUT)
+parser.add_argument("--timeout", "-t", type=float, default=CONNECTION_TIMEOUT)
 parser.add_argument("--verbose", "-v", action="count", default=0)
 parser.add_argument("--silent", "-s", action="store_true")
 parser.add_argument("--no-color", "-n", action="store_true")
@@ -83,7 +81,7 @@ parser.add_argument("--no-color", "-n", action="store_true")
 parser.add_argument("--version", action="store_true")
 parser.add_argument("--help", "-h", action="store_true")
 
-parser.add_argument("--output", "-o", nargs=1, type=Path, action="append", default=[])
+parser.add_argument("--output", "-o", type=Path, action="append", default=[])
 parser.add_argument("input", nargs="*", type=Path, action="append", default=[])
 
 HELP_TEXT = """{StBold}{FgYellow}{NAME}{StBoldOff}{FgReset} version {VERSION}

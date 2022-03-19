@@ -76,7 +76,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
     def __iter__(self) -> Iterator[EntryType]:
         """Iterate through entries"""
         for db in self.bibdatabases:
-            for entry in filter(self.entries.__contains__, get_entries(db)):
+            for entry in filter(lambda x: x["ID"] in self.entries, get_entries(db)):
                 yield entry
 
     @memoize

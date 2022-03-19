@@ -46,11 +46,8 @@ def main(argv: Optional[list[str]] = None) -> None:
     if args.inplace:
         args.output = args.input
     args.input = flatten(args.input)
-    args.output = flatten(args.output)
     args.output = make_output_names(args.input, args.output)
 
-    if isinstance(args.timeout, list):
-        args.timeout = args.timeout[0]
     HTTPSLookup.connection_timeout = args.timeout
     lookups = (
         OnlyExclude[str]
