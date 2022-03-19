@@ -132,19 +132,20 @@ class BibtexAutocomplete(Iterable[EntryType]):
                         break
                 else:
                     # else update entry with the results
-                    changed_fields = 0
+                    changes = []
                     entry = entries[position]
                     for thread in threads:
                         result = thread.result[position]
                         if result is not None:
-                            changed_fields += self.combine(entry, result)
-                    if changed_fields != 0:
+                            changes.extend(self.combine(entry, result))
+                    if changes != []:
                         self.changed_entries += 1
-                        self.changed_fields += changed_fields
+                        self.changed_fields += len(changes)
+                        self.changes.append((entry["ID"], changes))
                     logger.verbose_info(
                         BULLET + "{StBold}{entry}{StBoldOff} {nb} new fields",
                         entry=entry["ID"].ljust(padding),
-                        nb=changed_fields,
+                        nb=len(changes),
                     )
                     bar.text = f"found {self.changed_fields} new fields"
                     position += 1
@@ -156,11 +157,10 @@ class BibtexAutocomplete(Iterable[EntryType]):
             changed_fields=self.changed_fields,
         )
 
-    def combine(self, entry: EntryType, new_info: BibtexEntry) -> int:
+    def combine(self, entry: EntryType, new_info: BibtexEntry) -> list[tuple[str, str]]:
         """Adds the information in info to entry.
         Does not overwrite unless self.force_overwrite is True
         only acts on fields contained in self.fields"""
-        changed = 0
         changes = []
         for field, value in new_info:
             if field not in self.fields:
@@ -180,11 +180,8 @@ class BibtexAutocomplete(Iterable[EntryType]):
                     value=s_value,
                 )
                 changes.append((field, s_value))
-                changed += 1
                 entry[field] = s_value
-        if changed:
-            self.changes.append((entry["ID"], changes))
-        return changed
+        return changes
 
     def print_changes(self) -> None:
         """prints a pretty list of changes"""
