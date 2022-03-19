@@ -6,7 +6,7 @@ main class used to manage calls to different lookups
 from functools import reduce
 from pathlib import Path
 from threading import Condition
-from typing import Container, Iterable, Iterator, List, Optional
+from typing import Callable, Container, Iterable, Iterator, List, TypeVar
 
 from alive_progress import alive_bar  # type: ignore
 from bibtexparser.bibdatabase import BibDatabase
@@ -20,6 +20,25 @@ from ..utils.constants import MAX_THREAD_NB, EntryType
 from ..utils.logger import logger
 from .threads import LookupThread
 
+T = TypeVar("T")
+Q = TypeVar("Q")
+
+
+def memoize(method: Callable[[T], Q]) -> Callable[[T], Q]:
+    """Simple decorator for no argument method memoization
+    as an attribute"""
+    attribute = "_memoize_" + method.__name__
+
+    def new_method(self):
+        if not hasattr(self, attribute):
+            setattr(self, attribute, method(self))
+        return getattr(self, attribute)
+
+    return new_method
+
+
+BULLET = "{FgBlue}{StBold}*{StBoldOff}{FgReset} "
+
 
 class BibtexAutocomplete(Iterable[EntryType]):
     """Main class used to dispatch calls to the relevant lookups"""
@@ -30,10 +49,12 @@ class BibtexAutocomplete(Iterable[EntryType]):
     entries: Container[str]
     force_overwrite: bool
 
-    changed_fields: int = 0
-    changed_entries: int = 0
+    changed_fields: int
+    changed_entries: int
 
-    _total_entries: Optional[int] = None
+    # Ordered list of (entry, changes) where
+    # changes is a list of (field, new_value)
+    changes: list[tuple[str, list[tuple[str, str]]]]
 
     def __init__(
         self,
@@ -48,6 +69,9 @@ class BibtexAutocomplete(Iterable[EntryType]):
         self.fields = fields
         self.entries = entries
         self.force_overwrite = force_overwrite
+        self.changed_entries = 0
+        self.changed_fields = 0
+        self.changes = []
 
     def __iter__(self) -> Iterator[EntryType]:
         """Iterate through entries"""
@@ -55,13 +79,13 @@ class BibtexAutocomplete(Iterable[EntryType]):
             for entry in filter(self.entries.__contains__, get_entries(db)):
                 yield entry
 
+    @memoize
     def count_entries(self) -> int:
         """count the number of entries"""
         # Its official, functional programming has infected me...
-        if self._total_entries is None:
-            self._total_entries = reduce(lambda x, _y: x + 1, self, 0)
-        return self._total_entries
+        return reduce(lambda x, _y: x + 1, self, 0)
 
+    @memoize
     def get_id_padding(self) -> int:
         """Return the max length of entries' ID
         to use for pretty printing"""
@@ -118,7 +142,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                         self.changed_entries += 1
                         self.changed_fields += changed_fields
                     logger.verbose_info(
-                        " {FgBlue}{StBold}*{StBoldOff}{FgReset} {StBold}{entry}{StBoldOff} {nb} new fields",
+                        BULLET + "{StBold}{entry}{StBoldOff} {nb} new fields",
                         entry=entry["ID"].ljust(padding),
                         nb=changed_fields,
                     )
@@ -137,6 +161,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         Does not overwrite unless self.force_overwrite is True
         only acts on fields contained in self.fields"""
         changed = 0
+        changes = []
         for field, value in new_info:
             if field not in self.fields:
                 continue
@@ -154,9 +179,30 @@ class BibtexAutocomplete(Iterable[EntryType]):
                     field=field,
                     value=s_value,
                 )
+                changes.append((field, s_value))
                 changed += 1
                 entry[field] = s_value
+        if changed:
+            self.changes.append((entry["ID"], changes))
         return changed
+
+    def print_changes(self) -> None:
+        """prints a pretty list of changes"""
+        logger.header("New fields")
+        if self.changes == []:
+            logger.info("No new fields")
+            return None
+        for entry, changes in self.changes:
+            logger.info(
+                BULLET + "{StBold}{entry}{StBoldOff}:",
+                entry=entry,
+            )
+            for field, value in changes:
+                logger.info(
+                    "    {FgBlue}{field}{FgReset} = {{{value}}},",
+                    field=field,
+                    value=value,
+                )
 
     def write(self, files: List[Path]) -> None:
         """Writes the databases in self to the given files
