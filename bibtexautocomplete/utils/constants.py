@@ -10,8 +10,8 @@ AUTHOR = "Dorian Lesbre"
 URL = "https://github.com/dlesbre/bibtex-autocomplete"
 LICENSE = "MIT"
 
-VERSION_MAJOR = 0
-VERSION_MINOR = 4
+VERSION_MAJOR = 1
+VERSION_MINOR = 0
 VERSION_PATCH = 0
 
 VERSION = (VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH)

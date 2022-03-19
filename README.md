@@ -55,7 +55,7 @@ This package has two dependencies (automatically installed by pip) :
 The command line tool can be used as follows:
 
 ```
-btac version 0.4.0
+btac version 1.0.0
 Program to autocomplete bibtex entries by searching online databases.
 Polls the following databases:
   ['crossref', 'dblp', 'researchr', 'unpaywall']

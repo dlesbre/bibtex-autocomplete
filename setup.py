@@ -26,7 +26,7 @@ setup(
     extras_require={
         "dev": ["pre-commit", "pytest", "mypy", "black", "flake8", "isort"],
     },
-    python_requires=">=3.9",
+    python_requires=">=3.6",
     license="MIT",
     platforms=["any"],
     keywords=["bibtex biblatex latex autocomplete btac"],
@@ -35,7 +35,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         # Indicate who your project is intended for
         "Intended Audience :: Science/Research",
         "Intended Audience :: Developers",
