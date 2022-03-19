@@ -17,7 +17,7 @@ from ..bibtex.normalize import has_field
 from ..lookups.abstract_base import LookupType
 from ..utils.ansi import ansi_format
 from ..utils.constants import MAX_THREAD_NB, EntryType
-from ..utils.logger import logger
+from ..utils.logger import VERBOSE_INFO, logger
 from .threads import LookupThread
 
 T = TypeVar("T")
@@ -188,17 +188,17 @@ class BibtexAutocomplete(Iterable[EntryType]):
 
     def print_changes(self) -> None:
         """prints a pretty list of changes"""
-        logger.header("New fields")
+        logger.header("New fields", VERBOSE_INFO)
         if self.changes == []:
-            logger.info("No new fields")
+            logger.verbose_info("No new fields")
             return None
         for entry, changes in self.changes:
-            logger.info(
+            logger.verbose_info(
                 BULLET + "{StBold}{entry}{StBoldOff}:",
                 entry=entry,
             )
             for field, value in changes:
-                logger.info(
+                logger.verbose_info(
                     "    {FgBlue}{field}{FgReset} = {{{value}}},",
                     field=field,
                     value=value,

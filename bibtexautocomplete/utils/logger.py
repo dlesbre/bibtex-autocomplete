@@ -135,9 +135,9 @@ class Logger:
             verbosity = mini
         self.set_level(self.verbosity[verbosity])
 
-    def header(self, title: str) -> None:
+    def header(self, title: str, level: int = logging.INFO) -> None:
         """Shows a pretty header, 100% inspired by opam's output"""
-        self.info("")  # newline
+        self.to_logger(level, "")  # newline
         title = (
             "{FgBlue}===={FgReset} {StBold}"
             + title
@@ -145,7 +145,7 @@ class Logger:
             + ("=" * (74 - len(title)))
             + "{FgReset}"
         )
-        self.info(title)
+        self.to_logger(level, title)
 
 
 logger = Logger()
