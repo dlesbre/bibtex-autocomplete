@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import TypeVar
 
 from ..APIs import LOOKUP_NAMES
-from ..utils.constants import BTAC_FILENAME, CONNECTION_TIMEOUT, NAME
+from ..utils.constants import BTAC_FILENAME, CONNECTION_TIMEOUT, SCRIPT_NAME
 from ..utils.logger import logger
 
 T = TypeVar("T")
@@ -48,7 +48,7 @@ def make_output_names(inputs: list[Path], outputs: list[Path]) -> list[Path]:
     return outputs
 
 
-parser = ArgumentParser(prog=NAME, add_help=False)
+parser = ArgumentParser(prog=SCRIPT_NAME, add_help=False)
 
 parser.add_argument(
     "--dont-query", "-Q", nargs=1, action="append", default=[], choices=LOOKUP_NAMES
@@ -95,7 +95,7 @@ Usage:
   {StBold}{FgYellow}{NAME}{StBoldOff}{FgReset} {FgYellow}[--flags] <input_files>{FgReset}
 
 Example:
-  {StBold}{FgYellow}{NAME}{StBoldOff}{FgReset} {FgYellow}my_bib.bib{FgReset}         print to stdout
+  {StBold}{FgYellow}{NAME}{StBoldOff}{FgReset} {FgYellow}my_bib.bib{FgReset}         writes to my_bib.btac.bib
   {StBold}{FgYellow}{NAME}{StBoldOff}{FgReset} {FgYellow}-i my_bib.bib{FgReset}      inplace modify
   {StBold}{FgYellow}{NAME}{StBoldOff}{FgReset} {FgYellow}a.bib -o b.bib c.bib -o d.bib{FgReset}
       writes completed a.bib in b.bib and c.bib in d.bib

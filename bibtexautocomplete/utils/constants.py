@@ -4,6 +4,7 @@ Project-wide constants
 
 
 NAME = "bibtexautocomplete"
+SCRIPT_NAME = "btac"
 AUTHOR = "Dorian Lesbre"
 URL = "https://github.com/dlesbre/bibtex-autocomplete"
 LICENSE = "MIT"

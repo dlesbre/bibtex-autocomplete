@@ -209,20 +209,22 @@ class BibtexAutocomplete(Iterable[EntryType]):
         If not enough files, extra databases are written to stdout
         If too many files, extras are ignored"""
         logger.header("Writing files")
-        length = len(files)
         total = len(self.bibdatabases)
         wrote = 0
         for i, db in enumerate(self.bibdatabases):
-            file = files[i] if i < length else None
-            pretty_file = file if file is not None else "<stdout>"
+            file = files[i]
             logger.info(
-                "Writing database {id} / {total} to '{file}'",
+                "Writing file {id} / {total} to '{file}'",
                 id=i + 1,
                 total=total,
-                file=pretty_file,
+                file=file,
             )
             wrote += file_write(file, db)
-        logger.info("Wrote {total} databases", total=wrote)
+        logger.info(
+            "Wrote {total} {files}",
+            total=wrote,
+            files="file" if wrote == 1 else "files",
+        )
 
     @staticmethod
     def read(files: List[Path]) -> List[BibDatabase]:
@@ -231,7 +233,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         dbs = []
         for i, file in enumerate(files):
             logger.debug(
-                "Reading database {id} / {length} from '{file}'",
+                "Reading file {id} / {length} from '{file}'",
                 id=i + 1,
                 length=length,
                 file=file,

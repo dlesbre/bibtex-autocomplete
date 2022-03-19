@@ -5,7 +5,7 @@ from ..APIs import LOOKUP_NAMES, LOOKUPS
 from ..lookups.condition_mixin import FieldConditionMixin
 from ..lookups.https import HTTPSLookup
 from ..utils.ansi import ANSICodes, ansi_format
-from ..utils.constants import CONNECTION_TIMEOUT, NAME, VERSION_STR
+from ..utils.constants import CONNECTION_TIMEOUT, SCRIPT_NAME, VERSION_STR
 from ..utils.logger import logger
 from ..utils.only_exclude import OnlyExclude
 from .autocomplete import BibtexAutocomplete
@@ -31,12 +31,12 @@ def main(argv: Optional[list[str]] = None) -> None:
                 TIMEOUT=CONNECTION_TIMEOUT,
                 VERSION=VERSION_STR,
                 LOOKUPS=LOOKUP_NAMES,
-                NAME=NAME,
+                NAME=SCRIPT_NAME,
             )
         )
         exit(0)
     if args.version:
-        print("{NAME} version {VERSION}".format(NAME=NAME, VERSION=VERSION_STR))
+        print("{NAME} version {VERSION}".format(NAME=SCRIPT_NAME, VERSION=VERSION_STR))
         exit(0)
 
     if args.silent:
