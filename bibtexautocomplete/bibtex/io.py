@@ -25,7 +25,7 @@ writer.display_order = ("title", "author")
 
 def write(database: BibDatabase) -> str:
     """Transform the database to a bibtex string"""
-    return writer.write(database).strip()
+    return writer.write(database).strip() + "\n"
 
 
 def read(bibtex: str, src: str = "") -> BibDatabase:
