@@ -48,7 +48,7 @@ class CrossrefLookup(JSON_DAT_Lookup):
         if limit is None or interval is None:
             return None
         try:
-            return float(limit) / float(interval[:-1])
+            return float(interval[:-1]) / float(limit)
         except ValueError or ZeroDivisionError:
             return None
 
