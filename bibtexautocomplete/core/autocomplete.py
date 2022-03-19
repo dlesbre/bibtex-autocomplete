@@ -53,8 +53,8 @@ class BibtexAutocomplete(Iterable[EntryType]):
     changed_entries: int
 
     # Ordered list of (entry, changes) where
-    # changes is a list of (field, new_value)
-    changes: list[tuple[str, list[tuple[str, str]]]]
+    # changes is a list of (field, new_value, source)
+    changes: list[tuple[str, list[tuple[str, str, str]]]]
 
     def __init__(
         self,
@@ -132,12 +132,15 @@ class BibtexAutocomplete(Iterable[EntryType]):
                         break
                 else:
                     # else update entry with the results
-                    changes = []
+                    changes: list[tuple[str, str, str]] = []
                     entry = entries[position]
                     for thread in threads:
                         result = thread.result[position]
                         if result is not None:
-                            changes.extend(self.combine(entry, result))
+                            changes.extend(
+                                (field, value, thread.name)
+                                for field, value in self.combine(entry, result)
+                            )
                     if changes != []:
                         self.changed_entries += 1
                         self.changed_fields += len(changes)
@@ -161,7 +164,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         """Adds the information in info to entry.
         Does not overwrite unless self.force_overwrite is True
         only acts on fields contained in self.fields"""
-        changes = []
+        changes: list[tuple[str, str]] = []
         for field, value in new_info:
             if field not in self.fields:
                 continue
@@ -194,11 +197,13 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 BULLET + "{StBold}{entry}{StBoldOff}:",
                 entry=entry,
             )
-            for field, value in changes:
+            for field, value, source in changes:
                 logger.verbose_info(
-                    "    {FgBlue}{field}{FgReset} = {{{value}}},",
+                    "    {FgBlue}{field}{FgReset} = {{{value}}},"
+                    " {FgGreen}{StItalics}% {source}{StItalicsOff}{FgReset}",
                     field=field,
                     value=value,
+                    source=source,
                 )
 
     def write(self, files: List[Path]) -> None:
