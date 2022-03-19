@@ -2,6 +2,7 @@ from sys import stdout
 from typing import List, Optional
 
 from ..APIs import LOOKUP_NAMES, LOOKUPS
+from ..bibtex.io import writer
 from ..lookups.condition_mixin import FieldConditionMixin
 from ..lookups.https import HTTPSLookup
 from ..utils.ansi import ANSICodes, ansi_format
@@ -44,9 +45,16 @@ def main(argv: Optional[List[str]] = None) -> None:
     logger.set_verbosity(args.verbose)
 
     if args.inplace:
+        if args.output != []:
+            logger.warn("Inplace mode, ignoring specified output files")
         args.output = args.input
     args.input = flatten(args.input)
     args.output = make_output_names(args.input, args.output)
+
+    writer.align_values = args.align_values
+    writer.comma_first = args.comma_first
+    writer.add_trailing_comma = args.no_trailing_comma
+    writer.indent = args.indent
 
     HTTPSLookup.connection_timeout = args.timeout
     lookups = (
