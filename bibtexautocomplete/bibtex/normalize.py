@@ -5,7 +5,7 @@ Functions used to normalize bibtex fields
 import unicodedata
 from datetime import date
 from re import search, sub
-from typing import Optional
+from typing import Dict, Optional
 
 from ..utils.constants import EntryType
 
@@ -38,11 +38,13 @@ def has_field(entry: EntryType, field: str) -> bool:
     return has_data(get_field(entry, field))
 
 
-def strip_accents(s):
+def strip_accents(string: str) -> str:
     """replace accented characters with their non-accented variants"""
     # Solution from https://stackoverflow.com/a/518232
     return "".join(
-        c for c in unicodedata.normalize("NFD", s) if unicodedata.category(c) != "Mn"
+        c
+        for c in unicodedata.normalize("NFD", string)
+        if unicodedata.category(c) != "Mn"
     )
 
 
@@ -88,7 +90,7 @@ def months_format(month: int, format: str):
     return date(2001, month, 1).strftime(format)
 
 
-def get_locale_months() -> dict[str, int]:
+def get_locale_months() -> Dict[str, int]:
     mapping = {}
     for month in range(1, 13):
         for format in ("%B", "%b"):  # "%m", "%-m"

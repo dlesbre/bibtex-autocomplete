@@ -2,7 +2,7 @@
 A class to represent author/editor names and read/write them to valid bibtex
 """
 
-from typing import Optional
+from typing import List, Optional
 
 AUTHOR_JOIN = " and "
 
@@ -26,7 +26,7 @@ class Author:
         return self.lastname
 
     @staticmethod
-    def list_to_bibtex(authors: "list[Author]") -> str:
+    def list_to_bibtex(authors: "List[Author]") -> str:
         return AUTHOR_JOIN.join(author.to_bibtex() for author in authors)
 
     def __eq__(self, other) -> bool:
@@ -56,7 +56,7 @@ class Author:
         return Author(last, first)
 
     @classmethod
-    def from_namelist(cls, authors: str) -> "list[Author]":
+    def from_namelist(cls, authors: str) -> "List[Author]":
         """Return a list of 'first name', 'last name' for authors"""
         result = []
         for name in authors.replace("\n", " ").replace("\t", " ").split(AUTHOR_JOIN):

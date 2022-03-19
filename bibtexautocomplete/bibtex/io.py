@@ -2,6 +2,8 @@
 Wraps around bibtexparser to provider parser/writer primitives
 """
 
+from typing import List
+
 from bibtexparser.bibdatabase import BibDatabase, UndefinedString
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
@@ -78,6 +80,6 @@ def file_read(filepath) -> BibDatabase:
     return read(bibtex)
 
 
-def get_entries(db: BibDatabase) -> list[EntryType]:
+def get_entries(db: BibDatabase) -> List[EntryType]:
     """Get entries from a bibdatabase"""
     return db.entries

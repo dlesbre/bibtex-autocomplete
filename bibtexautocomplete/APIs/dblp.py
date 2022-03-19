@@ -2,7 +2,7 @@
 Lookup info from https://dlbp.org
 """
 
-from typing import Iterable
+from typing import Dict, Iterable, List
 
 from ..bibtex.author import Author
 from ..bibtex.entry import BibtexEntry, FieldNames
@@ -26,7 +26,7 @@ class DBLPLookup(JSON_AT_Lookup):
     domain = "dblp.org"
     path = "/search/publ/api"
 
-    def get_params(self) -> dict[str, str]:
+    def get_params(self) -> Dict[str, str]:
         search = ""
         if self.author is not None:
             search += self.author + " "
@@ -39,7 +39,7 @@ class DBLPLookup(JSON_AT_Lookup):
         return SafeJSON.from_bytes(data)["result"]["hits"]["hit"].iter_list()
 
     @staticmethod
-    def get_authors(info: SafeJSON) -> list[Author]:
+    def get_authors(info: SafeJSON) -> List[Author]:
         """Return a bibtex formatted list of authors"""
         authors = info["authors"]["author"]
         formatted = []

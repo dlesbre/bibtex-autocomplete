@@ -2,7 +2,7 @@
 Mixin to check if a condition holds before performing queries
 """
 
-from typing import Optional
+from typing import Optional, Set
 
 from ..bibtex.entry import BibtexEntry, SearchedFields
 from .abstract_base import AbstractEntryLookup, AbstractLookup
@@ -40,9 +40,9 @@ class FieldConditionMixin(ConditionMixin, AbstractEntryLookup):
     """
 
     # list of fields that can be added to an entry by this lookup
-    fields: set[str]
+    fields: Set[str]
 
-    fields_to_complete: set[str] = SearchedFields
+    fields_to_complete: Set[str] = SearchedFields
 
     def condition(self):
         """Only return True if there exists a field in self.fields

@@ -3,7 +3,7 @@ Wraps around bibtexparser's entry representations for safer access
 and field normalization
 """
 
-from typing import Iterator, Optional
+from typing import Iterator, List, Optional, Set, Tuple
 
 from ..utils.constants import EntryType
 from .author import Author
@@ -42,7 +42,7 @@ class FieldNames:
 
 
 # Set of all fields
-FieldNamesSet: set[str] = {
+FieldNamesSet: Set[str] = {
     value
     for attr, value in vars(FieldNames).items()
     if isinstance(value, str) and "_" not in attr and attr.upper() == attr
@@ -52,7 +52,7 @@ FieldNamesSet: set[str] = {
 SearchedFields = FieldNamesSet.copy()
 
 # Set of fields with sanitized inputs
-SpecialFields: set[str] = {
+SpecialFields: Set[str] = {
     "author",
     "doi",
     "editor",
@@ -82,12 +82,12 @@ class BibtexEntry:
 
     address: Optional[str]
     annote: Optional[str]
-    author: list[Author]
+    author: List[Author]
     booktitle: Optional[str]
     chapter: Optional[str]
     doi: Optional[str]
     edition: Optional[str]
-    editor: list[Author]
+    editor: List[Author]
     howpublished: Optional[str]
     institution: Optional[str]
     issn: Optional[str]
@@ -149,28 +149,28 @@ class BibtexEntry:
         """Is the given field non empty in this entry?"""
         return field in FieldNamesSet and has_field(self._entry, field)
 
-    def __iter__(self) -> Iterator[tuple[str, str]]:
+    def __iter__(self) -> Iterator[Tuple[str, str]]:
         """Iterates through the fields of self"""
         return filter(
             lambda pair: pair[0] in FieldNamesSet and has_data(pair[1]),
             self._entry.items(),
         )
 
-    def get_author(self) -> list[Author]:
+    def get_author(self) -> List[Author]:
         """Formats entry['author'] into Author list"""
         authors = get_field(self._entry, FieldNames.AUTHOR)
         if authors is not None:
             return Author.from_namelist(authors)
         return []
 
-    def get_editor(self) -> list[Author]:
+    def get_editor(self) -> List[Author]:
         """Formats entry['editor'] into Author list"""
         authors = get_field(self._entry, FieldNames.EDITOR)
         if authors is not None:
             return Author.from_namelist(authors)
         return []
 
-    def set_author(self, authors: list[Author]) -> None:
+    def set_author(self, authors: List[Author]) -> None:
         """set entry['author']"""
         if len(authors) == 0:
             if FieldNames.AUTHOR in self._entry:
@@ -178,7 +178,7 @@ class BibtexEntry:
         else:
             self._entry[FieldNames.AUTHOR] = Author.list_to_bibtex(authors)
 
-    def set_editor(self, authors: list[Author]) -> None:
+    def set_editor(self, authors: List[Author]) -> None:
         """set entry['editor']"""
         if len(authors) == 0:
             if FieldNames.EDITOR in self._entry:

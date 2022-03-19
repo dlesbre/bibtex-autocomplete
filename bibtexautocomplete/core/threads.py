@@ -1,5 +1,5 @@
 from threading import Condition, Thread
-from typing import Callable, Optional
+from typing import Callable, List, Optional
 
 from ..bibtex.entry import BibtexEntry
 from ..lookups.abstract_base import LookupType
@@ -13,9 +13,9 @@ class LookupThread(Thread):
     We create one thread per lookup, to keep query rate polite for each domain"""
 
     lookup: LookupType
-    entries: list[EntryType] = []  # Read only
+    entries: List[EntryType] = []  # Read only
     condition: Condition
-    result: list[Optional[BibtexEntry]]  # Write
+    result: List[Optional[BibtexEntry]]  # Write
     # bar : Callable[[], None]
 
     position: int
@@ -24,7 +24,7 @@ class LookupThread(Thread):
     def __init__(
         self,
         lookup: LookupType,
-        entries: list[EntryType],
+        entries: List[EntryType],
         condition: Condition,
         bar: Callable[[], None],
     ):

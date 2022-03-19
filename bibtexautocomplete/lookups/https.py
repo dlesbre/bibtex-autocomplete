@@ -4,7 +4,7 @@ Lookup for HTTPS queries
 
 from http.client import HTTPResponse, HTTPSConnection, socket  # type: ignore
 from time import sleep, time
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 from urllib.parse import urlencode
 
 from ..utils.constants import CONNECTION_TIMEOUT, MIN_QUERY_DELAY, USER_AGENT
@@ -25,11 +25,11 @@ class HTTPSLookup(AbstractDataLookup):
     - domain: str = "localhost" - the domain name e.g. api.crossref.org
     - host : Optional[str] = None - host when different from domain
     - path : str = "/" - the path component of the URL
-    - params : dict[str, str] = {} - parameters to add to the URL
+    - params : Dict[str, str] = {} - parameters to add to the URL
 
     - request : str = "GET" - https request type
-    - default_headers : dict[str, str] = ... default http header
-    - headers : dict[str, str] = {} - headers to add, overrite default_headers
+    - default_headers : Dict[str, str] = ... default http header
+    - headers : Dict[str, str] = {} - headers to add, overrite default_headers
 
     all of these have associated methods get_XX : Self -> Type[XX] that can be overridden
     for finer behavior control
@@ -41,20 +41,20 @@ class HTTPSLookup(AbstractDataLookup):
     domain: str = "localhost"
     host: Optional[str] = None
     path: str = "/"
-    params: dict[str, str] = {}
+    params: Dict[str, str] = {}
 
     request: str = "GET"
-    default_headers: dict[str, str] = {
+    default_headers: Dict[str, str] = {
         "User-Agent": USER_AGENT,
         "Accept": "application/json",
     }
-    headers: dict[str, str] = {}
+    headers: Dict[str, str] = {}
 
     connection_timeout: float = CONNECTION_TIMEOUT
 
     response: Optional[HTTPResponse] = None
 
-    def get_headers(self) -> dict[str, str]:
+    def get_headers(self) -> Dict[str, str]:
         """Return the headers used in an HTTPS request"""
         headers = self.default_headers.copy()
         headers.update(self.headers)
@@ -86,7 +86,7 @@ class HTTPSLookup(AbstractDataLookup):
             return self.path + "?" + urlencode(params)
         return self.path
 
-    def get_params(self) -> dict[str, str]:
+    def get_params(self) -> Dict[str, str]:
         """Url parameters, can use self.entry to set them
         override this if not using self.path"""
         return self.params

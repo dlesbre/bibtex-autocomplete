@@ -4,7 +4,7 @@ Command-line argument parser
 
 from argparse import ArgumentParser
 from pathlib import Path
-from typing import TypeVar
+from typing import List, TypeVar
 
 from ..APIs import LOOKUP_NAMES
 from ..utils.constants import BTAC_FILENAME, CONNECTION_TIMEOUT, SCRIPT_NAME
@@ -13,7 +13,7 @@ from ..utils.logger import logger
 T = TypeVar("T")
 
 
-def flatten(list_of_lists: list[list[T]]) -> list[T]:
+def flatten(list_of_lists: List[List[T]]) -> List[T]:
     """flatten a nested list"""
     return [val for sublist in list_of_lists for val in sublist]
 
@@ -30,7 +30,7 @@ def make_output_name(input: Path) -> Path:
     return Path(input.root, BTAC_FILENAME.format(name=name, suffix=suffix))
 
 
-def make_output_names(inputs: list[Path], outputs: list[Path]) -> list[Path]:
+def make_output_names(inputs: List[Path], outputs: List[Path]) -> List[Path]:
     """Returns output names
     - the first ones are taken from outputs
     - if outputs < inputs, uses inputs with renaming xxx.bib -> xxx.btac.bib

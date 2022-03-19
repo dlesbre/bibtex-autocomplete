@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Dict, List, Optional
 
 from bibtexautocomplete.bibtex.entry import BibtexEntry, FieldNames
 from bibtexautocomplete.lookups.abstract_base import AbstractLookup
@@ -9,7 +9,7 @@ from bibtexautocomplete.lookups.multiple_mixin import DATQueryMixin, DTQueryMixi
 class SearchEval(AbstractLookup):
 
     index: int = 0
-    expected: list[dict[str, Optional[str]]] = []
+    expected: List[Dict[str, Optional[str]]] = []
 
     def query(self):
         test = self.expected[self.index]
@@ -202,7 +202,7 @@ class TestCondition:
             FieldNames.AUTHOR,
         }
 
-    def run(self, entry: dict[str, str], expected: bool):
+    def run(self, entry: Dict[str, str], expected: bool):
         p = self.parent(BibtexEntry(entry))
         p.query()
         assert p.queried == expected

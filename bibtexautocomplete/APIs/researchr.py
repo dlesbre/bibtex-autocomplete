@@ -2,7 +2,7 @@
 Lookup info from https://researchr.org/
 """
 
-from typing import Iterable
+from typing import Iterable, List
 from urllib.parse import quote_plus
 
 from ..bibtex.author import Author
@@ -40,7 +40,7 @@ class ResearchrLookup(JSON_AT_Lookup):
         return SafeJSON.from_bytes(data)["result"].iter_list()
 
     @staticmethod
-    def get_authors(authors: SafeJSON) -> list[Author]:
+    def get_authors(authors: SafeJSON) -> List[Author]:
         """Return a bibtex formatted list of authors"""
         formatted = []
         for author in authors.iter_list():

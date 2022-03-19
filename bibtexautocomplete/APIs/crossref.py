@@ -2,7 +2,7 @@
 Lookup info from https://www.crossref.org
 """
 
-from typing import Iterable, Optional
+from typing import Dict, Iterable, List, Optional, Tuple
 
 from ..bibtex.author import Author
 from ..bibtex.entry import BibtexEntry, FieldNames
@@ -32,7 +32,7 @@ class CrossrefLookup(JSON_DAT_Lookup):
             return self.path + "/" + self.doi
         return super().get_path()
 
-    def get_params(self) -> dict[str, str]:
+    def get_params(self) -> Dict[str, str]:
         base = {"rows": "3"}
         if self.title is not None:
             base["query.title"] = self.title
@@ -63,7 +63,7 @@ class CrossrefLookup(JSON_DAT_Lookup):
         return None
 
     @staticmethod
-    def get_authors(authors: SafeJSON) -> list[Author]:
+    def get_authors(authors: SafeJSON) -> List[Author]:
         """Parses JSON output into bibtex formatted author list"""
         formatted = []
         for author in authors.iter_list():
@@ -75,7 +75,7 @@ class CrossrefLookup(JSON_DAT_Lookup):
         return formatted
 
     @staticmethod
-    def get_date(result: SafeJSON) -> tuple[Optional[str], Optional[str]]:
+    def get_date(result: SafeJSON) -> Tuple[Optional[str], Optional[str]]:
         date = None
         for field in (
             "published-print",

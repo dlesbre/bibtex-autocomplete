@@ -2,7 +2,7 @@
 Lookup info from https://unpaywall.org/
 """
 
-from typing import Iterable, Optional
+from typing import Dict, Iterable, List, Optional
 from urllib.parse import urlencode
 
 from ..bibtex.author import Author
@@ -36,7 +36,7 @@ class UnpaywallLookup(JSON_DT_Lookup):
     doi: Optional[str] = None
     title: Optional[str] = None
 
-    def get_params(self) -> dict[str, str]:
+    def get_params(self) -> Dict[str, str]:
         base = super().get_params()
         if self.doi is None:
             if self.title is None:
@@ -59,7 +59,7 @@ class UnpaywallLookup(JSON_DT_Lookup):
         return json["results"].iter_list()
 
     @staticmethod
-    def get_authors(authors: SafeJSON) -> list[Author]:
+    def get_authors(authors: SafeJSON) -> List[Author]:
         """Return a bibtex formatted list of authors"""
         formatted = []
         for author in authors.iter_list():

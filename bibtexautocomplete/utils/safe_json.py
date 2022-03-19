@@ -5,15 +5,15 @@ No operations will raise any error, invalid operations will simply return None
 
 
 from json import JSONDecodeError, JSONDecoder
-from typing import Any, Iterator, Optional, TypeVar, Union
+from typing import Any, Dict, Iterator, List, Optional, Tuple, TypeVar, Union
 
-JSONType = Union[dict[str, Any], list[Any], int, float, str, bool, None]
+JSONType = Union[Dict[str, Any], List[Any], int, float, str, bool, None]
 S = TypeVar("S", bound=JSONType)
 
 
 class SafeJSON:
     """class designed to make failess accesses to a JSON-like structure
-    (recursive structure of either dict[str, SafeJSON], list[SafeJSON], int, float, str, bool, None)
+    (recursive structure of either Dict[str, SafeJSON], List[SafeJSON], int, float, str, bool, None)
 
     defines get_item to seamlessly access dict entries (if item is str) or list element (if item is int)
     """
@@ -83,13 +83,13 @@ class SafeJSON:
             return self.value
         return None
 
-    def to_list(self) -> Optional[list[Any]]:
+    def to_list(self) -> Optional[List[Any]]:
         """Returns the value if it is an list, None otherwise"""
         if isinstance(self.value, list):
             return self.value
         return None
 
-    def to_dict(self) -> Optional[dict[str, Any]]:
+    def to_dict(self) -> Optional[Dict[str, Any]]:
         """Returns the value if it is a dict, None otherwise"""
         if isinstance(self.value, dict):
             return self.value
@@ -102,7 +102,7 @@ class SafeJSON:
             for x in self.value:
                 yield SafeJSON(x)
 
-    def iter_dict(self) -> "Iterator[tuple[str, SafeJSON]]":
+    def iter_dict(self) -> "Iterator[Tuple[str, SafeJSON]]":
         """Iterate through self if it is a list
         else yields nothing"""
         if isinstance(self.value, dict):

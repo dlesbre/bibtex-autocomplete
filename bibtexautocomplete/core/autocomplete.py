@@ -6,7 +6,7 @@ main class used to manage calls to different lookups
 from functools import reduce
 from pathlib import Path
 from threading import Condition
-from typing import Callable, Container, Iterable, Iterator, List, TypeVar
+from typing import Callable, Container, Iterable, Iterator, List, Tuple, TypeVar
 
 from alive_progress import alive_bar  # type: ignore
 from bibtexparser.bibdatabase import BibDatabase
@@ -54,7 +54,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
 
     # Ordered list of (entry, changes) where
     # changes is a list of (field, new_value, source)
-    changes: list[tuple[str, list[tuple[str, str, str]]]]
+    changes: List[Tuple[str, List[Tuple[str, str, str]]]]
 
     def __init__(
         self,
@@ -103,7 +103,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         entries = list(self)
         condition = Condition()
         assert len(self.lookups) < MAX_THREAD_NB
-        threads: list[LookupThread] = []
+        threads: List[LookupThread] = []
         with alive_bar(
             total,
             title=ansi_format("{FgBlue}Querying databases:{FgReset}"),
@@ -132,7 +132,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                         break
                 else:
                     # else update entry with the results
-                    changes: list[tuple[str, str, str]] = []
+                    changes: List[Tuple[str, str, str]] = []
                     entry = entries[position]
                     for thread in threads:
                         result = thread.result[position]
@@ -160,11 +160,11 @@ class BibtexAutocomplete(Iterable[EntryType]):
             changed_fields=self.changed_fields,
         )
 
-    def combine(self, entry: EntryType, new_info: BibtexEntry) -> list[tuple[str, str]]:
+    def combine(self, entry: EntryType, new_info: BibtexEntry) -> List[Tuple[str, str]]:
         """Adds the information in info to entry.
         Does not overwrite unless self.force_overwrite is True
         only acts on fields contained in self.fields"""
-        changes: list[tuple[str, str]] = []
+        changes: List[Tuple[str, str]] = []
         for field, value in new_info:
             if field not in self.fields:
                 continue

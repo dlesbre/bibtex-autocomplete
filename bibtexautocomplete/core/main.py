@@ -1,5 +1,5 @@
 from sys import stdout
-from typing import Optional
+from typing import List, Optional
 
 from ..APIs import LOOKUP_NAMES, LOOKUPS
 from ..lookups.condition_mixin import FieldConditionMixin
@@ -12,7 +12,7 @@ from .autocomplete import BibtexAutocomplete
 from .parser import HELP_TEXT, flatten, make_output_names, parser
 
 
-def main(argv: Optional[list[str]] = None) -> None:
+def main(argv: Optional[List[str]] = None) -> None:
     """The main function of bibtexautocomplete
     Takes an argv like List as argument,
     if none, uses sys.argv

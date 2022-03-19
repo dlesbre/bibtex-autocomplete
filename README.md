@@ -37,8 +37,8 @@ pip install bibtexautocomplete
 You should now be able to run the script using either commands:
 
 ```
-python3 -m bibtexautocomplete --version
 btac --version
+python3 -m bibtexautocomplete --version
 ```
 
 ### Dependencies
