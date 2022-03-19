@@ -40,6 +40,18 @@ class CrossrefLookup(JSON_DAT_Lookup):
             base["query.author"] = self.author
         return base
 
+    def update_rate_cap(self) -> Optional[float]:
+        if self.response is None:
+            return None
+        limit = self.response.getheader("X-Rate-Limit-Limit")
+        interval = self.response.getheader("X-Rate-Limit-Interval")
+        if limit is None or interval is None:
+            return None
+        try:
+            return float(limit) / float(interval[:-1])
+        except ValueError or ZeroDivisionError:
+            return None
+
     def get_results(self, data) -> Optional[Iterable[SafeJSON]]:
         """Return the result list"""
         json = SafeJSON.from_bytes(data)
