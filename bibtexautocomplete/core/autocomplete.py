@@ -190,7 +190,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         if self.changes == []:
             logger.verbose_info("No new fields")
             return None
-        for entry, changes in self.changes:
+        for entry, changes in sorted(self.changes, key=lambda x: x[0]):
             logger.verbose_info(
                 BULLET + "{StBold}{entry}{Reset}:",
                 entry=entry,
