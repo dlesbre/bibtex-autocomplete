@@ -1,7 +1,7 @@
 """
 setup file. run 'python3 setup.py install' to install.
 """
-from setuptools import setup  # type: ignore
+from setuptools import find_packages, setup  # type: ignore
 
 import bibtexautocomplete
 
@@ -17,7 +17,7 @@ setup(
     description=bibtexautocomplete.__description__,
     long_description=long_description,
     long_description_content_type="text/markdown",
-    packages=["bibtexautocomplete"],
+    packages=find_packages(),
     scripts=["scripts/btac"],
     install_requires=[
         "bibtexparser",
