@@ -67,8 +67,6 @@ class CrossrefLookup(JSON_DAT_Lookup):
         """Parses JSON output into bibtex formatted author list"""
         formatted = []
         for author in authors.iter_list():
-            if not isinstance(author, dict):
-                continue
             lastname = author["family"].to_str()
             if lastname is not None:
                 formatted.append(Author(lastname, author["given"].to_str()))
