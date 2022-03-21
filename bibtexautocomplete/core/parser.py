@@ -48,7 +48,11 @@ def make_output_names(inputs: List[Path], outputs: List[Path]) -> List[Path]:
     return outputs
 
 
-parser = ArgumentParser(prog=SCRIPT_NAME, add_help=False)
+parser = ArgumentParser(
+    prog=SCRIPT_NAME,
+    add_help=False,
+    usage="btac [--options] <input_files>\nSee help for a list of options.\n",
+)
 
 parser.add_argument(
     "--dont-query", "-Q", action="append", default=[], choices=LOOKUP_NAMES
