@@ -89,21 +89,21 @@ parser.add_argument("--help", "-h", action="store_true")
 parser.add_argument("--output", "-o", type=Path, action="append", default=[])
 parser.add_argument("input", nargs="*", type=Path, action="append", default=[])
 
-HELP_TEXT = """{StBold}{FgYellow}{NAME}{Reset} version {VERSION}
+HELP_TEXT = """{StBold}{FgYellow}{NAME}{Reset} {StBold}version {VERSION}{Reset}
 Program to autocomplete bibtex entries by searching online databases.
 Polls the following databases:
   {LOOKUPS}
 
-Usage:
+{StBold}Usage:{Reset}
   {StBold}{FgYellow}{NAME}{Reset} {FgYellow}[--flags] <input_files>{Reset}
 
-Example:
+{StBold}Example:{Reset}
   {StBold}{FgYellow}{NAME}{Reset} {FgYellow}my_bib.bib{Reset}         writes to my_bib.btac.bib
   {StBold}{FgYellow}{NAME}{Reset} {FgYellow}-i my_bib.bib{Reset}      inplace modify
   {StBold}{FgYellow}{NAME}{Reset} {FgYellow}a.bib -o b.bib c.bib -o d.bib{Reset}
       writes completed a.bib in b.bib and c.bib in d.bib
 
-Optional arguments: can all be used multiple times
+{StBold}Optional arguments:{Reset} can all be used multiple times
   {FgYellow}-o --output{Reset} {FgGreen}<file>{Reset}          Write output to given file
         With multiple input/outputs they are mapped in appearance order
         Extra inputs are dumped on stdout
@@ -120,13 +120,13 @@ Optional arguments: can all be used multiple times
   {FgYellow}-C --dont-complete{Reset} {FgGreen}<field>{Reset}  Don't complete the given fields
         Field is a bibtex field (e.g. 'author', 'doi',...)
 
-Output formatting:
+{StBold}Output formatting:{Reset}
   {FgYellow}--fa --align-values{Reset}        pad fieldnames to align all values)
   {FgYellow}--fc --comma-first{Reset}         comma first syntax (, title = ...)
   {FgYellow}--fl --no-trailing-comma{Reset}   don't add a last trailing comma
   {FgYellow}--fi --indent{Reset} {FgGreen}<space>{Reset}      space used for indentation, default is a tab
 
-Flags:
+{StBold}Flags:{Reset}
   {FgYellow}-i --inplace{Reset}          Modify input files inplace
         ignores any specified output files
   {FgYellow}-f --force-overwrite{Reset}  Overwrite aldready present fields
