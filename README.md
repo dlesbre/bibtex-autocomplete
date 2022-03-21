@@ -53,56 +53,67 @@ This package has two dependencies (automatically installed by pip) :
 ## Usage
 
 The command line tool can be used as follows:
-
 ```
-btac version 1.0.1
-Program to autocomplete bibtex entries by searching online databases.
-Polls the following databases:
-  ['crossref', 'dblp', 'researchr', 'unpaywall']
-
-Usage:
-  btac [--flags] <input_files>
-
-Example:
-  btac my_bib.bib         writes to my_bib.btac.bib
-  btac -i my_bib.bib      inplace modify
-  btac a.bib -o b.bib c.bib -o d.bib
-      writes completed a.bib in b.bib and c.bib in d.bib
-
-Optional arguments: can all be used multiple times
-  -o --output <file>          Write output to given file
-        With multiple input/outputs they are mapped in appearance order
-        Extra inputs are dumped on stdout
-
-  -q --only-query <site>      Only query the given sites
-  -Q --dont-query <site>      Don't query the given sites
-        Site must be one of: ['crossref', 'dblp', 'researchr', 'unpaywall']
-
-  -e --only-entry    <id>     Only perform lookup these entries
-  -E --exclude-entry <id>     Don't perform lookup these entries
-        ID is the identifier in bibtex (e.g. @inproceedings{<id> ... })
-
-  -c --only-complete <field>  Only complete the given fields
-  -C --dont-complete <field>  Don't complete the given fields
-        Field is a bibtex field (e.g. 'author', 'doi',...)
-
-Output formatting:
-  --fa --align-values        pad fieldnames to align all values)
-  --fc --comma-first         comma first syntax (, title = ...)
-  --fl --no-trailing-comma   don't add a last trailing comma
-  --fi --indent <space>      space used for indentation, default is a tab
-
-Flags:
-  -i --inplace          Modify input files inplace
-        ignores any specified output files
-  -f --force-overwrite  Overwrite aldready present fields
-        The default is to overwrite a field if it is empty or absent
-  -t --timeout <float>  set timeout on request, default: 10.0 s
-
-  -v --verbose          increase verbosity (use up to 3 times)
-  -s --silent           decrease verbosity (use up to 4 times)
-  -n --no-color         don't color/stylise output
-
-  --version             show version number
-  -h --help             show this help
+btac [-flag] <input_files>
 ```
+
+**Examples :**
+
+- `btac my/db.bib` : reads from `./my/db.bib`, writes to  `./my/db.btac.bib`
+- `btac -i db.bib` : reads from `db.bib` and overwrites it (inplace flag)
+- `btac db1.bib db2.bib -o out1.bib -o out2.bib` reads multiple files and write their outputs to `out1.bib` and `out2.bib` respectively
+
+
+**Optional arguments:**
+
+- `-o --output <file>`
+
+  Write output to given file. Can be used multiple times when also giving multiple inputs. Maps inputs to outputs in order in that case If there are extra inputs, use default name (`old_name.btac.bib`). Ignored in inplace (`-i`) mode.
+
+- `-q --only-query <site>` or `-Q --dont-query <site>`
+
+  Restrict which websites to query from. `<site>` must be one of: `crossref`, `dblp`, `researchr`, `unpaywall`. These arguments can be used multiple times, for example to only query crossref and dblp use `-q crossref -q dblp` or `-Q researchr -Q unpaywall`
+
+- `-e --only-entry <id>` or `-E --exclude-entry <id>`
+
+  Restrict which entries should be autocomplete. `<id>` is the entry id used in your bibtex file (e.g. `@inproceedings{<id> ... }`). These arguments can also be used multiple times to select only/exclude multiple entries
+
+- `-c --only-complete <field>` or `-C --dont-complete <field>`
+
+  Restrict which fields you wish to autocomplete. Field is a bibtex field (e.g. `author`, `doi`,...). So if you only wish to add missing doi's used `-c doi`.
+
+**Output formatting:**
+
+- `--fa --align-values` pad fieldnames to align all values
+
+  ```bibtex
+  @article{Example,
+    author = {Someone},
+    doi    = {10.xxxx/yyyyy},
+  }
+  ```
+
+- `--fc --comma-first` use comma first syntax
+
+  ```bibtex
+  @article{Example
+    , author = {Someone}
+    , doi = {10.xxxx/yyyyy}
+    ,
+  }
+  ```
+
+- `--fl --no-trailing-comma` don't add the last trailing comma
+- `--fi --indent <space>` space used for indentation, default is a tab
+
+**Flags:**
+- `-i --inplace` Modify input files inplace, ignores any specified output files
+- `-f --force-overwrite`  Overwrite already present fields. The default is to overwrite a field if it is empty or absent
+- `-t --timeout <float>` set timeout on request in seconds, default: 10.0 s, increase this if you are getting a lot of timeouts.
+
+- `-v --verbose` verbose mode shows more info. It details entries as they are being processed and shows a summary of new fields and their source at the end. Using it more then once prints debug info (up to three times).
+- `-s --silent` hide info and progressbar. Keep showing warnings and errors. Use twice to also hide warnings, thrice to also hide errors and four times to also hide critical error, effectively killing all output.
+- `-n --no-color` don't color use ansi codes to color and stylise output
+
+- `--version` show version number
+- `-h --help` show help

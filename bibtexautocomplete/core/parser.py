@@ -121,7 +121,7 @@ Polls the following databases:
         Field is a bibtex field (e.g. 'author', 'doi',...)
 
 {StBold}Output formatting:{Reset}
-  {FgYellow}--fa --align-values{Reset}        pad fieldnames to align all values)
+  {FgYellow}--fa --align-values{Reset}        pad fieldnames to align all values
   {FgYellow}--fc --comma-first{Reset}         comma first syntax (, title = ...)
   {FgYellow}--fl --no-trailing-comma{Reset}   don't add a last trailing comma
   {FgYellow}--fi --indent{Reset} {FgGreen}<space>{Reset}      space used for indentation, default is a tab
@@ -129,7 +129,7 @@ Polls the following databases:
 {StBold}Flags:{Reset}
   {FgYellow}-i --inplace{Reset}          Modify input files inplace
         ignores any specified output files
-  {FgYellow}-f --force-overwrite{Reset}  Overwrite aldready present fields
+  {FgYellow}-f --force-overwrite{Reset}  Overwrite already present fields
         The default is to overwrite a field if it is empty or absent
   {FgYellow}-t --timeout{Reset} {FgGreen}<float>{Reset}  set timeout on request, default: {TIMEOUT} s
 
