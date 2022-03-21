@@ -15,7 +15,6 @@ from ..bibtex.entry import BibtexEntry
 from ..bibtex.io import file_read, file_write, get_entries
 from ..bibtex.normalize import has_field
 from ..lookups.abstract_base import LookupType
-from ..utils.ansi import ansi_format
 from ..utils.constants import MAX_THREAD_NB, EntryType
 from ..utils.logger import VERBOSE_INFO, logger
 from .threads import LookupThread
@@ -106,12 +105,11 @@ class BibtexAutocomplete(Iterable[EntryType]):
         threads: List[LookupThread] = []
         with alive_bar(
             total,
-            title=ansi_format("{FgBlue}Querying databases:{FgReset}"),
+            title="Querying databases:",
             disable=no_progressbar,
             enrich_print=False,
-            receipt_text=True,
-            monitor=ansi_format("[{FgBlue}{{percent:.0%}}{FgReset}]"),
-            monitor_end=ansi_format("[ {FgBlue}{{percent:.0%}}{FgReset}]"),
+            monitor="[{percent:.0%}]",
+            monitor_end="[{percent:.0%}]",
             stats="(eta: {eta})",
             stats_end="",
         ) as bar:
@@ -150,7 +148,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                         entry=entry["ID"].ljust(padding),
                         nb=len(changes),
                     )
-                    bar.text = f"found {self.changed_fields} new fields"
+                    bar.text = f"{self.changed_fields} new fields"
                     position += 1
         logger.info(
             "Modified {changed_entries} / {count_entries} entries"
