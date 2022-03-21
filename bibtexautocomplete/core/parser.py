@@ -89,18 +89,18 @@ parser.add_argument("--help", "-h", action="store_true")
 parser.add_argument("--output", "-o", type=Path, action="append", default=[])
 parser.add_argument("input", nargs="*", type=Path, action="append", default=[])
 
-HELP_TEXT = """{StBold}{FgYellow}{NAME}{StBoldOff}{Reset} version {VERSION}
+HELP_TEXT = """{StBold}{FgYellow}{NAME}{Reset} version {VERSION}
 Program to autocomplete bibtex entries by searching online databases.
 Polls the following databases:
   {LOOKUPS}
 
 Usage:
-  {StBold}{FgYellow}{NAME}{StBoldOff}{Reset} {FgYellow}[--flags] <input_files>{Reset}
+  {StBold}{FgYellow}{NAME}{Reset} {FgYellow}[--flags] <input_files>{Reset}
 
 Example:
-  {StBold}{FgYellow}{NAME}{StBoldOff}{Reset} {FgYellow}my_bib.bib{Reset}         writes to my_bib.btac.bib
-  {StBold}{FgYellow}{NAME}{StBoldOff}{Reset} {FgYellow}-i my_bib.bib{Reset}      inplace modify
-  {StBold}{FgYellow}{NAME}{StBoldOff}{Reset} {FgYellow}a.bib -o b.bib c.bib -o d.bib{Reset}
+  {StBold}{FgYellow}{NAME}{Reset} {FgYellow}my_bib.bib{Reset}         writes to my_bib.btac.bib
+  {StBold}{FgYellow}{NAME}{Reset} {FgYellow}-i my_bib.bib{Reset}      inplace modify
+  {StBold}{FgYellow}{NAME}{Reset} {FgYellow}a.bib -o b.bib c.bib -o d.bib{Reset}
       writes completed a.bib in b.bib and c.bib in d.bib
 
 Optional arguments: can all be used multiple times
