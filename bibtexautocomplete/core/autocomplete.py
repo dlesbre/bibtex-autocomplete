@@ -36,7 +36,7 @@ def memoize(method: Callable[[T], Q]) -> Callable[[T], Q]:
     return new_method
 
 
-BULLET = "{FgBlue}{StBold}*{StBoldOff}{FgReset} "
+BULLET = "{FgBlue}{StBold}*{Reset} "
 
 
 class BibtexAutocomplete(Iterable[EntryType]):
@@ -192,13 +192,13 @@ class BibtexAutocomplete(Iterable[EntryType]):
             return None
         for entry, changes in self.changes:
             logger.verbose_info(
-                BULLET + "{StBold}{entry}{StBoldOff}:",
+                BULLET + "{StBold}{entry}{Reset}:",
                 entry=entry,
             )
             for field, value, source in changes:
                 logger.verbose_info(
-                    "    {FgBlue}{field}{FgReset} = {{{value}}},"
-                    " {FgGreen}{StItalics}% {source}{StItalicsOff}{FgReset}",
+                    "    {FgBlue}{field}{Reset} = {{{value}}},"
+                    " {FgGreen}{StItalics}% {source}{Reset}",
                     field=field,
                     value=value,
                     source=source,

@@ -123,7 +123,7 @@ class HTTPSLookup(AbstractDataLookup):
             delay = round(time() - start, 3)
             if self.response.status != HTTP_CODE_OK:
                 logger.warn(
-                    "response: {FgYellow}{status}{reason}{FgReset} in {delay}s",
+                    "response: {FgYellow}{status}{reason}{Reset} in {delay}s",
                     status=self.response.status,
                     reason=" " + self.response.reason if self.response.reason else "",
                     delay=delay,

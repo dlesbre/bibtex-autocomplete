@@ -60,7 +60,7 @@ class Logger:
         """Add thread name to message if not in main thread"""
         current = current_thread()
         if current is not main_thread():
-            message = "[{FgBlue}" + current.name + "{FgReset}] " + message
+            message = "[{FgBlue}" + current.name + "{Reset}] " + message
         return message
 
     def to_logger(self, level: int, message: str, *args, **kwargs) -> None:
@@ -73,20 +73,20 @@ class Logger:
     def warn(self, message: str, *args, **kwargs) -> None:
         """Issue a warning, extra arguments are formatter options"""
         self.to_logger(
-            logging.WARN, "{FgPurple}WARNING:{FgReset} " + message, *args, **kwargs
+            logging.WARN, "{FgPurple}WARNING:{Reset} " + message, *args, **kwargs
         )
 
     def error(self, message: str, *args, **kwargs) -> None:
         """Issue an error, extra arguments are formatter options"""
         self.to_logger(
-            logging.ERROR, "{FgRed}ERROR:{FgReset} " + message, *args, **kwargs
+            logging.ERROR, "{FgRed}ERROR:{Reset} " + message, *args, **kwargs
         )
 
     def critical(self, message: str, *args, **kwargs) -> None:
         """Issue a critical error, extra arguments are formatter options"""
         self.to_logger(
             logging.CRITICAL,
-            "{FgRed}CRITICAL ERROR:{FgReset} " + message,
+            "{FgRed}CRITICAL ERROR:{Reset} " + message,
             *args,
             **kwargs
         )
@@ -139,11 +139,11 @@ class Logger:
         """Shows a pretty header, 100% inspired by opam's output"""
         self.to_logger(level, "")  # newline
         title = (
-            "{FgBlue}===={FgReset} {StBold}"
+            "{FgBlue}===={Reset} {StBold}"
             + title
-            + "{StBoldOff} {FgBlue}"
+            + "{Reset} {FgBlue}"
             + ("=" * (74 - len(title)))
-            + "{FgReset}"
+            + "{Reset}"
         )
         self.to_logger(level, title)
 

@@ -89,53 +89,53 @@ parser.add_argument("--help", "-h", action="store_true")
 parser.add_argument("--output", "-o", type=Path, action="append", default=[])
 parser.add_argument("input", nargs="*", type=Path, action="append", default=[])
 
-HELP_TEXT = """{StBold}{FgYellow}{NAME}{StBoldOff}{FgReset} version {VERSION}
+HELP_TEXT = """{StBold}{FgYellow}{NAME}{StBoldOff}{Reset} version {VERSION}
 Program to autocomplete bibtex entries by searching online databases.
 Polls the following databases:
   {LOOKUPS}
 
 Usage:
-  {StBold}{FgYellow}{NAME}{StBoldOff}{FgReset} {FgYellow}[--flags] <input_files>{FgReset}
+  {StBold}{FgYellow}{NAME}{StBoldOff}{Reset} {FgYellow}[--flags] <input_files>{Reset}
 
 Example:
-  {StBold}{FgYellow}{NAME}{StBoldOff}{FgReset} {FgYellow}my_bib.bib{FgReset}         writes to my_bib.btac.bib
-  {StBold}{FgYellow}{NAME}{StBoldOff}{FgReset} {FgYellow}-i my_bib.bib{FgReset}      inplace modify
-  {StBold}{FgYellow}{NAME}{StBoldOff}{FgReset} {FgYellow}a.bib -o b.bib c.bib -o d.bib{FgReset}
+  {StBold}{FgYellow}{NAME}{StBoldOff}{Reset} {FgYellow}my_bib.bib{Reset}         writes to my_bib.btac.bib
+  {StBold}{FgYellow}{NAME}{StBoldOff}{Reset} {FgYellow}-i my_bib.bib{Reset}      inplace modify
+  {StBold}{FgYellow}{NAME}{StBoldOff}{Reset} {FgYellow}a.bib -o b.bib c.bib -o d.bib{Reset}
       writes completed a.bib in b.bib and c.bib in d.bib
 
 Optional arguments: can all be used multiple times
-  {FgYellow}-o --output{FgReset} {FgGreen}<file>{FgReset}          Write output to given file
+  {FgYellow}-o --output{Reset} {FgGreen}<file>{Reset}          Write output to given file
         With multiple input/outputs they are mapped in appearance order
         Extra inputs are dumped on stdout
 
-  {FgYellow}-q --only-query{FgReset} {FgGreen}<site>{FgReset}      Only query the given sites
-  {FgYellow}-Q --dont-query{FgReset} {FgGreen}<site>{FgReset}      Don't query the given sites
+  {FgYellow}-q --only-query{Reset} {FgGreen}<site>{Reset}      Only query the given sites
+  {FgYellow}-Q --dont-query{Reset} {FgGreen}<site>{Reset}      Don't query the given sites
         Site must be one of: {LOOKUPS}
 
-  {FgYellow}-e --only-entry{FgReset}    {FgGreen}<id>{FgReset}     Only perform lookup these entries
-  {FgYellow}-E --exclude-entry{FgReset} {FgGreen}<id>{FgReset}     Don't perform lookup these entries
+  {FgYellow}-e --only-entry{Reset}    {FgGreen}<id>{Reset}     Only perform lookup these entries
+  {FgYellow}-E --exclude-entry{Reset} {FgGreen}<id>{Reset}     Don't perform lookup these entries
         ID is the identifier in bibtex (e.g. @inproceedings{{<id> ... }})
 
-  {FgYellow}-c --only-complete{FgReset} {FgGreen}<field>{FgReset}  Only complete the given fields
-  {FgYellow}-C --dont-complete{FgReset} {FgGreen}<field>{FgReset}  Don't complete the given fields
+  {FgYellow}-c --only-complete{Reset} {FgGreen}<field>{Reset}  Only complete the given fields
+  {FgYellow}-C --dont-complete{Reset} {FgGreen}<field>{Reset}  Don't complete the given fields
         Field is a bibtex field (e.g. 'author', 'doi',...)
 
 Output formatting:
-  {FgYellow}--fa --align-values{FgReset}        pad fieldnames to align all values)
-  {FgYellow}--fc --comma-first{FgReset}         comma first syntax (, title = ...)
-  {FgYellow}--fl --no-trailing-comma{FgReset}   don't add a last trailing comma
-  {FgYellow}--fi --indent{FgReset} {FgGreen}<space>{FgReset}      space used for indentation, default is a tab
+  {FgYellow}--fa --align-values{Reset}        pad fieldnames to align all values)
+  {FgYellow}--fc --comma-first{Reset}         comma first syntax (, title = ...)
+  {FgYellow}--fl --no-trailing-comma{Reset}   don't add a last trailing comma
+  {FgYellow}--fi --indent{Reset} {FgGreen}<space>{Reset}      space used for indentation, default is a tab
 
 Flags:
-  {FgYellow}-i --inplace{FgReset}          Modify input files inplace
+  {FgYellow}-i --inplace{Reset}          Modify input files inplace
         ignores any specified output files
-  {FgYellow}-f --force-overwrite{FgReset}  Overwrite aldready present fields
+  {FgYellow}-f --force-overwrite{Reset}  Overwrite aldready present fields
         The default is to overwrite a field if it is empty or absent
-  {FgYellow}-t --timeout{FgReset} {FgGreen}<float>{FgReset}  set timeout on request, default: {TIMEOUT} s
+  {FgYellow}-t --timeout{Reset} {FgGreen}<float>{Reset}  set timeout on request, default: {TIMEOUT} s
 
-  {FgYellow}-v --verbose{FgReset}          increase verbosity (use up to 3 times)
-  {FgYellow}-s --silent{FgReset}           decrease verbosity (use up to 4 times)
-  {FgYellow}-n --no-color{FgReset}         don't color/stylise output
+  {FgYellow}-v --verbose{Reset}          increase verbosity (use up to 3 times)
+  {FgYellow}-s --silent{Reset}           decrease verbosity (use up to 4 times)
+  {FgYellow}-n --no-color{Reset}         don't color/stylise output
 
-  {FgYellow}--version{FgReset}             show version number
-  {FgYellow}-h --help{FgReset}             show this help"""
+  {FgYellow}--version{Reset}             show version number
+  {FgYellow}-h --help{Reset}             show this help"""

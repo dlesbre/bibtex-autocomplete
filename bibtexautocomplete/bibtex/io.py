@@ -35,7 +35,7 @@ def read(bibtex: str, src: str = "") -> BibDatabase:
     except UndefinedString as err:
         src = " '" + src + "'" if src else ""
         logger.critical(
-            "Failed to parse bibtex{src}: {FgPurple}undefined string{FgReset} '{err}'",
+            "Failed to parse bibtex{src}: {FgPurple}undefined string{Reset} '{err}'",
             src=src,
             err=err,
         )
@@ -56,7 +56,7 @@ def file_write(filepath, database: BibDatabase) -> bool:
             file.write(output)
     except IOError as err:
         logger.error(
-            "Failed to write to '{filepath}' : {FgPurple}{err}{FgReset}",
+            "Failed to write to '{filepath}' : {FgPurple}{err}{Reset}",
             filepath=str(filepath),
             err=err,
         )
@@ -72,7 +72,7 @@ def file_read(filepath) -> BibDatabase:
             bibtex = file.read()
     except IOError as err:
         logger.critical(
-            "Failed to read '{filepath}': {FgPurple}{err}{FgReset}",
+            "Failed to read '{filepath}': {FgPurple}{err}{Reset}",
             filepath=str(filepath),
             err=err,
         )
