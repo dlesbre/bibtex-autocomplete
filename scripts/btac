@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
 
-from bibtexautocomplete import main
+from bibtexautocomplete.core.main import main
 
 main()

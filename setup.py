@@ -21,7 +21,7 @@ setup(
     scripts=["scripts/btac"],
     install_requires=[
         "bibtexparser",
-        "alive-progress @ git+https://github.com/dlesbre/alive-progress.git",
+        "alive-progress",
     ],
     extras_require={
         "dev": ["pre-commit", "pytest", "mypy", "black", "flake8", "isort"],

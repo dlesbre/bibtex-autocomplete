@@ -7,7 +7,8 @@ from sys import stderr, stdout
 from threading import current_thread, main_thread
 
 from .ansi import ansi_format
-from .constants import NAME
+
+# from .constants import NAME
 
 
 class LevelFilter(logging.Filter):
@@ -41,7 +42,7 @@ class Logger:
 
     def __init__(self):
         # create logger
-        self.logger = logging.getLogger(NAME)
+        self.logger = logging.root  # logging.getLogger(NAME)
         # Errors got to STDERR
         self.error_handler = logging.StreamHandler(stderr)
         self.error_handler.addFilter(LevelFilter(logging.WARN, logging.CRITICAL))
