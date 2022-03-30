@@ -77,7 +77,8 @@ class UnpaywallLookup(JSON_DT_Lookup):
         if date is not None:
             if year is None and len(date) >= 4:
                 year = date[0:4]
-            if len(date) >= 7:
+            # Unknown month are set to first january...
+            if date[4:] != "-01-01" and len(date) >= 7:
                 month = date[5:7]
         values = BibtexEntry()
 

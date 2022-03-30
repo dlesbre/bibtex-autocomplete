@@ -1,5 +1,9 @@
 # Change Log
 
+## Version ??? - Not yet released
+
+- Fixed unpaywall setting unknown months to 1.
+
 ## Version 1.0.2 - 2022-03-21
 
 - Fixed missing submodules in upload
