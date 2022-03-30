@@ -11,7 +11,7 @@ class SearchEval(AbstractLookup):
     index: int = 0
     expected: List[Dict[str, Optional[str]]] = []
 
-    def query(self):
+    def query(self) -> Optional[BibtexEntry]:
         test = self.expected[self.index]
         if "doi" in test:
             assert getattr(self, "doi") == test["doi"]
@@ -23,27 +23,30 @@ class SearchEval(AbstractLookup):
         return None
 
 
+Expected = List[Dict[str, Optional[str]]]
+
+
 class TestDATQuery:
     class parent(DATQueryMixin, SearchEval):
-        def __repr__(self):
+        def __repr__(self) -> str:
             return f"<doi:{self.doi}; author:{self.author}; title:{self.title}>"
 
-    def make_query(self, expected, entry):
+    def make_query(self, expected: Expected, entry: Dict[str, str]) -> None:
         p = self.parent(BibtexEntry(entry))
         p.index = 0
         p.expected = expected
         assert p.query() is None
         assert p.index == len(p.expected)
 
-    def test_empty(self):
+    def test_empty(self) -> None:
         self.make_query([], {})
 
-    def test_all(self):
+    def test_all(self) -> None:
         title = "This is a title"
         authors = ["Alp", "Rom", "Bob"]
         doi = "10.1234/123456"
         entry = {"doi": doi, "author": " and ".join(authors), "title": title}
-        expected = [
+        expected: Expected = [
             {"doi": doi, "author": " ".join(authors), "title": title},
             {"doi": None, "author": " ".join(authors), "title": title},
             {"doi": None, "author": authors[0], "title": title},
@@ -53,7 +56,7 @@ class TestDATQuery:
         ]
         self.make_query(expected, entry)
 
-    def test_no_doi(self):
+    def test_no_doi(self) -> None:
         title = "This is a title"
         authors = ["Alp", "Rom", "Bob"]
         # doi = "10.1234/123456"
@@ -62,7 +65,7 @@ class TestDATQuery:
             "author": " and ".join(authors),
             "title": title,
         }
-        expected = [
+        expected: Expected = [
             # {"doi":doi, "author": " ".join(authors), "title": title},
             {"doi": None, "author": " ".join(authors), "title": title},
             {"doi": None, "author": authors[0], "title": title},
@@ -72,7 +75,7 @@ class TestDATQuery:
         ]
         self.make_query(expected, entry)
 
-    def test_no_author(self):
+    def test_no_author(self) -> None:
         title = "This is a title"
         # authors = ["Alp", "Rom", "Bob"]
         doi = "10.1234/123456"
@@ -81,7 +84,7 @@ class TestDATQuery:
             # "author": " and ".join(authors),
             "title": title,
         }
-        expected = [
+        expected: Expected = [
             {"doi": doi, "author": None, "title": title},
             # {"doi":None, "author": " ".join(authors), "title": title},
             # {"doi":None, "author": authors[0], "title": title},
@@ -91,7 +94,7 @@ class TestDATQuery:
         ]
         self.make_query(expected, entry)
 
-    def test_no_title(self):
+    def test_no_title(self) -> None:
         # title = "This is a title"
         authors = ["Alp", "Rom", "Bob"]
         doi = "10.1234/123456"
@@ -100,7 +103,7 @@ class TestDATQuery:
             "author": " and ".join(authors),
             # "title": title
         }
-        expected = [
+        expected: Expected = [
             {"doi": doi, "author": " ".join(authors), "title": None},
             # {"doi":None, "author": " ".join(authors), "title": title},
             # {"doi":None, "author": authors[0], "title": title},
@@ -110,7 +113,7 @@ class TestDATQuery:
         ]
         self.make_query(expected, entry)
 
-    def test_no_doi_author(self):
+    def test_no_doi_author(self) -> None:
         title = "This is a title"
         # authors = ["Alp", "Rom", "Bob"]
         # doi = "10.1234/123456"
@@ -119,7 +122,7 @@ class TestDATQuery:
             # "author": " and ".join(authors),
             "title": title
         }
-        expected = [
+        expected: Expected = [
             # {"doi":doi, "author": " ".join(authors), "title": None},
             # {"doi":None, "author": " ".join(authors), "title": title},
             # {"doi":None, "author": authors[0], "title": title},
@@ -132,50 +135,50 @@ class TestDATQuery:
 
 class TestDTQuery:
     class parent(DTQueryMixin, SearchEval):
-        def __repr__(self):
+        def __repr__(self) -> str:
             return f"<doi:{self.doi}; title:{self.title}>"
 
-    def make_query(self, expected, entry):
+    def make_query(self, expected: Expected, entry: Dict[str, str]) -> None:
         p = self.parent(BibtexEntry(entry))
         p.index = 0
         p.expected = expected
         assert p.query() is None
         assert p.index == len(p.expected)
 
-    def test_empty(self):
+    def test_empty(self) -> None:
         self.make_query([], {})
 
-    def test_all(self):
+    def test_all(self) -> None:
         title = "This is a title"
         doi = "10.1234/123456"
         entry = {"doi": doi, "title": title}
-        expected = [
+        expected: Expected = [
             {"doi": doi, "title": title},
             {"doi": None, "title": title},
         ]
         self.make_query(expected, entry)
 
-    def test_no_doi(self):
+    def test_no_doi(self) -> None:
         title = "This is a title"
         # doi = "10.1234/123456"
         entry = {
             # "doi":doi,
             "title": title,
         }
-        expected = [
+        expected: Expected = [
             # {"doi":doi, "title": title},
             {"doi": None, "title": title},
         ]
         self.make_query(expected, entry)
 
-    def test_no_title(self):
+    def test_no_title(self) -> None:
         # title = "This is a title"
         doi = "10.1234/123456"
         entry = {
             "doi": doi,
             # "title": title
         }
-        expected = [
+        expected: Expected = [
             {"doi": doi, "title": None},
             # {"doi":None, "title": title},
         ]
@@ -185,11 +188,11 @@ class TestDTQuery:
 class ConditionEval(AbstractLookup):
     queried: bool
 
-    def __init__(self, entry: BibtexEntry):
+    def __init__(self, entry: BibtexEntry) -> None:
         self.queried = False
         super().__init__(entry)
 
-    def query(self):
+    def query(self) -> Optional[BibtexEntry]:
         self.queried = True
         return None
 
@@ -202,21 +205,21 @@ class TestCondition:
             FieldNames.AUTHOR,
         }
 
-    def run(self, entry: Dict[str, str], expected: bool):
+    def run(self, entry: Dict[str, str], expected: bool) -> None:
         p = self.parent(BibtexEntry(entry))
         p.query()
         assert p.queried == expected
 
-    def test_empty(self):
+    def test_empty(self) -> None:
         self.run({}, True)
         self.run({"junk": "junk", "more junk": "more junk"}, True)
 
-    def test_full(self):
+    def test_full(self) -> None:
         self.run(
             {"doi": "10.1234/1234", "title": "A Title", "author": "John Jones"}, False
         )
 
-    def test_partial(self):
+    def test_partial(self) -> None:
         self.run(
             {
                 # "doi":"10.1234/1234",
@@ -242,14 +245,14 @@ class TestCondition:
             True,
         )
 
-    def test_invalid(self):
+    def test_invalid(self) -> None:
         self.run({"doi": "", "title": "A Title", "author": "John Jones"}, True)
         self.run({"doi": "10.1234/1234", "title": "A Title", "author": "{}"}, True)
         self.run(
             {"doi": "10.1234/1234", "title": "A Title", "author": "{{}{{}}}"}, True
         )
 
-    def test_filter(self):
+    def test_filter(self) -> None:
         old = self.parent.fields_to_complete
         self.parent.fields_to_complete = {
             FieldNames.DOI,

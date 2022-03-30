@@ -3,7 +3,7 @@ Wraps around bibtexparser's entry representations for safer access
 and field normalization
 """
 
-from typing import Iterator, List, Optional, Set, Tuple
+from typing import Any, Iterator, List, Optional, Set, Tuple
 
 from ..utils.constants import EntryType
 from .author import Author
@@ -116,7 +116,7 @@ class BibtexEntry:
         else:
             self._entry = entry.copy()
 
-    def __getattribute__(self, attr_name: str):
+    def __getattribute__(self, attr_name: str) -> Any:
         """Performs checks when returning Bibtex fields"""
         if attr_name in FieldNamesSet:
             if attr_name in SpecialFields:
@@ -124,11 +124,12 @@ class BibtexEntry:
             return get_field(self._entry, attr_name)
         return super().__getattribute__(attr_name)
 
-    def __setattr__(self, attr_name: str, value):
+    def __setattr__(self, attr_name: str, value: Any) -> None:
         """Performs checks when returning Bibtex fields"""
         if attr_name in FieldNamesSet:
             if attr_name in SpecialFields:
-                return super().__getattribute__("set_" + attr_name)(value)
+                super().__getattribute__("set_" + attr_name)(value)
+                return None
             elif not has_data(value):
                 # Delete attribute
                 if attr_name in self._entry:
@@ -136,7 +137,7 @@ class BibtexEntry:
             else:
                 self._entry[attr_name] = value
             return None
-        return super().__setattr__(attr_name, value)
+        super().__setattr__(attr_name, value)
 
     def __delattr__(self, attr_name: str) -> None:
         if attr_name in FieldNamesSet:
@@ -145,7 +146,7 @@ class BibtexEntry:
             return
         return super().__delattr__(attr_name)
 
-    def __contains__(self, field) -> bool:
+    def __contains__(self, field: str) -> bool:
         """Is the given field non empty in this entry?"""
         return field in FieldNamesSet and has_field(self._entry, field)
 

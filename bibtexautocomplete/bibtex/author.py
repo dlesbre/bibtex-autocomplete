@@ -2,7 +2,7 @@
 A class to represent author/editor names and read/write them to valid bibtex
 """
 
-from typing import List, Optional
+from typing import Any, List, Optional
 
 AUTHOR_JOIN = " and "
 
@@ -29,8 +29,10 @@ class Author:
     def list_to_bibtex(authors: "List[Author]") -> str:
         return AUTHOR_JOIN.join(author.to_bibtex() for author in authors)
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any) -> bool:
         "Used in test only"
+        if not isinstance(other, Author):
+            return False
         return self.firstnames == other.firstnames and self.lastname == other.lastname
 
     @staticmethod

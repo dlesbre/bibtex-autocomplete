@@ -1,5 +1,7 @@
 """Tests for functions/classes in bibtexautcomplete/defs"""
 
+from typing import List
+
 import pytest
 
 from bibtexautocomplete.utils.only_exclude import OnlyExclude
@@ -14,9 +16,9 @@ tests = [
 
 
 @pytest.mark.parametrize(("test", "glob"), tests)
-def test_OnlyExclude_only(test, glob):
+def test_OnlyExclude_only(test: List[int], glob: List[int]) -> None:
     a = OnlyExclude(test, None)
-    b = OnlyExclude.from_nonempty(test, [])
+    b = OnlyExclude[int].from_nonempty(test, [])
     for i in glob + test:
         if i in test:
             assert i in a
@@ -35,9 +37,9 @@ def test_OnlyExclude_only(test, glob):
 
 
 @pytest.mark.parametrize(("test", "glob"), tests)
-def test_OnlyExclude_exclude(test, glob):
+def test_OnlyExclude_exclude(test: List[int], glob: List[int]) -> None:
     a = OnlyExclude(None, test)
-    b = OnlyExclude.from_nonempty([], test)
+    b = OnlyExclude[int].from_nonempty([], test)
     for i in glob + test:
         if i in test:
             assert i not in a
@@ -53,7 +55,7 @@ def test_OnlyExclude_exclude(test, glob):
     assert list(a.filter(glob, lambda x: x)) == res
 
 
-def test_SafeJSON():
+def test_SafeJSON() -> None:
     a = SafeJSON({"a": 5, "b": "bonjour", "c": [1, 2, {"3": 5, "4": [True, False]}]})
     assert a[0].value is None
     assert a["a"].to_int() == 5

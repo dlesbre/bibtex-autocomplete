@@ -85,7 +85,7 @@ def normalize_doi(doi_or_url: Optional[str]) -> Optional[str]:
     return None
 
 
-def months_format(month: int, format: str):
+def months_format(month: int, format: str) -> str:
     """Localized month format"""
     return date(2001, month, 1).strftime(format)
 

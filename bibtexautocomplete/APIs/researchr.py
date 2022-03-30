@@ -35,7 +35,7 @@ class ResearchrLookup(JSON_AT_Lookup):
             search += self.title + " "
         return self.path + quote_plus(search.strip())
 
-    def get_results(self, data) -> Iterable[SafeJSON]:
+    def get_results(self, data: bytes) -> Iterable[SafeJSON]:
         """Return the result list"""
         return SafeJSON.from_bytes(data)["result"].iter_list()
 

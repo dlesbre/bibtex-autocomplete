@@ -34,7 +34,7 @@ class DBLPLookup(JSON_AT_Lookup):
             search += self.title + " "
         return {"format": "json", "h": "3", "q": search.strip()}
 
-    def get_results(self, data) -> Iterable[SafeJSON]:
+    def get_results(self, data: bytes) -> Iterable[SafeJSON]:
         """Return the result list"""
         return SafeJSON.from_bytes(data)["result"]["hits"]["hit"].iter_list()
 

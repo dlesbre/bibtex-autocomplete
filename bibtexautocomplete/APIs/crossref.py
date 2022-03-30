@@ -52,7 +52,7 @@ class CrossrefLookup(JSON_DAT_Lookup):
         except ValueError or ZeroDivisionError:
             return None
 
-    def get_results(self, data) -> Optional[Iterable[SafeJSON]]:
+    def get_results(self, data: bytes) -> Optional[Iterable[SafeJSON]]:
         """Return the result list"""
         json = SafeJSON.from_bytes(data)
         if json["status"].to_str() == "ok":

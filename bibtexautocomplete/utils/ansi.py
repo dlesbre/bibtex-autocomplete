@@ -2,6 +2,8 @@
 ANSI escape sequence for colors and styles
 """
 
+from typing import Any
+
 
 class ANSICodes:
 
@@ -73,7 +75,7 @@ class ANSICodes:
     EmptyCodes = {attr: "" for attr in Codes}
 
     @classmethod
-    def ansi_format(cls, string: str, *args, **kwargs) -> str:
+    def ansi_format(cls, string: str, *args: Any, **kwargs: Any) -> str:
         """Return the string formatted with args and kwargs,
         adding the color formatters"""
         codes = cls.Codes

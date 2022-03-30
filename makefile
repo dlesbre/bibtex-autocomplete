@@ -77,7 +77,7 @@ test: ## Run all tests
 .PHONY: mypy
 mypy: ## Typecheck all files
 	$(call print,Running mypy)
-	$(MYPY) ./bibtexautocomplete/ ./tests/
+	$(MYPY) --strict ./bibtexautocomplete/ ./tests ./setup.py
 
 .PHONY: flake8
 flake8: ## Run flake8 on all files

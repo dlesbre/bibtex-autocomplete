@@ -14,5 +14,5 @@ test = [
 
 
 @pytest.mark.parametrize(("input", "expected"), test)
-def test_make_output_name(input, expected):
+def test_make_output_name(input: str, expected: str) -> None:
     assert str(make_output_name(Path(input))) == str(Path(expected))

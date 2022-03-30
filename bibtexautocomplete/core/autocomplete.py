@@ -6,7 +6,7 @@ main class used to manage calls to different lookups
 from functools import reduce
 from pathlib import Path
 from threading import Condition
-from typing import Callable, Container, Iterable, Iterator, List, Tuple, TypeVar
+from typing import Callable, Container, Iterable, Iterator, List, Tuple, TypeVar, cast
 
 from alive_progress import alive_bar  # type: ignore
 from bibtexparser.bibdatabase import BibDatabase
@@ -28,10 +28,10 @@ def memoize(method: Callable[[T], Q]) -> Callable[[T], Q]:
     as an attribute"""
     attribute = "_memoize_" + method.__name__
 
-    def new_method(self):
+    def new_method(self: T) -> Q:
         if not hasattr(self, attribute):
             setattr(self, attribute, method(self))
-        return getattr(self, attribute)
+        return cast(Q, getattr(self, attribute))
 
     return new_method
 
@@ -93,7 +93,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
             max((len(entry["ID"]) + 1 for entry in self), default=0), max_id_padding
         )
 
-    def autocomplete(self, no_progressbar=False) -> None:
+    def autocomplete(self, no_progressbar: bool = False) -> None:
         """Main function that does all the work
         Iterate through entries, performing all lookups"""
         logger.header("Completing entries")

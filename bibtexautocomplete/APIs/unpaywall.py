@@ -51,7 +51,7 @@ class UnpaywallLookup(JSON_DT_Lookup):
             return base + self.doi + params
         return base + "search/" + params
 
-    def get_results(self, data) -> Optional[Iterable[SafeJSON]]:
+    def get_results(self, data: bytes) -> Optional[Iterable[SafeJSON]]:
         json = SafeJSON.from_bytes(data)
         if self.doi is not None:
             # doi based search, single result if any

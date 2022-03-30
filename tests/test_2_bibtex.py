@@ -1,3 +1,6 @@
+from pathlib import Path
+from typing import List
+
 import pytest
 
 from bibtexautocomplete.bibtex.author import Author
@@ -32,7 +35,7 @@ tests = [
 
 
 @pytest.mark.parametrize(("inp", "out"), tests)
-def test_normalize_str_weak(inp, out):
+def test_normalize_str_weak(inp: str, out: str) -> None:
     assert normalize_str_weak(inp) == out
 
 
@@ -47,11 +50,11 @@ tests = [
 
 
 @pytest.mark.parametrize(("inp", "out"), tests)
-def test_normalize_str(inp, out):
+def test_normalize_str(inp: str, out: str) -> None:
     assert normalize_str(inp) == out
 
 
-def test_normalize_doi():
+def test_normalize_doi() -> None:
     doi = [
         "10.1000/123456",
         "10.1038/issn.1476-4687",
@@ -64,7 +67,7 @@ def test_normalize_doi():
             assert normalize_doi(p + d) == d
 
 
-def test_normalize_month():
+def test_normalize_month() -> None:
     for month, norm in EN_MONTHS.items():
         assert normalize_month(month) == str(norm)
     for month in ("bla", "not.a.month", "6496489", "#!!0"):
@@ -72,20 +75,20 @@ def test_normalize_month():
 
 
 def io_test(file: str) -> None:
-    db = file_read(file)
+    db = file_read(Path(file))
     write(db)
 
 
-def test_case():
-    db = file_read("tests/test_0.bib")
+def test_case() -> None:
+    db = file_read(Path("tests/test_0.bib"))
     assert "author" in db.entries[0]
 
 
-def test_io_0():
+def test_io_0() -> None:
     io_test("tests/test_0.bib")
 
 
-def test_io_1():
+def test_io_1() -> None:
     io_test("tests/test_1.bib")
 
 
@@ -100,11 +103,11 @@ authors = [
 
 
 @pytest.mark.parametrize(("author", "res"), authors)
-def test_get_authors(author, res):
+def test_get_authors(author: str, res: List[Author]) -> None:
     assert Author.from_namelist(author) == res
 
 
-def test_BibtexEntry_normal():
+def test_BibtexEntry_normal() -> None:
     a = BibtexEntry()
     for field in FieldNamesSet - SpecialFields:
         assert getattr(a, field) is None
@@ -113,7 +116,7 @@ def test_BibtexEntry_normal():
         assert getattr(a, field) == field
 
 
-def test_BibtexEntry_special():
+def test_BibtexEntry_special() -> None:
     a = BibtexEntry({})
     for field in SpecialFields:
         val = getattr(a, field)
@@ -126,33 +129,33 @@ def test_BibtexEntry_special():
 
 
 @pytest.mark.parametrize(("author", "res"), authors)
-def test_BibtexEntry_author_get(author, res):
+def test_BibtexEntry_author_get(author: str, res: List[Author]) -> None:
     b = BibtexEntry({FieldNames.AUTHOR: author})
     assert b.author == res
 
 
 @pytest.mark.parametrize(("author", "res"), authors)
-def test_BibtexEntry_editor_get(author, res):
+def test_BibtexEntry_editor_get(author: str, res: List[Author]) -> None:
 
     b = BibtexEntry({FieldNames.EDITOR: author})
     assert b.editor == res
 
 
 @pytest.mark.parametrize(("author", "res"), authors)
-def test_BibtexEntry_author_set(author, res):
+def test_BibtexEntry_author_set(author: str, res: List[Author]) -> None:
     b = BibtexEntry()
     b.author = res
     assert b.author == res
 
 
 @pytest.mark.parametrize(("author", "res"), authors)
-def test_BibtexEntry_editor_set(author, res):
+def test_BibtexEntry_editor_set(author: str, res: List[Author]) -> None:
     b = BibtexEntry()
     b.editor = res
     assert b.editor == res
 
 
-def test_matching():
+def test_matching() -> None:
     assert match_score(BibtexEntry(), BibtexEntry()) == ENTRY_NO_MATCH
     doi1 = BibtexEntry({"doi": "10.1234/12345"})
     doi2 = BibtexEntry({"doi": "10.1234/different.12345"})

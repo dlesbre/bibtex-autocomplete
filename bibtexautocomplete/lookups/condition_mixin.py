@@ -44,7 +44,7 @@ class FieldConditionMixin(ConditionMixin, AbstractEntryLookup):
 
     fields_to_complete: Set[str] = SearchedFields
 
-    def condition(self):
+    def condition(self) -> bool:
         """Only return True if there exists a field in self.fields
         that is not in self.entry"""
         for field in self.fields.intersection(self.fields_to_complete):

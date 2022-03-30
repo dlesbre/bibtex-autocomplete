@@ -4,16 +4,19 @@ a list of contained elements or a list of excluded elements
 """
 
 
-from typing import Callable, Container, Iterable, Optional, Sized, TypeVar
+from typing import Callable, Container, Iterable, Optional, Protocol, Sized, TypeVar
 
-T = TypeVar("T")
-Q = TypeVar("Q")
+U = TypeVar("U", covariant=True)
 
 
-class SizedContainer(Sized, Container[T]):
+class SizedContainer(Protocol, Sized, Container[U]):
     """Type hint for containers that define __len__"""
 
     pass
+
+
+T = TypeVar("T")
+Q = TypeVar("Q")
 
 
 class OnlyExclude(Container[T]):
@@ -27,7 +30,7 @@ class OnlyExclude(Container[T]):
     nots: Optional[Container[T]]
 
     def __init__(
-        self, onlys=Optional[Container[T]], nots=Optional[Container[T]]
+        self, onlys: Optional[Container[T]], nots: Optional[Container[T]]
     ) -> None:
         """Create a new instance with onlys or nots.
         If both are specified, onlys takes precedence.

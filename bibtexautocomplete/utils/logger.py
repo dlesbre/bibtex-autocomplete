@@ -5,19 +5,21 @@ Defining and configuring the logger
 import logging
 from sys import stderr, stdout
 from threading import current_thread, main_thread
+from typing import Any
 
 from .ansi import ansi_format
 
 # from .constants import NAME
+Level = int
 
 
 class LevelFilter(logging.Filter):
-    def __init__(self, low, high):
+    def __init__(self, low: Level, high: Level):
         self._low = low
         self._high = high
         logging.Filter.__init__(self)
 
-    def filter(self, record):
+    def filter(self, record: logging.LogRecord) -> bool:
         if self._low <= record.levelno <= self._high:
             return True
         return False
@@ -35,12 +37,10 @@ DEFAULT_LEVEL = logging.INFO
 class Logger:
 
     logger: logging.Logger
-    error_handler: logging.StreamHandler
-    info_handler: logging.StreamHandler
 
     has_written: bool = False
 
-    def __init__(self):
+    def __init__(self) -> None:
         # create logger
         self.logger = logging.root  # logging.getLogger(NAME)
         # Errors got to STDERR
@@ -64,26 +64,26 @@ class Logger:
             message = "[{FgBlue}" + current.name + "{Reset}] " + message
         return message
 
-    def to_logger(self, level: int, message: str, *args, **kwargs) -> None:
+    def to_logger(self, level: int, message: str, *args: Any, **kwargs: Any) -> None:
         """Formats a message (with given args and ansi colors)
         and sends it to the logger with the given level"""
         message = ansi_format(self.add_thread_info(message), *args, **kwargs)
         self.logger.log(level=level, msg=message)
         self.has_written = True
 
-    def warn(self, message: str, *args, **kwargs) -> None:
+    def warn(self, message: str, *args: Any, **kwargs: Any) -> None:
         """Issue a warning, extra arguments are formatter options"""
         self.to_logger(
             logging.WARN, "{FgPurple}WARNING:{Reset} " + message, *args, **kwargs
         )
 
-    def error(self, message: str, *args, **kwargs) -> None:
+    def error(self, message: str, *args: Any, **kwargs: Any) -> None:
         """Issue an error, extra arguments are formatter options"""
         self.to_logger(
             logging.ERROR, "{FgRed}ERROR:{Reset} " + message, *args, **kwargs
         )
 
-    def critical(self, message: str, *args, **kwargs) -> None:
+    def critical(self, message: str, *args: Any, **kwargs: Any) -> None:
         """Issue a critical error, extra arguments are formatter options"""
         self.to_logger(
             logging.CRITICAL,
@@ -92,23 +92,23 @@ class Logger:
             **kwargs
         )
 
-    def info(self, message: str, *args, **kwargs) -> None:
+    def info(self, message: str, *args: Any, **kwargs: Any) -> None:
         """Show info, extra arguments are formatter options"""
         self.to_logger(logging.INFO, message, *args, **kwargs)
 
-    def verbose_info(self, message: str, *args, **kwargs) -> None:
+    def verbose_info(self, message: str, *args: Any, **kwargs: Any) -> None:
         """Show info when verbose, extra arguments are formatter options"""
         self.to_logger(VERBOSE_INFO, message, *args, **kwargs)
 
-    def debug(self, message: str, *args, **kwargs) -> None:
+    def debug(self, message: str, *args: Any, **kwargs: Any) -> None:
         """Show debug info, extra arguments are formatter options"""
         self.to_logger(logging.DEBUG, message, *args, **kwargs)
 
-    def verbose_debug(self, message: str, *args, **kwargs) -> None:
+    def verbose_debug(self, message: str, *args: Any, **kwargs: Any) -> None:
         """Show very verbose debug info, extra arguments are formatter options"""
         self.to_logger(VERBOSE_DEBUG, message, *args, **kwargs)
 
-    def set_level(self, level: int) -> None:
+    def set_level(self, level: Level) -> None:
         """Set the logger's level, using logging's level values"""
         self.logger.setLevel(level)
 
@@ -136,7 +136,7 @@ class Logger:
             verbosity = mini
         self.set_level(self.verbosity[verbosity])
 
-    def header(self, title: str, level: int = logging.INFO) -> None:
+    def header(self, title: str, level: Level = logging.INFO) -> None:
         """Shows a pretty header, 100% inspired by opam's output"""
         self.to_logger(level, "")  # newline
         title = (

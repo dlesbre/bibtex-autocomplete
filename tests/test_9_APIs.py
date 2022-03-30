@@ -42,21 +42,21 @@ class Base:
     Lookup: LookupType
     entry = (entry2, doi2)
 
-    def test_valid(self):
+    def test_valid(self) -> None:
         a = self.Lookup(BibtexEntry(self.entry[0]))
         res = a.query()
         assert res is not None
         assert res.doi == self.entry[1]
 
-    def test_junk(self):
+    def test_junk(self) -> None:
         a = self.Lookup(BibtexEntry(entry_junk))
         assert a.query() is None
 
-    def test_invalid(self):
+    def test_invalid(self) -> None:
         a = CrossrefLookup(BibtexEntry(entry_invalid))
         assert a.query() is None
 
-    def test_no_author(self):
+    def test_no_author(self) -> None:
         entry = self.entry[0].copy()
         del entry["author"]
         del entry["plain_author"]
@@ -65,7 +65,7 @@ class Base:
         assert res is not None
         assert res.doi == self.entry[1]
 
-    def test_no_title(self):
+    def test_no_title(self) -> None:
         entry = self.entry[0].copy()
         del entry["title"]
         del entry["plain_title"]

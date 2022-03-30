@@ -15,4 +15,12 @@ LOOKUPS: List[LookupType] = [
 ]
 LOOKUP_NAMES = [cls.name for cls in LOOKUPS]
 
-__all__ = ("LookupType", "LOOKUPS", "LOOKUP_NAMES")
+__all__ = (
+    "LookupType",
+    "LOOKUPS",
+    "LOOKUP_NAMES",
+    "CrossrefLookup",
+    "DBLPLookup",
+    "ResearchrLookup",
+    "UnpaywallLookup",
+)

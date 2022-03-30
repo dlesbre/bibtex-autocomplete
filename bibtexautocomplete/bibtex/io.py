@@ -2,7 +2,8 @@
 Wraps around bibtexparser to provider parser/writer primitives
 """
 
-from typing import List
+from pathlib import Path
+from typing import List, cast
 
 from bibtexparser.bibdatabase import BibDatabase, UndefinedString
 from bibtexparser.bparser import BibTexParser
@@ -25,7 +26,7 @@ writer.display_order = ("title", "author")
 
 def write(database: BibDatabase) -> str:
     """Transform the database to a bibtex string"""
-    return writer.write(database).strip() + "\n"
+    return cast(str, writer.write(database).strip() + "\n")
 
 
 def read(bibtex: str, src: str = "") -> BibDatabase:
@@ -45,7 +46,7 @@ def read(bibtex: str, src: str = "") -> BibDatabase:
     return database
 
 
-def file_write(filepath, database: BibDatabase) -> bool:
+def file_write(filepath: Path, database: BibDatabase) -> bool:
     """Writes database to given file, stdout if None"""
     output = write(database)
     if filepath is None:
@@ -64,7 +65,7 @@ def file_write(filepath, database: BibDatabase) -> bool:
     return True
 
 
-def file_read(filepath) -> BibDatabase:
+def file_read(filepath: Path) -> BibDatabase:
     """reads the given file, parses and normalizes it"""
     # Read and parse the file
     try:
@@ -82,4 +83,4 @@ def file_read(filepath) -> BibDatabase:
 
 def get_entries(db: BibDatabase) -> List[EntryType]:
     """Get entries from a bibdatabase"""
-    return db.entries
+    return list(db.entries)
