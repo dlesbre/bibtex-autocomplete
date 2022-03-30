@@ -2,8 +2,11 @@
 
 ## Version ??? - Not yet released
 
+- Clarify response priorities
 - Fixed unpaywall setting unknown months to 1
 - Switch to strict mypy typechecking
+- Unsupport python 3.6 as alive-progress dropped it
+- Switch back to custom logger
 
 ## Version 1.0.2 - 2022-03-21
 

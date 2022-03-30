@@ -8,8 +8,8 @@ from threading import current_thread, main_thread
 from typing import Any
 
 from .ansi import ansi_format
+from .constants import NAME
 
-# from .constants import NAME
 Level = int
 
 
@@ -42,7 +42,7 @@ class Logger:
 
     def __init__(self) -> None:
         # create logger
-        self.logger = logging.root  # logging.getLogger(NAME)
+        self.logger = logging.getLogger(NAME)
         # Errors got to STDERR
         self.error_handler = logging.StreamHandler(stderr)
         self.error_handler.addFilter(LevelFilter(logging.WARN, logging.CRITICAL))

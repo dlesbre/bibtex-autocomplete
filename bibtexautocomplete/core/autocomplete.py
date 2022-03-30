@@ -132,7 +132,8 @@ class BibtexAutocomplete(Iterable[EntryType]):
                     # else update entry with the results
                     changes: List[Tuple[str, str, str]] = []
                     entry = entries[position]
-                    for thread in threads:
+                    iterator = reversed(threads) if self.force_overwrite else threads
+                    for thread in iterator:
                         result = thread.result[position]
                         if result is not None:
                             changes.extend(

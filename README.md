@@ -8,7 +8,7 @@
 [![Downloads](https://pepy.tech/badge/bibtexautocomplete)](https://pepy.tech/project/bibtexautocomplete)
 
 
-This repository contains a python package to autocomplete bibtex bibliographies.
+**bibtexautocomplete** or **btac** is a python package to autocomplete bibtex bibliographies.
 It is inspired and expanding on the solution provided by [thando](https://tex.stackexchange.com/users/182467/thando) in this [tex stackexchange post](https://tex.stackexchange.com/questions/6810/automatically-adding-doi-fields-to-a-hand-made-bibliography).
 
 It attempts to complete a bibtex file by querying the following domains:
@@ -17,16 +17,29 @@ It attempts to complete a bibtex file by querying the following domains:
 - [researchr.org](https://researchr.org/)
 - [unpaywall.org](https://unpaywall.org/)
 
+## Demo
+
 ![demo.svg](https://raw.githubusercontent.com/dlesbre/bibtex-autocomplete/master/imgs/demo.svg)
 
-## Disclaimers
+## Quick overview
 
-The searches are performed using the entries' dois if present, title or author otherwise. Titles are compared excluding punctuation and case, so make sure to include the full title to get matches.
+**How does it find matches?**
 
-There is no guarantee that this script will find matches for your entries, or that the websites will have any data to add to your entries.
+`btac` queries the websites using the entry doi if known otherwise the title. So entries that don't have one of those two fields *will not* be completed. Additionally, the title should be the full title (title are compared excluding case and punctuation, but missing words are a mismatch).
 
-The script will not overwrite any user given non-empty fields, unless the `-f/--force-overwrite` flag is given. It is designed to minimize the chance of false positive - that is adding data from another similar-ish entry to your entry. If you find any such false positive please report them using the [issue tracker](https://github.com/dlesbre/bibtex-autocomplete/issues).
+**Disclaimers**
 
+- There is no guarantee that the script will find matches for your entries, or that the websites will have any data to add to your entries, (or even that the website data is correct, but that's not for me to say...)
+
+- The script is designed to minimize the chance of false positives - that is adding data from another similar-ish entry to your entry. If you find any such false positive please report them using the [issue tracker](https://github.com/dlesbre/bibtex-autocomplete/issues).
+
+**How are entries completed?**
+
+Once responses from all websites have been found, the script will add fields from website with the following priority : crossref > dblp > researchr > unpaywall.
+
+So if both crossref's and dblp's response contain a publisher, the one from crossref will be used.
+
+The script will not overwrite any user given non-empty fields, unless the `-f/--force-overwrite` flag is given.
 
 ## Installation
 
