@@ -233,7 +233,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         length = len(files)
         dbs = []
         for i, file in enumerate(files):
-            logger.debug(
+            logger.info(
                 "Reading file {id} / {length} from '{file}'",
                 id=i + 1,
                 length=length,

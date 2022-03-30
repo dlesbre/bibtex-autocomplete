@@ -1,8 +1,8 @@
 # Change Log
 
-## Version ??? - Not yet released
+## Version 1.0.3 - 2022-03-30
 
-- Clarify response priorities
+- Clarify new field source priorities
 - Fixed unpaywall setting unknown months to 1
 - Switch to strict mypy typechecking
 - Unsupport python 3.6 as alive-progress dropped it

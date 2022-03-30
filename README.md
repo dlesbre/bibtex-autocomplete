@@ -61,7 +61,7 @@ python3 -m bibtexautocomplete --version
 This package has two dependencies (automatically installed by pip) :
 
 - [bibtexparser](https://bibtexparser.readthedocs.io/)
-- [alive_progress](https://github.com/rsalmei/alive-progress) for the fancy progressbar
+- [alive_progress](https://github.com/rsalmei/alive-progress) (>= 2.4.0) for the fancy progressbar
 
 ## Usage
 
