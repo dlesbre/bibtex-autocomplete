@@ -35,10 +35,10 @@ def main(argv: Optional[List[str]] = None) -> None:
                 NAME=SCRIPT_NAME,
             )
         )
-        exit(0)
+        return
     if args.version:
         print("{NAME} version {VERSION}".format(NAME=SCRIPT_NAME, VERSION=VERSION_STR))
-        exit(0)
+        return
 
     if args.silent:
         args.verbose = -args.silent
@@ -49,7 +49,8 @@ def main(argv: Optional[List[str]] = None) -> None:
         if args.output != []:
             logger.warn("Inplace mode, ignoring specified output files")
         args.output = args.input
-    args.output = make_output_names(args.input, args.output)
+    else:
+        args.output = make_output_names(args.input, args.output)
 
     writer.align_values = args.align_values
     writer.comma_first = args.comma_first

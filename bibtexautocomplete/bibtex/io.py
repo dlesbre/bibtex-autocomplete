@@ -13,10 +13,6 @@ from bibtexparser.customization import convert_to_unicode
 from ..utils.constants import EntryType
 from ..utils.logger import logger
 
-parser = BibTexParser(common_strings=True)
-# Keep non standard entries if present
-parser.ignore_nonstandard_types = False
-
 writer = BibTexWriter()
 writer.indent = "\t"
 writer.add_trailing_comma = True
@@ -31,6 +27,9 @@ def write(database: BibDatabase) -> str:
 
 def read(bibtex: str, src: str = "") -> BibDatabase:
     """Parses bibtex string into database"""
+    parser = BibTexParser(common_strings=True)
+    # Keep non standard entries if present
+    parser.ignore_nonstandard_types = False
     try:
         database = parser.parse(bibtex)
     except UndefinedString as err:
@@ -78,7 +77,7 @@ def file_read(filepath: Path) -> BibDatabase:
             err=err,
         )
         exit(1)
-    return read(bibtex)
+    return read(bibtex, str(filepath))
 
 
 def get_entries(db: BibDatabase) -> List[EntryType]:
