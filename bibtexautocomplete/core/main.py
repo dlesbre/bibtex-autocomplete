@@ -44,11 +44,11 @@ def main(argv: Optional[List[str]] = None) -> None:
         args.verbose = -args.silent
     logger.set_verbosity(args.verbose)
 
+    args.input = flatten(args.input)
     if args.inplace:
         if args.output != []:
             logger.warn("Inplace mode, ignoring specified output files")
         args.output = args.input
-    args.input = flatten(args.input)
     args.output = make_output_names(args.input, args.output)
 
     writer.align_values = args.align_values
