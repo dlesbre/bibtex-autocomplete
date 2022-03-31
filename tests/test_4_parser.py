@@ -9,7 +9,11 @@ test = [
     (".bib", ".btac.bib"),
     ("ex", "ex.btac"),
     ("", ".btac"),
+    (".", ".btac"),
     ("ex.", "ex.btac."),
+    ("folder/ex.bib", "folder/ex.btac.bib"),
+    ("f/.bib", "f/.btac.bib"),
+    ("f/ex", "f/ex.btac"),
 ]
 
 

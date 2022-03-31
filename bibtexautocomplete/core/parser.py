@@ -27,7 +27,7 @@ def make_output_name(input: Path) -> Path:
         split = name.split(".")
         suffix = "." + split.pop()
         name = ".".join(split)
-    return Path(input.root, BTAC_FILENAME.format(name=name, suffix=suffix))
+    return Path(input.parent, BTAC_FILENAME.format(name=name, suffix=suffix))
 
 
 def make_output_names(inputs: List[Path], outputs: List[Path]) -> List[Path]:
