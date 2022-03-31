@@ -49,7 +49,7 @@ Can be installed with [pip](https://pypi.org/project/pip/) :
 pip install bibtexautocomplete
 ```
 
-You should now be able to run the script using either commands:
+You should now be able to run the script using either command:
 
 ```
 btac --version
@@ -67,7 +67,7 @@ This package has two dependencies (automatically installed by pip) :
 
 The command line tool can be used as follows:
 ```
-btac [-flag] <input_files>
+btac [-flags] <input_files>
 ```
 
 **Examples :**
