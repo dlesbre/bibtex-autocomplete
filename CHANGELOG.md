@@ -1,5 +1,11 @@
 # Change Log
 
+## Version 1.0.4 - 2022-03-31
+
+- Fixed failed output write in inplace mode
+- Fixed double warning for extra output in inplace mode
+- Fix default output names ignoring parent directory
+
 ## Version 1.0.3 - 2022-03-30
 
 - Clarify new field source priorities

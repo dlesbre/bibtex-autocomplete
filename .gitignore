@@ -12,3 +12,5 @@ venv
 
 # VSCode
 .vscode/
+
+node_modules
