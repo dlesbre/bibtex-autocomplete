@@ -16,7 +16,7 @@ AbstractDataLookup(AbstractLookup): split query into two new methods:
   - process_data : Self, bytes -> BibtexEntry - process data into a bibtex entry
 """
 
-from typing import Optional, Protocol
+from typing import Optional, Protocol, Type
 
 from ..bibtex.entry import BibtexEntry
 
@@ -33,7 +33,7 @@ class LookupProtocol(Protocol):
         pass
 
 
-LookupType = type[LookupProtocol]
+LookupType = Type[LookupProtocol]
 
 
 class AbstractLookup:
