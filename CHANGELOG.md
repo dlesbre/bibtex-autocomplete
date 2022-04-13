@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 1.0.5 - 2022-04-13
+
+- Fixed a bug which prevented installation on python 3.8
+- Dropped python 3.7 support (It didn't work anyway...)
+
 ## Version 1.0.4 - 2022-03-31
 
 - Fixed failed output write in inplace mode

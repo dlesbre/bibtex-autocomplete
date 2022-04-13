@@ -26,7 +26,7 @@ setup(
     extras_require={
         "dev": ["pre-commit", "pytest", "mypy", "black", "flake8", "isort"],
     },
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     license="MIT",
     platforms=["any"],
     keywords=["bibtex biblatex latex autocomplete btac"],
@@ -44,7 +44,6 @@ setup(
         # Pick your license as you wish (should match "license" above)
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
