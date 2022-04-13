@@ -9,6 +9,9 @@ PIP := $(PYTHON) -m pip
 
 DIR = .
 
+DOCKER = sudo docker
+DOCKER_IMG_NAME = btac
+
 PRECOMMIT = pre-commit
 MYPY = mypy
 PYTEST = pytest
@@ -33,7 +36,7 @@ ifeq ($(COLOR),ON)
 	color_red    = \033[31m
 	color_green  = \033[32m
 	color_blue   = \033[34;1m
-	color_reset  = \033[38;22m
+	color_reset  = \033[0m
 endif
 
 define print
@@ -131,3 +134,17 @@ deploy: ## Build and deploys the package
 	$(PYTHON) setup.py sdist bdist_wheel
 	$(call print,Deploying package)
 	twine upload dist/*
+
+# =================================================
+# Docker
+# =================================================
+
+.PHONY: docker-build
+docker-build: ## Build the docker image
+	$(call print,Building docker image)
+	$(DOCKER) build -t $(DOCKER_IMG_NAME) .
+
+.PHONY: docker-run
+docker-run: ## Run the docker image (requires building first)
+	$(call print,Running docker image)
+	$(DOCKER) run --rm -it $(DOCKER_IMG_NAME)
