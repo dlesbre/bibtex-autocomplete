@@ -7,6 +7,7 @@ from typing import Dict, Iterable, List, Optional, Tuple
 from ..bibtex.author import Author
 from ..bibtex.entry import BibtexEntry, FieldNames
 from ..lookups.lookups import JSON_DAT_Lookup
+from ..utils.constants import QUERY_MAX_RESULTS
 from ..utils.safe_json import SafeJSON
 
 
@@ -33,7 +34,7 @@ class CrossrefLookup(JSON_DAT_Lookup):
         return super().get_path()
 
     def get_params(self) -> Dict[str, str]:
-        base = {"rows": "3"}
+        base = {"rows": str(QUERY_MAX_RESULTS)}
         if self.title is not None:
             base["query.title"] = self.title
         if self.author is not None:

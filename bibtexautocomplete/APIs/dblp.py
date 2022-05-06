@@ -7,6 +7,7 @@ from typing import Dict, Iterable, List
 from ..bibtex.author import Author
 from ..bibtex.entry import BibtexEntry, FieldNames
 from ..lookups.lookups import JSON_AT_Lookup
+from ..utils.constants import QUERY_MAX_RESULTS
 from ..utils.safe_json import SafeJSON
 
 
@@ -32,7 +33,7 @@ class DBLPLookup(JSON_AT_Lookup):
             search += self.author + " "
         if self.title is not None:
             search += self.title + " "
-        return {"format": "json", "h": "3", "q": search.strip()}
+        return {"format": "json", "h": str(QUERY_MAX_RESULTS), "q": search.strip()}
 
     def get_results(self, data: bytes) -> Iterable[SafeJSON]:
         """Return the result list"""

@@ -36,3 +36,7 @@ MAX_THREAD_NB = 8  # Max number of threads
 # name is the filename, without extension ("ex" for "ex.bib")
 # suffix is the file extansion, with leading dot (".bib" for "ex.bib")
 BTAC_FILENAME = "{name}.btac{suffix}"
+
+# Most APIs allow to limit the number of results returned for a search query
+# This allows for smaller data transfers
+QUERY_MAX_RESULTS = 3
