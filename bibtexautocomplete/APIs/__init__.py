@@ -1,6 +1,7 @@
 from typing import List
 
 from ..lookups.abstract_base import LookupType
+from .arxiv import ArxivLookup
 from .crossref import CrossrefLookup
 from .dblp import DBLPLookup
 from .researchr import ResearchrLookup
@@ -9,6 +10,7 @@ from .unpaywall import UnpaywallLookup
 # List of lookup to use, in the order they will be used
 LOOKUPS: List[LookupType] = [
     CrossrefLookup,
+    ArxivLookup,
     DBLPLookup,
     ResearchrLookup,
     UnpaywallLookup,
@@ -20,6 +22,7 @@ __all__ = (
     "LOOKUPS",
     "LOOKUP_NAMES",
     "CrossrefLookup",
+    "ArxivLookup",
     "DBLPLookup",
     "ResearchrLookup",
     "UnpaywallLookup",
