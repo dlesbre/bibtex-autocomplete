@@ -17,6 +17,8 @@ It attempts to complete a bibtex file by querying the following domains:
 - [researchr.org](https://researchr.org/)
 - [unpaywall.org](https://unpaywall.org/)
 
+Big thanks to all of them for allowing open, easy and well-documented access to their databases.
+
 ## Demo
 
 ![demo.svg](https://raw.githubusercontent.com/dlesbre/bibtex-autocomplete/master/imgs/demo.svg)
