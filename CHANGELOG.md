@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 1.1.0 - Work in progress
+
+- Now also queries arxiv
+- Normalize title before querying, should improve matches for title with special characters
+
 ## Version 1.0.5 - 2022-04-13
 
 - Fixed a bug which prevented installation on python 3.8

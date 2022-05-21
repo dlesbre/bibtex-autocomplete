@@ -13,6 +13,7 @@ It is inspired and expanding on the solution provided by [thando](https://tex.st
 
 It attempts to complete a bibtex file by querying the following domains:
 - [www.crossref.org](https://www.crossref.org)
+- [arxiv.org/](https://arxiv.org/)
 - [dlbp.org](https://dlbp.org)
 - [researchr.org](https://researchr.org/)
 - [unpaywall.org](https://unpaywall.org/)
@@ -37,7 +38,7 @@ Big thanks to all of them for allowing open, easy and well-documented access to 
 
 **How are entries completed?**
 
-Once responses from all websites have been found, the script will add fields from website with the following priority : crossref > dblp > researchr > unpaywall.
+Once responses from all websites have been found, the script will add fields from website with the following priority : crossref > arxiv > dblp > researchr > unpaywall.
 
 So if both crossref's and dblp's response contain a publisher, the one from crossref will be used.
 
