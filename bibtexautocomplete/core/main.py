@@ -77,6 +77,7 @@ def main(argv: Optional[List[str]] = None) -> None:
     try:
         completer.autocomplete(args.verbose < 0)
         completer.print_changes()
-        completer.write(args.output)
+        if not args.no_output:
+            completer.write(args.output)
     except KeyboardInterrupt:
         logger.warn("Interrupted")

@@ -90,6 +90,7 @@ parser.add_argument("--no-color", "-n", action="store_true")
 parser.add_argument("--version", action="store_true")
 parser.add_argument("--help", "-h", action="store_true")
 
+parser.add_argument("--no-output", "-O", action="store_true")
 parser.add_argument("--output", "-o", type=Path, action="append", default=[])
 parser.add_argument("input", nargs="*", type=Path, action="append", default=[])
 
@@ -136,6 +137,8 @@ Polls the following databases:
   {FgYellow}-f --force-overwrite{Reset}  Overwrite already present fields
         The default is to overwrite a field if it is empty or absent
   {FgYellow}-t --timeout{Reset} {FgGreen}<float>{Reset}  set timeout on request, default: {TIMEOUT} s
+
+  {FgYellow}-O --no-output{Reset}        Don't write any output files, forget output
 
   {FgYellow}-v --verbose{Reset}          increase verbosity (use up to 3 times)
   {FgYellow}-s --silent{Reset}           decrease verbosity (use up to 4 times)
