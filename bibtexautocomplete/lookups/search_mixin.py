@@ -63,6 +63,7 @@ class SearchResultMixin(Generic[result]):
         for res in results:
             entry = self.get_value(res)
             score = self.match_score(entry, res)
+            logger.debug("match {} for {}", score, entry._entry)
             if score >= ENTRY_CERTAIN_MATCH:
                 return entry
             if score > max_score:

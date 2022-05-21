@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional
 
 from bibtexautocomplete.bibtex.entry import BibtexEntry, FieldNames
+from bibtexautocomplete.bibtex.normalize import normalize_str
 from bibtexautocomplete.lookups.abstract_base import AbstractLookup
 from bibtexautocomplete.lookups.condition_mixin import FieldConditionMixin
 from bibtexautocomplete.lookups.multiple_mixin import DATQueryMixin, DTQueryMixin
@@ -18,7 +19,8 @@ class SearchEval(AbstractLookup):
         if "author" in test:
             assert getattr(self, "author") == test["author"]
         if "title" in test:
-            assert getattr(self, "title") == test["title"]
+            title = None if test["title"] is None else normalize_str(test["title"])
+            assert getattr(self, "title") == title
         self.index += 1
         return None
 

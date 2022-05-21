@@ -6,6 +6,7 @@ Set class attribute to be used by the query in get_data
 from typing import Iterator, Optional
 
 from ..bibtex.entry import BibtexEntry
+from ..bibtex.normalize import normalize_str
 from .abstract_base import AbstractEntryLookup, AbstractLookup
 
 
@@ -91,7 +92,9 @@ class TitleAuthorQueryMixin(MultipleQueryMixin, AbstractEntryLookup):
 
     def iter_queries(self) -> Iterator[None]:
         # Find and format authors
-        self.title = self.entry.title
+        self.title = (
+            None if self.entry.title is None else normalize_str(self.entry.title)
+        )
         authors = self.entry.author
         if authors:
             self.author = self.author_join.join(author.lastname for author in authors)
