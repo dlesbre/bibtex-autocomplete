@@ -143,10 +143,10 @@ btac [-flags] <input_files>
         "title" : "super interesting article!",
         "..." : "..."
       },
-      "arxiv": null,
-      "dblp": { ... },
-    "researchr": { ... },
-    "unpaywall": { ... }
+      "arxiv": null, // null when no match found
+      "dblp": ...,
+      "researchr": ...,
+      "unpaywall": ...
     },
     ...
   ]
