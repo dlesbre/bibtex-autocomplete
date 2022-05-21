@@ -26,6 +26,8 @@ class ArxivLookup(XML_T_Lookup):
     domain = "export.arxiv.org"
     path = "/api/query"
 
+    safe = ":"
+
     query_delay = 3.0  # seconds
 
     xml_prefix = "{http://www.w3.org/2005/Atom}"
@@ -34,7 +36,7 @@ class ArxivLookup(XML_T_Lookup):
         if self.title is None:
             raise ValueError("arXiv called with no title")
         return {
-            "search_query": f'tl:"{self.title}"',
+            "search_query": f'ti:"{self.title}"',
             "start": "0",
             "max_results": str(QUERY_MAX_RESULTS),
         }
@@ -105,7 +107,6 @@ class ArxivLookup(XML_T_Lookup):
         values.title = self.get_title(result)
         values.url = self.get_link(result)
         values.year = year
-        print(values._entry)
         return values
 
     fields = {

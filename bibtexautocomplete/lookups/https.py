@@ -43,6 +43,9 @@ class HTTPSLookup(AbstractDataLookup):
     path: str = "/"
     params: Dict[str, str] = {}
 
+    # Safe parameters kept in urlencode
+    safe: str = ""
+
     request: str = "GET"
     default_headers: Dict[str, str] = {
         "User-Agent": USER_AGENT,
@@ -83,7 +86,7 @@ class HTTPSLookup(AbstractDataLookup):
         override this if not using self.path"""
         params = self.get_params()
         if params:
-            return self.path + "?" + urlencode(params)
+            return self.path + "?" + urlencode(params, safe=self.safe)
         return self.path
 
     def get_params(self) -> Dict[str, str]:
