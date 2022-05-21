@@ -131,6 +131,27 @@ btac [-flags] <input_files>
 
   This allows to see duplicate fields from different sources that are otherwise overwritten when merged into a single entry.
 
+  The JSON file will have the following formatting:
+
+  ```json
+  [
+    {
+      "entry": "<entry_id>",
+      "new-fields": 8,
+      "crossref": {
+        "author" : "Lastname, Firstnames and Lastname, Firstnames ...",
+        "title" : "super interesting article!",
+        "..." : "..."
+      },
+      "arxiv": null,
+      "dblp": { ... },
+    "researchr": { ... },
+    "unpaywall": { ... }
+    },
+    ...
+  ]
+  ```
+
 - `-O --no-output` don't write any output files (except the one specified by `--dump-data`)
 
 - `-v --verbose` verbose mode shows more info. It details entries as they are being processed and shows a summary of new fields and their source at the end. Using it more then once prints debug info (up to three times).
