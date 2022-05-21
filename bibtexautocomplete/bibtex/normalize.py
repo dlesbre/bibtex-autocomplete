@@ -5,7 +5,7 @@ Functions used to normalize bibtex fields
 import unicodedata
 from datetime import date
 from re import search, sub
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from ..utils.constants import EntryType
 
@@ -71,6 +71,121 @@ def normalize_str(string: str) -> str:
             res += " "
             prev_space = True
     return res.lower().strip()
+
+
+# 100 most common english words, from Wikipedia
+COMMON_WORDS = [
+    "the",
+    "be",
+    "to",
+    "of",
+    "and",
+    "a",
+    "in",
+    "that",
+    "have",
+    "i",
+    "it",
+    "for",
+    "not",
+    "on",
+    "with",
+    "he",
+    "as",
+    "you",
+    "do",
+    "at",
+    "this",
+    "but",
+    "his",
+    "by",
+    "from",
+    "they",
+    "we",
+    "say",
+    "her",
+    "she",
+    "or",
+    "an",
+    "will",
+    "my",
+    "one",
+    "all",
+    "would",
+    "there",
+    "their",
+    "what",
+    "so",
+    "up",
+    "out",
+    "if",
+    "about",
+    "who",
+    "get",
+    "which",
+    "go",
+    "me",
+    "when",
+    "make",
+    "can",
+    "like",
+    "time",
+    "no",
+    "just",
+    "him",
+    "know",
+    "take",
+    "people",
+    "into",
+    "year",
+    "your",
+    "good",
+    "some",
+    "could",
+    "them",
+    "see",
+    "other",
+    "than",
+    "then",
+    "now",
+    "look",
+    "only",
+    "come",
+    "its",
+    "over",
+    "think",
+    "also",
+    "back",
+    "after",
+    "use",
+    "two",
+    "how",
+    "our",
+    "work",
+    "first",
+    "well",
+    "way",
+    "even",
+    "new",
+    "want",
+    "because",
+    "any",
+    "these",
+    "give",
+    "day",
+    "most",
+    "us",
+]
+
+
+def keywords(title: str) -> List[str]:
+    """Returns only the best keywords in the given title"""
+    title = normalize_str(title)
+    words = []
+    for word in title.split(" "):
+        if word not in COMMON_WORDS:
+            words.append(word)
+    return words
 
 
 DOI_REGEX = r"(10\.\d{4,5}\/[\S]+[^;,.\s])$"
