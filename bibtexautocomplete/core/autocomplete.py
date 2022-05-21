@@ -4,6 +4,7 @@ main class used to manage calls to different lookups
 """
 
 from functools import reduce
+from json import dump as json_dump
 from pathlib import Path
 from threading import Condition
 from typing import Callable, Container, Iterable, Iterator, List, Tuple, TypeVar, cast
@@ -17,6 +18,7 @@ from ..bibtex.normalize import has_field
 from ..lookups.abstract_base import LookupType
 from ..utils.constants import MAX_THREAD_NB, EntryType
 from ..utils.logger import VERBOSE_INFO, logger
+from .data_dump import DataDump
 from .threads import LookupThread
 
 T = TypeVar("T")
@@ -47,6 +49,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
     fields: Container[str]
     entries: Container[str]
     force_overwrite: bool
+    dumps: List[DataDump]
 
     changed_fields: int
     changed_entries: int
@@ -71,6 +74,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         self.changed_entries = 0
         self.changed_fields = 0
         self.changes = []
+        self.dumps = []
 
     def __iter__(self) -> Iterator[EntryType]:
         """Iterate through entries"""
@@ -125,21 +129,24 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 # Check if all threads have resolved the current entry
                 for thread in threads:
                     if position >= thread.position:
-                        # if not wait - release and reaquires lock
+                        # if not wait - releases and reacquires lock
                         condition.wait()
                         break
                 else:
                     # else update entry with the results
                     changes: List[Tuple[str, str, str]] = []
                     entry = entries[position]
+                    dump = DataDump(entry["ID"])
                     iterator = reversed(threads) if self.force_overwrite else threads
                     for thread in iterator:
                         result = thread.result[position]
+                        dump.add_entry(thread.lookup.name, result)
                         if result is not None:
                             changes.extend(
                                 (field, value, thread.name)
                                 for field, value in self.combine(entry, result)
                             )
+                    dump.new_fields = len(changes)
                     if changes != []:
                         self.changed_entries += 1
                         self.changed_fields += len(changes)
@@ -150,6 +157,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                         nb=len(changes),
                     )
                     bar.text = f"{self.changed_fields} new fields"
+                    self.dumps.append(dump)
                     position += 1
         logger.info(
             "Modified {changed_entries} / {count_entries} entries"
@@ -205,11 +213,34 @@ class BibtexAutocomplete(Iterable[EntryType]):
                     source=source,
                 )
 
+    wrote_header = False
+
+    def write_header(self) -> None:
+        """Ensures the final section header is only written once"""
+        if not self.wrote_header:
+            logger.header("Writing files")
+        self.wrote_header = True
+
+    def write_dumps(self, path: Path) -> None:
+        """Write the dumps to the given file"""
+        self.write_header()
+        json = [dump.to_dict() for dump in self.dumps]
+        logger.info("Writing data dump to '{}'", str(path))
+        try:
+            with open(path, "w") as file:
+                json_dump(json, file, indent=2)
+        except IOError as err:
+            logger.error(
+                "Failed to dump data to '{path}' : {FgPurple}{err}{Reset}",
+                path=str(path),
+                err=err,
+            )
+
     def write(self, files: List[Path]) -> None:
         """Writes the databases in self to the given files
         If not enough files, extra databases are written to stdout
         If too many files, extras are ignored"""
-        logger.header("Writing files")
+        self.write_header()
         total = len(self.bibdatabases)
         wrote = 0
         for i, db in enumerate(self.bibdatabases):

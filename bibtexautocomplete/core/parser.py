@@ -90,6 +90,7 @@ parser.add_argument("--no-color", "-n", action="store_true")
 parser.add_argument("--version", action="store_true")
 parser.add_argument("--help", "-h", action="store_true")
 
+parser.add_argument("--dump-data", "-d", type=Path)
 parser.add_argument("--no-output", "-O", action="store_true")
 parser.add_argument("--output", "-o", type=Path, action="append", default=[])
 parser.add_argument("input", nargs="*", type=Path, action="append", default=[])
@@ -109,13 +110,13 @@ Polls the following databases:
       writes completed a.bib in b.bib and c.bib in d.bib
 
 {StBold}Optional arguments:{Reset} can all be used multiple times
-  {FgYellow}-o --output{Reset} {FgGreen}<file>{Reset}          Write output to given file
+  {FgYellow}-o --output{Reset} {FgGreen}<file.bib>{Reset}      Write output to given file
         With multiple input/outputs they are mapped in appearance order
         Extra inputs are dumped on stdout
 
-  {FgYellow}-q --only-query{Reset} {FgGreen}<site>{Reset}      Only query the given sites
-  {FgYellow}-Q --dont-query{Reset} {FgGreen}<site>{Reset}      Don't query the given sites
-        Site must be one of: {LOOKUPS}
+  {FgYellow}-q --only-query{Reset} {FgGreen}<website>{Reset}   Only query the given sites
+  {FgYellow}-Q --dont-query{Reset} {FgGreen}<website>{Reset}   Don't query the given sites
+        Website must be one of: {LOOKUPS}
 
   {FgYellow}-e --only-entry{Reset}    {FgGreen}<id>{Reset}     Only perform lookup these entries
   {FgYellow}-E --exclude-entry{Reset} {FgGreen}<id>{Reset}     Don't perform lookup these entries
@@ -138,7 +139,9 @@ Polls the following databases:
         The default is to overwrite a field if it is empty or absent
   {FgYellow}-t --timeout{Reset} {FgGreen}<float>{Reset}  set timeout on request, default: {TIMEOUT} s
 
-  {FgYellow}-O --no-output{Reset}        Don't write any output files, forget output
+  {FgYellow}-d --dump-data{Reset} {FgGreen}<file.json>{Reset} writes all data from matching entries to
+        the given file in JSON format, so data from multiple sources can be compared
+  {FgYellow}-O --no-output{Reset}        Don't write any output files (except the --dump-data file)
 
   {FgYellow}-v --verbose{Reset}          increase verbosity (use up to 3 times)
   {FgYellow}-s --silent{Reset}           decrease verbosity (use up to 4 times)
