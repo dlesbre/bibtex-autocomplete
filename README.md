@@ -12,8 +12,8 @@
 It is inspired and expanding on the solution provided by [thando](https://tex.stackexchange.com/users/182467/thando) in this [tex stackexchange post](https://tex.stackexchange.com/questions/6810/automatically-adding-doi-fields-to-a-hand-made-bibliography).
 
 It attempts to complete a bibtex file by querying the following domains:
-- [www.crossref.org](https://www.crossref.org)
-- [arxiv.org/](https://arxiv.org/)
+- [www.crossref.org](https://www.crossref.org/)
+- [arxiv.org](https://arxiv.org/)
 - [dlbp.org](https://dlbp.org)
 - [researchr.org](https://researchr.org/)
 - [unpaywall.org](https://unpaywall.org/)
