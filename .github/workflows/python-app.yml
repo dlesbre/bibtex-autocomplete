@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
 
@@ -34,4 +34,4 @@ jobs:
     - name: Typecheck with mypy
       run: make mypy
     - name: Test with pytest
-      run: make pytest
+      run: make test
