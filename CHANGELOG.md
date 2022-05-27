@@ -3,6 +3,7 @@
 ## Version 1.1.1 - 2022-05-27
 
 - Fix decoding error when opening utf-8 files on windows
+- Add extra fields `query-url`, `query-response-time` and `query-status` to data dumps file
 - Added github actions
 
 ## Version 1.1.0 - 2022-05-21

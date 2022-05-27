@@ -140,6 +140,9 @@ btac [-flags] <input_files>
       "entry": "<entry_id>",
       "new-fields": 8,
       "crossref": {
+        "query-url": "https://api.crossref.org/...",
+        "query-response-time": 0.556,
+        "query-response-status": 200,
         "author" : "Lastname, Firstnames and Lastname, Firstnames ...",
         "title" : "super interesting article!",
         "..." : "..."
