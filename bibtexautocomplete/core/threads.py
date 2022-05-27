@@ -1,10 +1,11 @@
 from threading import Condition, Thread
-from typing import Callable, List, Optional
+from typing import Callable, Dict, List, Optional, Tuple
 
 from ..bibtex.entry import BibtexEntry
 from ..lookups.abstract_base import LookupType
 from ..utils.constants import EntryType
 from ..utils.logger import logger
+from ..utils.safe_json import JSONType
 
 
 class LookupThread(Thread):
@@ -15,8 +16,12 @@ class LookupThread(Thread):
     lookup: LookupType
     entries: List[EntryType] = []  # Read only
     condition: Condition
-    result: List[Optional[BibtexEntry]]  # Write
-    # bar : Callable[[], None]
+    result: List[
+        Tuple[
+            Optional[BibtexEntry],
+            Dict[str, JSONType],
+        ]
+    ]  # Write
 
     position: int
     nb_entries: int
@@ -34,6 +39,7 @@ class LookupThread(Thread):
         self.position = 0
         self.nb_entries = len(entries)
         self.result = []
+
         self.bar = bar
         super().__init__(name=lookup.name, daemon=True)
 
@@ -48,7 +54,7 @@ class LookupThread(Thread):
             result = lookup.query()
 
             self.condition.acquire()
-            self.result.append(result)
+            self.result.append((result, lookup.get_last_query_info()))
             self.position += 1
             self.bar()
             self.condition.notify()

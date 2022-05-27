@@ -5,6 +5,8 @@ LookupProtocol(Protocol): duck-typing of lookups. They must have
   - an attribute name : str (UNIQUE)
   - a method query(self) -> Optional[BibtexEntry]
   - a method __init__(self, entry: Entry)
+  - a method get_last_query_info(self) -> Dict[str, JSONType]
+        with return extra information to add to data-dumps
 
 
 AbstractLookup(): abstract base class, defines abstract methods
@@ -16,9 +18,10 @@ AbstractDataLookup(AbstractLookup): split query into two new methods:
   - process_data : Self, bytes -> BibtexEntry - process data into a bibtex entry
 """
 
-from typing import Optional, Protocol, Type
+from typing import Dict, Optional, Protocol, Type
 
 from ..bibtex.entry import BibtexEntry
+from ..utils.safe_json import JSONType
 
 
 class LookupProtocol(Protocol):
@@ -28,6 +31,10 @@ class LookupProtocol(Protocol):
         """Performs one or more queries to try and obtain the result
         VIRTUAL METHOD : must be overridden"""
         raise NotImplementedError("should be overridden in child class")
+
+    def get_last_query_info(self) -> Dict[str, JSONType]:
+        """Extra information to add to the data-dump about this query"""
+        return dict()
 
     def __init__(self, entry: BibtexEntry) -> None:
         pass
@@ -48,6 +55,10 @@ class AbstractLookup:
         """Performs one or more queries to try and obtain the result
         VIRTUAL METHOD : must be overridden"""
         raise NotImplementedError("should be overridden in child class")
+
+    def get_last_query_info(self) -> Dict[str, JSONType]:
+        """Extra information to add to the data-dump about this query"""
+        return dict()
 
     def __init__(self, entry: BibtexEntry) -> None:
         pass

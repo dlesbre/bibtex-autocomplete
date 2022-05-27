@@ -25,6 +25,7 @@ class ArxivLookup(XML_T_Lookup):
 
     domain = "export.arxiv.org"
     path = "/api/query"
+    accept = "application/xml"
 
     safe = ":"
 

@@ -139,8 +139,8 @@ class BibtexAutocomplete(Iterable[EntryType]):
                     dump = DataDump(entry["ID"])
                     iterator = reversed(threads) if self.force_overwrite else threads
                     for thread in iterator:
-                        result = thread.result[position]
-                        dump.add_entry(thread.lookup.name, result)
+                        result, info = thread.result[position]
+                        dump.add_entry(thread.lookup.name, result, info)
                         if result is not None:
                             changes.extend(
                                 (field, value, thread.name)

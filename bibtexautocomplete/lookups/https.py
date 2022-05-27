@@ -9,6 +9,7 @@ from urllib.parse import urlencode
 
 from ..utils.constants import CONNECTION_TIMEOUT, MIN_QUERY_DELAY, USER_AGENT
 from ..utils.logger import logger
+from ..utils.safe_json import JSONType
 from .abstract_base import AbstractDataLookup
 
 HTTP_CODE_OK = 200
@@ -47,9 +48,10 @@ class HTTPSLookup(AbstractDataLookup):
     safe: str = ""
 
     request: str = "GET"
+    accept: str = "application/json"
     default_headers: Dict[str, str] = {
         "User-Agent": USER_AGENT,
-        "Accept": "application/json",
+        "Accept": accept,
     }
     headers: Dict[str, str] = {}
 
@@ -57,9 +59,12 @@ class HTTPSLookup(AbstractDataLookup):
 
     response: Optional[HTTPResponse] = None
 
+    _last_query_info: Dict[str, JSONType] = {}
+
     def get_headers(self) -> Dict[str, str]:
         """Return the headers used in an HTTPS request"""
         headers = self.default_headers.copy()
+        headers["Accept"] = self.accept
         headers.update(self.headers)
         headers["Host"] = self.get_host()
         return headers
@@ -106,11 +111,12 @@ class HTTPSLookup(AbstractDataLookup):
         request = self.get_request()
         path = self.get_path()
         headers = self.get_headers()
+        url = f"https://{domain}{path}"
+        self._last_query_info = dict()
         logger.debug(
-            "{request} https://{domain}{path}",
+            "{request} {url}",
             request=request,
-            domain=domain,
-            path=path,
+            url=url,
         )
         logger.verbose_debug("headers: {headers}", headers=headers)
         start = time()
@@ -124,6 +130,11 @@ class HTTPSLookup(AbstractDataLookup):
             )
             self.response = connection.getresponse()
             delay = round(time() - start, 3)
+            self._last_query_info = {
+                "url": url,
+                "response-time": delay,
+                "response-status": self.response.status,
+            }
             if self.response.status != HTTP_CODE_OK:
                 logger.warn(
                     "response: {FgYellow}{status}{reason}{Reset} in {delay}s",
@@ -159,6 +170,11 @@ class HTTPSLookup(AbstractDataLookup):
             logger.warn("connection error: {err}", err=err)
             return None
         return data
+
+    def get_last_query_info(self) -> Dict[str, JSONType]:
+        base = super().get_last_query_info()
+        base.update(self._last_query_info)
+        return base
 
 
 class HTTPSRateCapedLookup(HTTPSLookup):

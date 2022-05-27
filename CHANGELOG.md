@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 1.1.1 - 2022-05-27
+
+- Fix decoding error when opening utf-8 files on windows
+- Added github actions
+
 ## Version 1.1.0 - 2022-05-21
 
 - Now also queries arxiv
