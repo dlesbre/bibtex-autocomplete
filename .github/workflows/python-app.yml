@@ -1,0 +1,37 @@
+# This workflow will:
+# - install Python dev dependencies
+# - run black, isort, flake8, mypy and pytest
+
+
+name: Python application
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+    - name: Install dependencies
+      run: make setup-dev
+    - name: Lint with flake8
+      run: make flake8
+    - name: Run formatters
+      run: make format
+    - name: Typecheck with mypy
+      run: make mypy
+    - name: Test with pytest
+      run: make pytest
