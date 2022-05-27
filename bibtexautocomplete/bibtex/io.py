@@ -52,9 +52,9 @@ def file_write(filepath: Path, database: BibDatabase) -> bool:
         print(output)
         return True
     try:
-        with open(filepath, "w") as file:
+        with open(filepath, "w", encoding="utf-8") as file:
             file.write(output)
-    except IOError as err:
+    except (IOError, UnicodeDecodeError) as err:
         logger.error(
             "Failed to write to '{filepath}' : {FgPurple}{err}{Reset}",
             filepath=str(filepath),
@@ -68,9 +68,9 @@ def file_read(filepath: Path) -> BibDatabase:
     """reads the given file, parses and normalizes it"""
     # Read and parse the file
     try:
-        with open(filepath, "r") as file:
+        with open(filepath, "r", encoding="utf-8") as file:
             bibtex = file.read()
-    except IOError as err:
+    except (IOError, UnicodeDecodeError) as err:
         logger.critical(
             "Failed to read '{filepath}': {FgPurple}{err}{Reset}",
             filepath=str(filepath),

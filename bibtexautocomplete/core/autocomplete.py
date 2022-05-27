@@ -227,9 +227,9 @@ class BibtexAutocomplete(Iterable[EntryType]):
         json = [dump.to_dict() for dump in self.dumps]
         logger.info("Writing data dump to '{}'", str(path))
         try:
-            with open(path, "w") as file:
+            with open(path, "w", encoding="utf-8") as file:
                 json_dump(json, file, indent=2)
-        except IOError as err:
+        except (IOError, UnicodeDecodeError) as err:
             logger.error(
                 "Failed to dump data to '{path}' : {FgPurple}{err}{Reset}",
                 path=str(path),
