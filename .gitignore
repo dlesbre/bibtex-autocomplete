@@ -13,4 +13,8 @@ venv
 # VSCode
 .vscode/
 
+# Coverage
+.coverage
+htmlcov/
+
 node_modules

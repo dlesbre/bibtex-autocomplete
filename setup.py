@@ -24,7 +24,17 @@ setup(
         "alive-progress>=2.4.0",
     ],
     extras_require={
-        "dev": ["pre-commit", "pytest", "mypy", "black", "flake8", "isort"],
+        "dev": [
+            "pre-commit",
+            "pytest",
+            "mypy",
+            "black",
+            "flake8",
+            "isort",
+            "coverage",
+            "pytest-cov",
+        ],
+        "deploy": ["wheel", "twine"],
     },
     python_requires=">=3.8",
     license="MIT",

@@ -6,6 +6,7 @@
 
 PYTHON := python3
 PIP := $(PYTHON) -m pip
+BROWSER := firefox
 
 DIR = .
 
@@ -75,7 +76,13 @@ precommit-all: ## run precommit on all files
 .PHONY: test
 test: ## Run all tests
 	$(call print,Running pytest)
-	$(PYTEST)
+	$(PYTEST) --cov
+
+.PHONY: coverage
+coverage: ## build html coverage and open in browser
+	$(call print,Building coverage report)
+	coverage html
+	$(BROWSER) htmlcov/index.html
 
 .PHONY: mypy
 mypy: ## Typecheck all files
