@@ -6,6 +6,7 @@
 [![License](https://img.shields.io/pypi/l/bibtexautocomplete.svg)](https://github.com/dlesbre/bibtex-autocomplete/blob/master/LICENSE)
 [![PyPI status](https://img.shields.io/pypi/status/bibtexautocomplete.svg)](https://pypi.python.org/pypi/bibtexautocomplete/)
 [![Downloads](https://pepy.tech/badge/bibtexautocomplete)](https://pepy.tech/project/bibtexautocomplete)
+[![actions](https://img.shields.io/github/workflow/status/dlesbre/bibtex-autocomplete/Python%20application?label=tests)](https://github.com/dlesbre/bibtex-autocomplete/actions/workflows/python-app.yml)
 
 
 **bibtexautocomplete** or **btac** is a python package to autocomplete bibtex bibliographies.
