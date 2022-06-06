@@ -148,4 +148,10 @@ Polls the following databases:
   {FgYellow}-n --no-color{Reset}         don't color/stylise output
 
   {FgYellow}--version{Reset}             show version number
-  {FgYellow}-h --help{Reset}             show this help"""
+  {FgYellow}-h --help{Reset}             show this help
+
+{StBold}Source and Bug reports:{Reset}
+  The source code is available under an {LICENSE} License on github:
+  {StUnderline}{URL}{Reset}
+
+  You can report bugs there using the issue tracker."""

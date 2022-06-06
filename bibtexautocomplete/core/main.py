@@ -6,7 +6,7 @@ from ..bibtex.io import writer
 from ..lookups.condition_mixin import FieldConditionMixin
 from ..lookups.https import HTTPSLookup
 from ..utils.ansi import ANSICodes, ansi_format
-from ..utils.constants import CONNECTION_TIMEOUT, SCRIPT_NAME, VERSION_STR
+from ..utils.constants import CONNECTION_TIMEOUT, LICENSE, SCRIPT_NAME, URL, VERSION_STR
 from ..utils.logger import logger
 from ..utils.only_exclude import OnlyExclude
 from .autocomplete import BibtexAutocomplete
@@ -33,6 +33,8 @@ def main(argv: Optional[List[str]] = None) -> None:
                 VERSION=VERSION_STR,
                 LOOKUPS=LOOKUP_NAMES,
                 NAME=SCRIPT_NAME,
+                URL=URL,
+                LICENSE=LICENSE,
             )
         )
         return
