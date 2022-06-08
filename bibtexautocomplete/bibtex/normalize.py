@@ -58,7 +58,7 @@ def normalize_str_weak(string: str) -> str:
 
 def normalize_str(string: str) -> str:
     """Normalize string for decent comparison
-    Converts to lower case
+    Converts to lower case, strips accents
     Replaces all non alpha-numeric characters with spaces
     Removes duplicate spaces"""
     res = ""
