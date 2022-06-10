@@ -5,10 +5,10 @@ Mixin to check if a condition holds before performing queries
 from typing import Optional, Set
 
 from ..bibtex.entry import BibtexEntry, SearchedFields
-from .abstract_base import AbstractEntryLookup, AbstractLookup
+from .abstract_base import AbstractEntryLookup, AbstractLookup, Input, Output
 
 
-class ConditionMixin(AbstractLookup):
+class ConditionMixin(AbstractLookup[Input, Output]):
     """Mixin to query only if a condition holds,
 
     inherit from this before the base Lookup class
@@ -21,14 +21,16 @@ class ConditionMixin(AbstractLookup):
         performing any queries"""
         return True
 
-    def query(self) -> Optional[BibtexEntry]:
+    def query(self) -> Optional[Output]:
         """calls parent query only if condition is met"""
         if self.condition():
             return super().query()
         return None
 
 
-class FieldConditionMixin(ConditionMixin, AbstractEntryLookup):
+class FieldConditionMixin(
+    ConditionMixin[BibtexEntry, BibtexEntry], AbstractEntryLookup
+):
     """Mixin used to query only if there exists a field in self.fields
     that does not exists in self.entry
 

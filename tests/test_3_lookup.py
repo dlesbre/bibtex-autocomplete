@@ -7,7 +7,7 @@ from bibtexautocomplete.lookups.condition_mixin import FieldConditionMixin
 from bibtexautocomplete.lookups.multiple_mixin import DATQueryMixin, DTQueryMixin
 
 
-class SearchEval(AbstractLookup):
+class SearchEval(AbstractLookup[BibtexEntry, BibtexEntry]):
 
     index: int = 0
     expected: List[Dict[str, Optional[str]]] = []
@@ -187,7 +187,7 @@ class TestDTQuery:
         self.make_query(expected, entry)
 
 
-class ConditionEval(AbstractLookup):
+class ConditionEval(AbstractLookup[BibtexEntry, BibtexEntry]):
     queried: bool
 
     def __init__(self, entry: BibtexEntry) -> None:

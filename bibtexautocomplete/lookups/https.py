@@ -10,12 +10,12 @@ from urllib.parse import urlencode
 from ..utils.constants import CONNECTION_TIMEOUT, MIN_QUERY_DELAY, USER_AGENT
 from ..utils.logger import logger
 from ..utils.safe_json import JSONType
-from .abstract_base import AbstractDataLookup
+from .abstract_base import AbstractDataLookup, Input, Output
 
 HTTP_CODE_OK = 200
 
 
-class HTTPSLookup(AbstractDataLookup):
+class HTTPSLookup(AbstractDataLookup[Input, Output]):
     """Abstract class to wrap https queries:
     Initialized with the entry to query info about
 
@@ -177,7 +177,7 @@ class HTTPSLookup(AbstractDataLookup):
         return base
 
 
-class HTTPSRateCapedLookup(HTTPSLookup):
+class HTTPSRateCapedLookup(HTTPSLookup[Input, Output]):
     """Add a rate cap to respect polite server requirements"""
 
     # Time of last query

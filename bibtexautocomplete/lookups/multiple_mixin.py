@@ -7,10 +7,10 @@ from typing import Iterator, Optional
 
 from ..bibtex.entry import BibtexEntry
 from ..bibtex.normalize import normalize_str
-from .abstract_base import AbstractEntryLookup, AbstractLookup
+from .abstract_base import AbstractEntryLookup, AbstractLookup, Input, Output
 
 
-class MultipleQueryMixin(AbstractLookup):
+class MultipleQueryMixin(AbstractLookup[Input, Output]):
     """Mixin to perform multiple queries
 
     Defines:
@@ -27,7 +27,7 @@ class MultipleQueryMixin(AbstractLookup):
         Default behavior: no queries"""
         return iter([])
 
-    def query(self) -> Optional[BibtexEntry]:
+    def query(self) -> Optional[Output]:
         """Performs queries as long as iter_query yields
         Stops at first valid result found"""
         for _ in self.iter_queries():
@@ -37,7 +37,7 @@ class MultipleQueryMixin(AbstractLookup):
         return None
 
 
-class DOIQueryMixin(MultipleQueryMixin, AbstractEntryLookup):
+class DOIQueryMixin(MultipleQueryMixin[BibtexEntry, BibtexEntry], AbstractEntryLookup):
     """Performs one query setting self.doi if self.entry has a doi
     then parent queries if any
     """
@@ -54,7 +54,9 @@ class DOIQueryMixin(MultipleQueryMixin, AbstractEntryLookup):
             yield x
 
 
-class TitleQueryMixin(MultipleQueryMixin, AbstractEntryLookup):
+class TitleQueryMixin(
+    MultipleQueryMixin[BibtexEntry, BibtexEntry], AbstractEntryLookup
+):
     """Sets self.title if self.entry has a title
     Performs parent queries if any
     then perform a single query if self.title is set
@@ -71,7 +73,9 @@ class TitleQueryMixin(MultipleQueryMixin, AbstractEntryLookup):
             yield None
 
 
-class TitleAuthorQueryMixin(MultipleQueryMixin, AbstractEntryLookup):
+class TitleAuthorQueryMixin(
+    MultipleQueryMixin[BibtexEntry, BibtexEntry], AbstractEntryLookup
+):
     """
     Sets self.title to entry title if any
     Sets self.author if self.entry has a authors to space separated list of lastnames

@@ -18,16 +18,19 @@ AbstractDataLookup(AbstractLookup): split query into two new methods:
   - process_data : Self, bytes -> BibtexEntry - process data into a bibtex entry
 """
 
-from typing import Dict, Optional, Protocol, Type
+from typing import Dict, Generic, Optional, Protocol, Type, TypeVar
 
 from ..bibtex.entry import BibtexEntry
 from ..utils.safe_json import JSONType
 
+Input = TypeVar("Input", covariant=True)
+Output = TypeVar("Output", covariant=True)
 
-class LookupProtocol(Protocol):
+
+class LookupProtocol(Protocol, Generic[Input, Output]):
     name: str  # used to identify the lookup, also appears in help string
 
-    def query(self) -> Optional[BibtexEntry]:
+    def query(self) -> Optional[Output]:
         """Performs one or more queries to try and obtain the result
         VIRTUAL METHOD : must be overridden"""
         raise NotImplementedError("should be overridden in child class")
@@ -36,14 +39,14 @@ class LookupProtocol(Protocol):
         """Extra information to add to the data-dump about this query"""
         return dict()
 
-    def __init__(self, entry: BibtexEntry) -> None:
+    def __init__(self, input: Input) -> None:
         pass
 
 
-LookupType = Type[LookupProtocol]
+LookupType = Type[LookupProtocol[BibtexEntry, BibtexEntry]]
 
 
-class AbstractLookup:
+class AbstractLookup(Generic[Input, Output]):
     """Abstract base class for lookup
     Is a valid LookupProtocol, but all methods should be overridden
 
@@ -51,7 +54,7 @@ class AbstractLookup:
 
     name: str  # used to identify the lookup, also appears in help string
 
-    def query(self) -> Optional[BibtexEntry]:
+    def query(self) -> Optional[Output]:
         """Performs one or more queries to try and obtain the result
         VIRTUAL METHOD : must be overridden"""
         raise NotImplementedError("should be overridden in child class")
@@ -60,11 +63,11 @@ class AbstractLookup:
         """Extra information to add to the data-dump about this query"""
         return dict()
 
-    def __init__(self, entry: BibtexEntry) -> None:
+    def __init__(self, input: Input) -> None:
         pass
 
 
-class AbstractEntryLookup(AbstractLookup):
+class AbstractEntryLookup(AbstractLookup[BibtexEntry, BibtexEntry]):
     """Abstract minimal lookup,
     Implements simple __init__ putting the argument in self.entry
 
@@ -75,23 +78,23 @@ class AbstractEntryLookup(AbstractLookup):
 
     entry: BibtexEntry
 
-    def __init__(self, entry: BibtexEntry) -> None:
-        super().__init__(entry)
-        self.entry = entry
+    def __init__(self, input: BibtexEntry) -> None:
+        super().__init__(input)
+        self.entry = input
 
 
-class AbstractDataLookup(AbstractLookup):
+class AbstractDataLookup(AbstractLookup[Input, Output]):
     def get_data(self) -> Optional[bytes]:
         """Performs a query to get data from the server
         VIRTUAL METHOD : must be overridden"""
         raise NotImplementedError("should be overridden in child class")
 
-    def process_data(self, data: bytes) -> Optional[BibtexEntry]:
+    def process_data(self, data: bytes) -> Optional[Output]:
         """Should create a new entry with info extracted from data
         VIRTUAL METHOD : must be overridden"""
         raise NotImplementedError("should be overridden in child class")
 
-    def query(self) -> Optional[BibtexEntry]:
+    def query(self) -> Optional[Output]:
         """Tries to complete an entry
         override this to make multiple requests
         (i.e. try different search terms)"""
