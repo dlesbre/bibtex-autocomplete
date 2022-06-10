@@ -29,7 +29,13 @@ Big thanks to all of them for allowing open, easy and well-documented access to 
 
 **How does it find matches?**
 
-`btac` queries the websites using the entry doi if known otherwise the title. So entries that don't have one of those two fields *will not* be completed. Additionally, the title should be the full title (title are compared excluding case and punctuation, but missing words are a mismatch).
+`btac` queries the websites using the entry doi if known otherwise the title. So entries that don't have one of those two fields *will not* be completed.
+- Titles should be the full title, they are compared excluding case and punctuation, but titles with missing words will not match.
+- If one or more authors are present, entries with no common authors will not match. Authors are compared using lower case last names only. Be sure to use one of the correct Bibtex format for the author field:
+  ```bibtex
+  author = {First Last and Last, First and First von Last}
+  ```
+  (see [https://www.bibtex.com/f/author-field/](https://www.bibtex.com/f/author-field/) for full details)
 
 **Disclaimers**
 
