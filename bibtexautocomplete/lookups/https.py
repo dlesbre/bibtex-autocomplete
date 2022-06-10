@@ -118,7 +118,7 @@ class HTTPSLookup(AbstractDataLookup):
             request=request,
             url=url,
         )
-        logger.verbose_debug("headers: {headers}", headers=headers)
+        logger.very_verbose_debug("headers: {headers}", headers=headers)
         start = time()
         try:
             connection = HTTPSConnection(domain, timeout=self.connection_timeout)
@@ -142,7 +142,7 @@ class HTTPSLookup(AbstractDataLookup):
                     reason=" " + self.response.reason if self.response.reason else "",
                     delay=delay,
                 )
-                logger.verbose_debug(
+                logger.very_verbose_debug(
                     "response headers: {headers}", headers=self.response.headers
                 )
                 connection.close()
@@ -153,7 +153,7 @@ class HTTPSLookup(AbstractDataLookup):
                 reason=" " + self.response.reason if self.response.reason else "",
                 delay=delay,
             )
-            logger.verbose_debug(
+            logger.very_verbose_debug(
                 "response headers: {headers}", headers=self.response.headers
             )
             data = self.response.read()

@@ -56,14 +56,14 @@ class SearchResultMixin(Generic[result]):
         """Iterate through results until one matches"""
         results = self.get_results(data)
         if results is None:
-            logger.debug("no results")
+            logger.verbose_debug("no results")
             return None
         max_score = ENTRY_NO_MATCH
         max_entry: Optional[BibtexEntry] = None
         for res in results:
             entry = self.get_value(res)
             score = self.match_score(entry, res)
-            logger.debug("match {} for {}", score, entry._entry)
+            logger.verbose_debug("match {} for {}", score, entry._entry)
             if score >= ENTRY_CERTAIN_MATCH:
                 return entry
             if score > max_score:

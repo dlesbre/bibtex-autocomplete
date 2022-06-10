@@ -45,7 +45,7 @@ class LookupThread(Thread):
 
     def run(self) -> None:
         """Starts querying for entries"""
-        logger.verbose_debug("Starting thread {name}", name=self.name)
+        logger.very_verbose_debug("Starting thread {name}", name=self.name)
         self.condition.acquire()
         while self.position < self.nb_entries:
             lookup = self.lookup(BibtexEntry(self.entries[self.position]))

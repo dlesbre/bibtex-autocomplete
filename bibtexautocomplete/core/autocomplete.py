@@ -183,7 +183,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 continue
             # Is it present on entry
             if self.force_overwrite or (not has_field(entry, field)):
-                logger.verbose_debug(
+                logger.very_verbose_debug(
                     "{ID}.{field} := {value}",
                     ID=entry["ID"],
                     field=field,

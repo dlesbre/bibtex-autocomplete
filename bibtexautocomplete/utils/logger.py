@@ -28,8 +28,10 @@ class LevelFilter(logging.Filter):
 # custom level
 VERBOSE_INFO = logging.INFO - 2
 VERBOSE_DEBUG = logging.DEBUG - 2
+VERY_VERBOSE_DEBUG = VERBOSE_DEBUG - 2
 logging.addLevelName(VERBOSE_INFO, "VERBOSE_INFO")
 logging.addLevelName(VERBOSE_DEBUG, "VERBOSE_DEBUG")
+logging.addLevelName(VERY_VERBOSE_DEBUG, "VERY_VERBOSE_DEBUG")
 
 DEFAULT_LEVEL = logging.INFO
 
@@ -105,8 +107,12 @@ class Logger:
         self.to_logger(logging.DEBUG, message, *args, **kwargs)
 
     def verbose_debug(self, message: str, *args: Any, **kwargs: Any) -> None:
-        """Show very verbose debug info, extra arguments are formatter options"""
+        """Show verbose debug info, extra arguments are formatter options"""
         self.to_logger(VERBOSE_DEBUG, message, *args, **kwargs)
+
+    def very_verbose_debug(self, message: str, *args: Any, **kwargs: Any) -> None:
+        """Show very verbose debug info, extra arguments are formatter options"""
+        self.to_logger(VERY_VERBOSE_DEBUG, message, *args, **kwargs)
 
     def set_level(self, level: Level) -> None:
         """Set the logger's level, using logging's level values"""
@@ -121,6 +127,7 @@ class Logger:
         1: VERBOSE_INFO,
         2: logging.DEBUG,
         3: VERBOSE_DEBUG,
+        4: VERY_VERBOSE_DEBUG,
     }
 
     def set_verbosity(self, verbosity: int) -> None:
