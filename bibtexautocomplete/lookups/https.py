@@ -5,7 +5,7 @@ Lookup for HTTPS queries
 from http.client import HTTPResponse, HTTPSConnection, socket  # type: ignore
 from time import sleep, time
 from typing import Any, Dict, Optional
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 
 from ..utils.constants import CONNECTION_TIMEOUT, MIN_QUERY_DELAY, USER_AGENT
 from ..utils.logger import logger
@@ -166,6 +166,34 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
         base = super().get_last_query_info()
         base.update(self._last_query_info)
         return base
+
+
+class RedirectFollower(HTTPSLookup[Input, Output]):
+    """Follows redirection up to max_depth
+    returns final data
+    Only works with fixed attributes for domain/path/query..."""
+
+    max_depth = 10
+    depth = 0
+
+    def get_data(self) -> Optional[Data]:
+        data = super().get_data()
+        while data is not None and data.code in [301, 302]:
+            if self.response is None:
+                return data
+            location = self.response.getheader("Location")
+            if location is None:
+                return data
+            self.depth += 1
+            logger.debug("Redirect {depth} to : {url}", depth=self.depth, url=location)
+            if self.depth >= self.max_depth:
+                logger.warn("Redirection depth exceeded")
+                return None
+            split = urlsplit(location)
+            self.domain = split.netloc
+            self.path = f"{split.path}?{split.query}"
+            data = super().get_data()
+        return data
 
 
 class HTTPSRateCapedLookup(HTTPSLookup[Input, Output]):
