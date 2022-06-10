@@ -3,13 +3,12 @@ Queries to https://doi.org/<doi>
 used to check that dois are valid
 """
 
-from typing import Iterator, List, Optional
+from typing import Optional
 from urllib.parse import quote, urlencode, urlsplit
 
 from ..bibtex.normalize import normalize_str_weak
 from ..lookups.abstract_base import Data
 from ..lookups.https import HTTPSRateCapedLookup, RedirectFollower
-from ..lookups.multiple_mixin import MultipleQueryMixin
 from ..utils.safe_json import SafeJSON
 
 
@@ -31,8 +30,7 @@ class URLCheck(RedirectFollower[str, Optional[Data]]):
 
 
 class DOICheck(
-    MultipleQueryMixin[List[str], Optional[str]],
-    HTTPSRateCapedLookup[List[str], Optional[str]],
+    HTTPSRateCapedLookup[str, Optional[bool]],
 ):
 
     name = "doi"
@@ -41,27 +39,18 @@ class DOICheck(
     domain = "doi.org"
     path = "/api/handles/"
 
-    doi: str
-    index: int
-
     not_available_checks = [
         "not available",
         "not found",
     ]
 
-    def iter_queries(self) -> Iterator[None]:
-        for i, doi in enumerate(self.dois):
-            self.doi = doi
-            self.index = i
-            yield None
-
-    def __init__(self, input: List[str]) -> None:
-        self.dois = input
+    def __init__(self, input: str) -> None:
+        self.doi = input
 
     def get_path(self) -> str:
         return self.path + quote(self.doi) + "?" + urlencode(self.params)
 
-    def process_data(self, data: Data) -> Optional[str]:
+    def process_data(self, data: Data) -> Optional[bool]:
         if data.code != 200:
             return None
         json = SafeJSON.from_bytes(data.data)
@@ -69,8 +58,7 @@ class DOICheck(
             return None
         for value in json["values"].iter_list():
             if value["type"].to_str() == "URL":
-                if self.check_url(value["data"]["value"].to_str()):
-                    return self.doi
+                return self.check_url(value["data"]["value"].to_str())
         return None
 
     def check_url(self, url: Optional[str]) -> bool:
@@ -86,7 +74,3 @@ class DOICheck(
                         return False
                 return True
         return False
-
-
-D = DOICheck(["10.1007/978-1-4684-5287-7", "10.1109/5.771073", "not a doi"])
-D.query()

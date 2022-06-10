@@ -7,12 +7,23 @@ from functools import reduce
 from json import dump as json_dump
 from pathlib import Path
 from threading import Condition
-from typing import Callable, Container, Iterable, Iterator, List, Tuple, TypeVar, cast
+from typing import (
+    Callable,
+    Container,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Tuple,
+    TypeVar,
+    cast,
+)
 
 from alive_progress import alive_bar  # type: ignore
 from bibtexparser.bibdatabase import BibDatabase
 
-from ..bibtex.entry import BibtexEntry
+from ..APIs.doi import DOICheck, URLCheck
+from ..bibtex.entry import BibtexEntry, FieldNames
 from ..bibtex.io import file_read, file_write, get_entries
 from ..bibtex.normalize import has_field
 from ..lookups.abstract_base import LookupType
@@ -142,9 +153,12 @@ class BibtexAutocomplete(Iterable[EntryType]):
                         result, info = thread.result[position]
                         dump.add_entry(thread.lookup.name, result, info)
                         if result is not None:
+                            to_add = self.combine(entry, result)
+                            to_add = self.sanitize(to_add)
+                            entry.update(to_add)
                             changes.extend(
                                 (field, value, thread.name)
-                                for field, value in self.combine(entry, result)
+                                for field, value in to_add.items()
                             )
                     dump.new_fields = len(changes)
                     if changes != []:
@@ -167,11 +181,11 @@ class BibtexAutocomplete(Iterable[EntryType]):
             changed_fields=self.changed_fields,
         )
 
-    def combine(self, entry: EntryType, new_info: BibtexEntry) -> List[Tuple[str, str]]:
+    def combine(self, entry: EntryType, new_info: BibtexEntry) -> Dict[str, str]:
         """Adds the information in info to entry.
         Does not overwrite unless self.force_overwrite is True
         only acts on fields contained in self.fields"""
-        changes: List[Tuple[str, str]] = []
+        changes: Dict[str, str] = {}
         for field, value in new_info:
             if field not in self.fields:
                 continue
@@ -183,14 +197,21 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 continue
             # Is it present on entry
             if self.force_overwrite or (not has_field(entry, field)):
-                logger.very_verbose_debug(
-                    "{ID}.{field} := {value}",
-                    ID=entry["ID"],
-                    field=field,
-                    value=s_value,
-                )
-                changes.append((field, s_value))
-                entry[field] = s_value
+                changes[field] = s_value
+        return changes
+
+    def sanitize(self, changes: Dict[str, str]) -> Dict[str, str]:
+        """Runs sanity checks on new_info if needed"""
+        doi = changes.get(FieldNames.DOI)
+        url = changes.get(FieldNames.URL)
+        if doi is not None:
+            doi_checker = DOICheck(doi)
+            if doi_checker.query() is not True:
+                del changes[FieldNames.DOI]
+        if url is not None:
+            checker = URLCheck(url)
+            if checker.query() is None:
+                del changes[FieldNames.URL]
         return changes
 
     def print_changes(self) -> None:
