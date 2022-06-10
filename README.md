@@ -51,6 +51,8 @@ So if both crossref's and dblp's response contain a publisher, the one from cros
 
 The script will not overwrite any user given non-empty fields, unless the `-f/--force-overwrite` flag is given.
 
+The script checks that the DOIs or URLs found correspond (or redirect to) a valid webpage before adding them to an entry.
+
 ## Installation
 
 Can be installed with [pip](https://pypi.org/project/pip/) :
@@ -164,7 +166,7 @@ btac [-flags] <input_files>
 
 - `-O --no-output` don't write any output files (except the one specified by `--dump-data`)
 
-- `-v --verbose` verbose mode shows more info. It details entries as they are being processed and shows a summary of new fields and their source at the end. Using it more then once prints debug info (up to three times).
+- `-v --verbose` verbose mode shows more info. It details entries as they are being processed and shows a summary of new fields and their source at the end. Using it more then once prints debug info (up to four times).
 - `-s --silent` hide info and progressbar. Keep showing warnings and errors. Use twice to also hide warnings, thrice to also hide errors and four times to also hide critical error, effectively killing all output.
 - `-n --no-color` don't color use ANSI codes to color and stylise output
 
