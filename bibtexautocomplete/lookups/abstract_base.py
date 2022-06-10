@@ -14,11 +14,11 @@ AbstractLookup(): abstract base class, defines abstract methods
 AbstractEntryLookup(AbstractLookup): entry attribute and __init__
 
 AbstractDataLookup(AbstractLookup): split query into two new methods:
-  - get_data : Self -> bytes - to perform the actual query
-  - process_data : Self, bytes -> BibtexEntry - process data into a bibtex entry
+  - get_data : Self -> Data - to perform the actual query
+  - process_data : Self, Data -> BibtexEntry - process data into a bibtex entry
 """
 
-from typing import Dict, Generic, Optional, Protocol, Type, TypeVar
+from typing import Dict, Generic, NamedTuple, Optional, Protocol, Type, TypeVar
 
 from ..bibtex.entry import BibtexEntry
 from ..utils.safe_json import JSONType
@@ -83,13 +83,20 @@ class AbstractEntryLookup(AbstractLookup[BibtexEntry, BibtexEntry]):
         self.entry = input
 
 
+class Data(NamedTuple):
+    data: bytes
+    code: int
+    reason: str
+    delay: float
+
+
 class AbstractDataLookup(AbstractLookup[Input, Output]):
-    def get_data(self) -> Optional[bytes]:
+    def get_data(self) -> Optional[Data]:
         """Performs a query to get data from the server
         VIRTUAL METHOD : must be overridden"""
         raise NotImplementedError("should be overridden in child class")
 
-    def process_data(self, data: bytes) -> Optional[Output]:
+    def process_data(self, data: Data) -> Optional[Output]:
         """Should create a new entry with info extracted from data
         VIRTUAL METHOD : must be overridden"""
         raise NotImplementedError("should be overridden in child class")

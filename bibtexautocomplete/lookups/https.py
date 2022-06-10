@@ -10,9 +10,7 @@ from urllib.parse import urlencode
 from ..utils.constants import CONNECTION_TIMEOUT, MIN_QUERY_DELAY, USER_AGENT
 from ..utils.logger import logger
 from ..utils.safe_json import JSONType
-from .abstract_base import AbstractDataLookup, Input, Output
-
-HTTP_CODE_OK = 200
+from .abstract_base import AbstractDataLookup, Data, Input, Output
 
 
 class HTTPSLookup(AbstractDataLookup[Input, Output]):
@@ -103,7 +101,7 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
         """Query body, can use self.entry to set them"""
         return None
 
-    def get_data(self) -> Optional[bytes]:
+    def get_data(self) -> Optional[Data]:
         """main lookup function
         returns true if the lookup succeeded in finding all info
         false otherwise"""
@@ -135,18 +133,6 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
                 "response-time": delay,
                 "response-status": self.response.status,
             }
-            if self.response.status != HTTP_CODE_OK:
-                logger.warn(
-                    "response: {FgYellow}{status}{reason}{Reset} in {delay}s",
-                    status=self.response.status,
-                    reason=" " + self.response.reason if self.response.reason else "",
-                    delay=delay,
-                )
-                logger.very_verbose_debug(
-                    "response headers: {headers}", headers=self.response.headers
-                )
-                connection.close()
-                return None
             logger.debug(
                 "response: {status}{reason} in {delay}s",
                 status=self.response.status,
@@ -169,7 +155,12 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
         except OSError as err:
             logger.warn("connection error: {err}", err=err)
             return None
-        return data
+        return Data(
+            data=data,
+            code=self.response.status,
+            delay=delay,
+            reason=self.response.reason,
+        )
 
     def get_last_query_info(self) -> Dict[str, JSONType]:
         base = super().get_last_query_info()
@@ -189,7 +180,7 @@ class HTTPSRateCapedLookup(HTTPSLookup[Input, Output]):
         """Returns the new delay between queries"""
         return None
 
-    def get_data(self) -> Optional[bytes]:
+    def get_data(self) -> Optional[Data]:
         since_last_query = time() - self.last_query_time
         wait = self.query_delay - since_last_query
         if wait > 0.0:

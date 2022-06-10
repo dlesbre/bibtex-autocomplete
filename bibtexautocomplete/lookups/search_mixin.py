@@ -8,12 +8,12 @@ New virtual methods:
 - get_value : result -> BibtexEntry - builds value from a result
 """
 
-from typing import Generic, Iterable, Optional, TypeVar
+from typing import Generic, Iterable, List, Optional, TypeVar
 
 from ..bibtex.entry import BibtexEntry
 from ..bibtex.matching import ENTRY_CERTAIN_MATCH, ENTRY_NO_MATCH, match_score
 from ..utils.logger import logger
-from .abstract_base import AbstractEntryLookup
+from .abstract_base import AbstractEntryLookup, Data
 
 result = TypeVar("result")
 
@@ -22,7 +22,7 @@ class SearchResultMixin(Generic[result]):
     """Iterates through multiple results until a matching one is found
 
     Defines:
-    - process_data : bytes -> Optional[BibtexEntry]
+    - process_data : Data -> Optional[BibtexEntry]
 
     Virtual methods defined here:
     - get_results : bytes -> Optional[Iterable[result]]
@@ -31,7 +31,12 @@ class SearchResultMixin(Generic[result]):
     - match_score : entry -> result -> int - matching score
         between the entry and our search term
         value between ENTRY_NO_MATCH and ENTRY_CERTAIN_MATCH (included)
+
+    Attribute: ok_codes : list of expected codes, fails data.code is not in them
+      defaults to [200]
     """
+
+    ok_codes: List[int] = [200]
 
     def get_results(self, data: bytes) -> Optional[Iterable[result]]:
         """Parse the data into a list of results to check
@@ -52,9 +57,17 @@ class SearchResultMixin(Generic[result]):
         raise NotImplementedError("should be overridden in child class")
         return match_score(self.entry, entry)
 
-    def process_data(self, data: bytes) -> Optional[BibtexEntry]:
+    def process_data(self, data: Data) -> Optional[BibtexEntry]:
         """Iterate through results until one matches"""
-        results = self.get_results(data)
+        if data.code not in self.ok_codes:
+            logger.warn(
+                "response: {FgYellow}{status}{reason}{Reset} in {delay}s",
+                status=data.code,
+                reason=" " + data.reason if data.reason else "",
+                delay=data.delay,
+            )
+            return None
+        results = self.get_results(data.data)
         if results is None:
             logger.verbose_debug("no results")
             return None
