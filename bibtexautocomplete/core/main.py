@@ -60,6 +60,7 @@ def main(argv: Optional[List[str]] = None) -> None:
     writer.indent = args.indent
 
     HTTPSLookup.connection_timeout = args.timeout
+    HTTPSLookup.ignore_ssl = args.ignore_ssl
     lookups = (
         OnlyExclude[str]
         .from_nonempty(args.only_query, args.dont_query)

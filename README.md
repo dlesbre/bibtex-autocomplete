@@ -135,6 +135,11 @@ btac [-flags] <input_files>
 - `-i --inplace` Modify input files inplace, ignores any specified output files
 - `-f --force-overwrite`  Overwrite already present fields. The default is to overwrite a field if it is empty or absent
 - `-t --timeout <float>` set timeout on request in seconds, default: 10.0 s, increase this if you are getting a lot of timeouts.
+- `-S --ignore-ssl` bypass SSL verification. Use this if you encounter the error:
+  ```
+  [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1129)
+  ```
+  another (better) fix for this is to run `pip install --upgrade certifi` to update python's certificates.
 
 - `-d --dump-data <file.json>` writes matching entries to the given JSON files.
 

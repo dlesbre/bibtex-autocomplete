@@ -86,6 +86,7 @@ parser.add_argument("--timeout", "-t", type=float, default=CONNECTION_TIMEOUT)
 parser.add_argument("--verbose", "-v", action="count", default=0)
 parser.add_argument("--silent", "-s", action="store_true")
 parser.add_argument("--no-color", "-n", action="store_true")
+parser.add_argument("--ignore-ssl", "-S", action="store_true")
 
 parser.add_argument("--version", action="store_true")
 parser.add_argument("--help", "-h", action="store_true")
@@ -138,6 +139,7 @@ Polls the following databases:
   {FgYellow}-f --force-overwrite{Reset}  Overwrite already present fields
         The default is to overwrite a field if it is empty or absent
   {FgYellow}-t --timeout{Reset} {FgGreen}<float>{Reset}  set timeout on request, default: {TIMEOUT} s
+  {FgYellow}-S --ignore-ssl{Reset}       Ignore SSL verification when performing queries
 
   {FgYellow}-d --dump-data{Reset} {FgGreen}<file.json>{Reset} writes all data from matching entries to
         the given file in JSON format, so data from multiple sources can be compared

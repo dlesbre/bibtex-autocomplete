@@ -3,6 +3,7 @@ Lookup for HTTPS queries
 """
 
 from http.client import HTTPResponse, HTTPSConnection, socket  # type: ignore
+from ssl import _create_unverified_context
 from time import sleep, time
 from typing import Any, ClassVar, Dict, Optional
 from urllib.parse import urlencode
@@ -43,6 +44,9 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
     path: str = "/"
     params: Dict[str, str] = {}
 
+    ignore_ssl: ClassVar[bool] = False
+    silent_fail: ClassVar[bool] = False
+
     # Safe parameters kept in urlencode
     safe: str = ""
 
@@ -61,6 +65,7 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
     _last_query_info: Dict[str, JSONType] = {}
 
     DNS_Fail_Hint: ClassVar[bool] = False
+    SSL_Fail_Hint: ClassVar[bool] = False
 
     def get_headers(self) -> Dict[str, str]:
         """Return the headers used in an HTTPS request"""
@@ -122,7 +127,14 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
         logger.very_verbose_debug("headers: {headers}", headers=headers)
         start = time()
         try:
-            connection = HTTPSConnection(domain, timeout=self.connection_timeout)
+            if self.ignore_ssl:
+                connection = HTTPSConnection(
+                    domain,
+                    timeout=self.connection_timeout,
+                    context=_create_unverified_context(),
+                )
+            else:
+                connection = HTTPSConnection(domain, timeout=self.connection_timeout)
             connection.request(
                 request,
                 path,
@@ -148,11 +160,15 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
             data = self.response.read()
             connection.close()
         except socket.timeout:
+            if self.silent_fail:
+                return None
             logger.warn(
                 "connection timeout ({timeout}s)", timeout=self.connection_timeout
             )
             return None
         except socket.gaierror as err:
+            if self.silent_fail:
+                return None
             error_name = "CONNECTION ERROR"
             error_msg = "{err}"
             hint = None
@@ -162,12 +178,21 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
                 if not HTTPSLookup.DNS_Fail_Hint:
                     hint = "{FgBlue}Hint:{Reset} check your internet connection or DNS server"
                     HTTPSLookup.DNS_Fail_Hint = True
+            elif "[SSL: CERTIFICATE_VERIFY_FAILED]" in str(err):
+                if not HTTPSLookup.SSL_Fail_Hint:
+                    hint = (
+                        "{FgBlue}Hint:{Reset} run 'pip install --upgrade certifi' to update certificates\n"
+                        + "      or run btac with the -S / --ignore-ssl flag."
+                    )
+                    HTTPSLookup.SSL_Fail_Hint = True
             logger.warn(error_msg, err=err, error=error_name)
             if hint is not None:
                 logger.info(hint)
             return None
         except OSError as err:
-            logger.error("{err}", err=err, error="CONNECTION ERROR")
+            if self.silent_fail:
+                return None
+            logger.warn("{err}", err=err, error="CONNECTION ERROR")
             return None
         return Data(
             data=data,

@@ -21,6 +21,7 @@ class URLCheck(
 
     name = "url_checker"
     accept = "text/html"
+    silent_fail = True
 
     def condition(self) -> bool:
         return self.is_valid
@@ -46,6 +47,7 @@ class DOICheck(
 ):
 
     name = "doi_checker"
+    silent_fail = True
 
     params = {"type": "URL"}
     domain = "doi.org"
