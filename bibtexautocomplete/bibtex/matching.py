@@ -2,7 +2,7 @@
 Function to determine how likely two entries are the same
 """
 
-from typing import Set
+from typing import Set, Tuple
 
 from .entry import BibtexEntry
 from .normalize import normalize_str, normalize_str_weak
@@ -22,7 +22,7 @@ def author_set(entry: BibtexEntry) -> Set[str]:
     return last_names
 
 
-def common_authors(a: BibtexEntry, b: BibtexEntry) -> tuple[int, int, int]:
+def common_authors(a: BibtexEntry, b: BibtexEntry) -> Tuple[int, int, int]:
     """Returns:
     number of common authors, number of a authors, number of authors of b"""
     authors_a = author_set(a)
