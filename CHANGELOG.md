@@ -1,11 +1,12 @@
 # Change Log
 
-## Version FUTURE - Not Yet Released
+## Version 1.1.2 - 2022-06-11
 
 - Add common authors check when matching entries: if your entries has some author field then entries will no common authors will be ignored and entries with common authors will be boosted
 - Add sanity check for found URLs and DOIs, `btac` now queries them and follows a few redirection to check they resolve to an existing page
 - Some prettier messages and resolve hints for connection errors
 - Add `-S/--ignore-ssl` flag
+- Add some logic to dispatch crossref's `container-title` and unpaywall's `journal-title` between `journal` and `booktitle` fields.
 
 ## Version 1.1.1 - 2022-05-27
 
