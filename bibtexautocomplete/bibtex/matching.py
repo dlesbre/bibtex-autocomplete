@@ -42,7 +42,7 @@ def match_score(a: BibtexEntry, b: BibtexEntry) -> int:
     if a.title is not None and b.title is not None:
         # Title is our best identifier
         if normalize_str_weak(a.title) == normalize_str_weak(b.title):
-            score = ENTRY_CERTAIN_MATCH * 2 // 3
+            score = ENTRY_CERTAIN_MATCH // 2
         elif normalize_str(a.title) == normalize_str(b.title):
             score = ENTRY_CERTAIN_MATCH // 3
         else:
@@ -53,7 +53,7 @@ def match_score(a: BibtexEntry, b: BibtexEntry) -> int:
             return ENTRY_NO_MATCH
         if authors_common != 0:
             if authors_common == authors_a and authors_common == authors_b:
-                score += ENTRY_CERTAIN_MATCH // 3 - 1  # -1 to avoid = certain
+                score += ENTRY_CERTAIN_MATCH // 3
             elif authors_common == authors_a or authors_common == authors_b:
                 score += ENTRY_CERTAIN_MATCH // 6
             else:
