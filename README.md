@@ -97,7 +97,7 @@ btac [-flags] <input_files>
 
 - `-q --only-query <website>` or `-Q --dont-query <website>`
 
-  Restrict which websites to query from. `<site>` must be one of: `crossref`, `dblp`, `researchr`, `unpaywall`. These arguments can be used multiple times, for example to only query crossref and dblp use `-q crossref -q dblp` or `-Q researchr -Q unpaywall`
+  Restrict which websites to query from. `<site>` must be one of: `crossref`, `dblp`, `researchr`, `unpaywall`. These arguments can be used multiple times, for example to only query crossref and dblp use `-q crossref -q dblp` or `-Q researchr -Q unpaywall -Q arxiv`
 
 - `-e --only-entry <id>` or `-E --exclude-entry <id>`
 

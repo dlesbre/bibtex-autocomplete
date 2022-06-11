@@ -40,8 +40,6 @@ class Logger:
 
     logger: logging.Logger
 
-    has_written: bool = False
-
     def __init__(self) -> None:
         # create logger
         self.logger = logging.getLogger(NAME)
@@ -63,34 +61,50 @@ class Logger:
         """Add thread name to message if not in main thread"""
         current = current_thread()
         if current is not main_thread():
-            message = "[{FgBlue}" + current.name + "{Reset}] " + message
+            info = ansi_format("[{FgBlue}" + current.name + "{Reset}] ")
+            len_info = len(current.name) + 3
+            message = info + message.replace("\n", "\n" + " " * len_info)
         return message
 
     def to_logger(self, level: int, message: str, *args: Any, **kwargs: Any) -> None:
         """Formats a message (with given args and ansi colors)
         and sends it to the logger with the given level"""
-        message = ansi_format(self.add_thread_info(message), *args, **kwargs)
+        message = self.add_thread_info(ansi_format(message, *args, **kwargs))
         self.logger.log(level=level, msg=message)
-        self.has_written = True
 
-    def warn(self, message: str, *args: Any, **kwargs: Any) -> None:
+    def warn(
+        self, message: str, error: str = "WARNING", *args: Any, **kwargs: Any
+    ) -> None:
         """Issue a warning, extra arguments are formatter options"""
         self.to_logger(
-            logging.WARN, "{FgPurple}WARNING:{Reset} " + message, *args, **kwargs
+            logging.WARN,
+            "{FgPurple}{error}:{Reset} " + message,
+            *args,
+            error=error,
+            **kwargs
         )
 
-    def error(self, message: str, *args: Any, **kwargs: Any) -> None:
+    def error(
+        self, message: str, error: str = "ERROR", *args: Any, **kwargs: Any
+    ) -> None:
         """Issue an error, extra arguments are formatter options"""
         self.to_logger(
-            logging.ERROR, "{FgRed}ERROR:{Reset} " + message, *args, **kwargs
+            logging.ERROR,
+            "{FgRed}{error}:{Reset} " + message,
+            error=error,
+            *args,
+            **kwargs
         )
 
-    def critical(self, message: str, *args: Any, **kwargs: Any) -> None:
+    def critical(
+        self, message: str, error: str = "CRITICAL ERROR", *args: Any, **kwargs: Any
+    ) -> None:
         """Issue a critical error, extra arguments are formatter options"""
         self.to_logger(
             logging.CRITICAL,
-            "{FgRed}CRITICAL ERROR:{Reset} " + message,
+            "{FgRed}{error}:{Reset} " + message,
             *args,
+            error=error,
             **kwargs
         )
 

@@ -18,7 +18,16 @@ AbstractDataLookup(AbstractLookup): split query into two new methods:
   - process_data : Self, Data -> BibtexEntry - process data into a bibtex entry
 """
 
-from typing import Dict, Generic, NamedTuple, Optional, Protocol, Type, TypeVar
+from typing import (
+    ClassVar,
+    Dict,
+    Generic,
+    NamedTuple,
+    Optional,
+    Protocol,
+    Type,
+    TypeVar,
+)
 
 from ..bibtex.entry import BibtexEntry
 from ..utils.safe_json import JSONType
@@ -28,7 +37,7 @@ Output = TypeVar("Output", covariant=True)
 
 
 class LookupProtocol(Protocol, Generic[Input, Output]):
-    name: str  # used to identify the lookup, also appears in help string
+    name: ClassVar[str]  # used to identify the lookup, also appears in help string
 
     def query(self) -> Optional[Output]:
         """Performs one or more queries to try and obtain the result
@@ -52,7 +61,7 @@ class AbstractLookup(Generic[Input, Output]):
 
     Use this as a base class for mixin so that super().query calls can typecheck"""
 
-    name: str  # used to identify the lookup, also appears in help string
+    name: ClassVar[str]  # used to identify the lookup, also appears in help string
 
     def query(self) -> Optional[Output]:
         """Performs one or more queries to try and obtain the result

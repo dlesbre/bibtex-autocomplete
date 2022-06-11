@@ -16,6 +16,7 @@ class URLCheck(RedirectFollower[str, Optional[Data]]):
     """Checks that an URL exists (should return 200)
     Follows redirection (up to a certain depth)"""
 
+    name = "url_checker"
     accept = "text/html"
 
     def __init__(self, input: str):
@@ -33,7 +34,7 @@ class DOICheck(
     HTTPSRateCapedLookup[str, Optional[bool]],
 ):
 
-    name = "doi"
+    name = "doi_checker"
 
     params = {"type": "URL"}
     domain = "doi.org"

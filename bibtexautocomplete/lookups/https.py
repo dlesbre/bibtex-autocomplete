@@ -4,7 +4,7 @@ Lookup for HTTPS queries
 
 from http.client import HTTPResponse, HTTPSConnection, socket  # type: ignore
 from time import sleep, time
-from typing import Any, Dict, Optional
+from typing import Any, ClassVar, Dict, Optional
 from urllib.parse import urlencode, urlsplit
 
 from ..utils.constants import CONNECTION_TIMEOUT, MIN_QUERY_DELAY, USER_AGENT
@@ -58,6 +58,8 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
     response: Optional[HTTPResponse] = None
 
     _last_query_info: Dict[str, JSONType] = {}
+
+    DNS_Fail_Hint: ClassVar[bool] = False
 
     def get_headers(self) -> Dict[str, str]:
         """Return the headers used in an HTTPS request"""
@@ -150,10 +152,21 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
             )
             return None
         except socket.gaierror as err:
-            logger.warn("connection error: {err}", err=err)
+            error_name = "CONNECTION ERROR"
+            error_msg = "{err}"
+            hint = None
+            if str(err) == "[Errno -3] Temporary failure in name resolution":
+                padding = "\n" + " " * (len(error_name) + 2)
+                error_msg += "{}Could not resolve '{}'".format(padding, domain)
+                if not HTTPSLookup.DNS_Fail_Hint:
+                    hint = "{FgBlue}Hint:{Reset} check your internet connection or DNS server"
+                    HTTPSLookup.DNS_Fail_Hint = True
+            logger.warn(error_msg, err=err, error=error_name)
+            if hint is not None:
+                logger.info(hint)
             return None
         except OSError as err:
-            logger.warn("connection error: {err}", err=err)
+            logger.error("{err}", err=err, error="CONNECTION ERROR")
             return None
         return Data(
             data=data,
