@@ -5,8 +5,9 @@ Lookup for HTTPS queries
 from http.client import HTTPResponse, HTTPSConnection, socket  # type: ignore
 from time import sleep, time
 from typing import Any, ClassVar, Dict, Optional
-from urllib.parse import urlencode, urlsplit
+from urllib.parse import urlencode
 
+from ..bibtex.normalize import normalize_url
 from ..utils.constants import CONNECTION_TIMEOUT, MIN_QUERY_DELAY, USER_AGENT
 from ..utils.logger import logger
 from ..utils.safe_json import JSONType
@@ -202,9 +203,11 @@ class RedirectFollower(HTTPSLookup[Input, Output]):
             if self.depth >= self.max_depth:
                 logger.warn("Redirection depth exceeded")
                 return None
-            split = urlsplit(location)
-            self.domain = split.netloc
-            self.path = f"{split.path}?{split.query}"
+            split = normalize_url(location)
+            if split is None:
+                return data
+            self.domain = split[0]
+            self.path = split[1]
             data = super().get_data()
         return data
 

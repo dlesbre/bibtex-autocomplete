@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Optional, Tuple
 
 import pytest
 
@@ -22,6 +22,7 @@ from bibtexautocomplete.bibtex.normalize import (
     normalize_month,
     normalize_str,
     normalize_str_weak,
+    normalize_url,
 )
 
 tests = [
@@ -173,3 +174,20 @@ def test_matching() -> None:
         assert match_score(title, title) > ENTRY_NO_MATCH
     assert match_score(title1, title1_v) > ENTRY_NO_MATCH
     assert match_score(title2, title2_v) == ENTRY_NO_MATCH
+
+
+urls: List[Tuple[str, Optional[Tuple[str, str]]]] = [
+    ("http://google.com", ("google.com", "")),
+    ("https://google.com", ("google.com", "")),
+    ("https://google.com/path/to/something", ("google.com", "/path/to/something")),
+    ("https://google.fr?query=hello", ("google.fr", "?query=hello")),
+    ("https://google.fr/path/?query=hello", ("google.fr", "/path/?query=hello")),
+    ("file:///home/user/thingy", None),
+    ("NOT AN URL", None),
+    ("http//sfdq.com/fp", None),
+]
+
+
+@pytest.mark.parametrize(("url", "result"), urls)
+def test_normalize_url(url: str, result: Optional[Tuple[str, str]]) -> None:
+    assert normalize_url(url) == result

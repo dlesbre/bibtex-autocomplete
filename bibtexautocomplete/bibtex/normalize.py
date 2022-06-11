@@ -4,8 +4,9 @@ Functions used to normalize bibtex fields
 
 import unicodedata
 from datetime import date
-from re import search, sub
-from typing import Dict, List, Optional
+from re import compile, search, sub
+from typing import Dict, List, Optional, Tuple
+from urllib.parse import urlsplit
 
 from ..utils.constants import EntryType
 
@@ -270,3 +271,27 @@ def normalize_month(month: str) -> str:
     if norm in months:
         return str(months[norm])
     return month
+
+
+URL_REGEX = compile(
+    "((http|https)://)(www.)?"
+    + "[a-zA-Z0-9@:%._\\+~#?&//=]"
+    + "{2,256}\\.[a-z]"
+    + "{2,6}\\b([-a-zA-Z0-9@:%"
+    + "._\\+~#?&//=]*)"
+)
+
+
+def normalize_url(url: str) -> Optional[Tuple[str, str]]:
+    """Splits and url into domain/path
+    Returns none if url is not valid"""
+    if not search(URL_REGEX, url):
+        return None
+    split = urlsplit(url)
+    if split.netloc == "":
+        return None
+    domain = split.netloc
+    path = split.path
+    if split.query != "":
+        path += "?" + split.query
+    return domain, path

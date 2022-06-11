@@ -4,25 +4,35 @@ used to check that dois are valid
 """
 
 from typing import Optional
-from urllib.parse import quote, urlencode, urlsplit
+from urllib.parse import quote, urlencode
 
-from ..bibtex.normalize import normalize_str_weak
+from ..bibtex.normalize import normalize_doi, normalize_str_weak, normalize_url
 from ..lookups.abstract_base import Data
+from ..lookups.condition_mixin import ConditionMixin
 from ..lookups.https import HTTPSRateCapedLookup, RedirectFollower
 from ..utils.safe_json import SafeJSON
 
 
-class URLCheck(RedirectFollower[str, Optional[Data]]):
+class URLCheck(
+    ConditionMixin[str, Optional[Data]], RedirectFollower[str, Optional[Data]]
+):
     """Checks that an URL exists (should return 200)
     Follows redirection (up to a certain depth)"""
 
     name = "url_checker"
     accept = "text/html"
 
+    def condition(self) -> bool:
+        return self.is_valid
+
     def __init__(self, input: str):
-        split = urlsplit(input)
-        self.domain = split.netloc
-        self.path = f"{split.path}?{split.query}"
+        split = normalize_url(input)
+        if split is None:
+            self.is_valid = False
+        else:
+            self.is_valid = True
+            self.domain = split[0]
+            self.path = split[1]
 
     def process_data(self, data: Data) -> Optional[Data]:
         if data.code != 200:
@@ -31,6 +41,7 @@ class URLCheck(RedirectFollower[str, Optional[Data]]):
 
 
 class DOICheck(
+    ConditionMixin[str, Optional[bool]],
     HTTPSRateCapedLookup[str, Optional[bool]],
 ):
 
@@ -45,8 +56,18 @@ class DOICheck(
         "not found",
     ]
 
+    doi: str
+
     def __init__(self, input: str) -> None:
-        self.doi = input
+        self.input = input
+
+    def condition(self) -> bool:
+        """Checks that a doi is valid"""
+        doi = normalize_doi(self.input)
+        if doi is not None:
+            self.doi = doi
+            return True
+        return False
 
     def get_path(self) -> str:
         return self.path + quote(self.doi) + "?" + urlencode(self.params)

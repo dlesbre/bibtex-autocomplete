@@ -1,3 +1,5 @@
+import pytest
+
 from bibtexautocomplete.APIs import (
     ArxivLookup,
     CrossrefLookup,
@@ -5,6 +7,7 @@ from bibtexautocomplete.APIs import (
     ResearchrLookup,
     UnpaywallLookup,
 )
+from bibtexautocomplete.APIs.doi import DOICheck, URLCheck
 from bibtexautocomplete.bibtex.entry import BibtexEntry
 from bibtexautocomplete.lookups.abstract_base import LookupType
 from bibtexautocomplete.utils.logger import logger
@@ -93,3 +96,38 @@ class TestUnpaywall(Base):
 class TestArxiv(Base):
     Lookup = ArxivLookup
     entry = (entry3, doi3)
+
+
+dois = [
+    ("not a valid doi", False),
+    ("https://doi.org/10.1109/5.771073", True),
+    ("10.1109/5.771073", True),
+    ("10.1007/978-1-4684-5287-7", False),
+]
+
+
+@pytest.mark.parametrize(("doi", "valid"), dois)
+def test_doi_check(doi: str, valid: bool) -> None:
+    d = DOICheck(doi)
+    if d.query() is True:
+        assert valid is True
+    else:
+        assert valid is False
+
+
+urls = [
+    ("http://google.com", True),
+    ("https://google.com", True),
+    ("https://sfkmlj.jl.fs", False),
+    ("NOT AN URL", False),
+    ("http//sfdq.com/fp", False),
+]
+
+
+@pytest.mark.parametrize(("url", "valid"), urls)
+def test_url_check(url: str, valid: bool) -> None:
+    d = URLCheck(url)
+    if d.query() is not None:
+        assert valid is True
+    else:
+        assert valid is False
