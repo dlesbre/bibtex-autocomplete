@@ -192,7 +192,7 @@ class RedirectFollower(HTTPSLookup[Input, Output]):
 
     def get_data(self) -> Optional[Data]:
         data = super().get_data()
-        while data is not None and data.code in [301, 302]:
+        while data is not None and data.code in [301, 302, 303]:
             if self.response is None:
                 return data
             location = self.response.getheader("Location")
