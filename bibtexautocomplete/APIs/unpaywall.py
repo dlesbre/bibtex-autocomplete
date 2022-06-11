@@ -82,10 +82,14 @@ class UnpaywallLookup(JSON_DT_Lookup):
                 month = date[5:7]
         values = BibtexEntry()
 
+        title = result["journal_name"].to_str()
+        is_journal = result["genre"].to_str() == "journal-article"
+
         values.author = self.get_authors(result["z_authors"])
-        values.booktitle = result["journal_name"].to_str()
+        values.booktitle = None if is_journal else title
         values.doi = result["doi"].to_str()
         values.issn = result["journal_issn_l"].to_str()
+        values.journal = title if is_journal else None
         values.month = month
         values.publisher = result["publisher"].to_str()
         values.title = result["title"].to_str()
@@ -99,6 +103,7 @@ class UnpaywallLookup(JSON_DT_Lookup):
         FieldNames.BOOKTITLE,
         FieldNames.DOI,
         FieldNames.ISSN,
+        FieldNames.JOURNAL,
         FieldNames.MONTH,
         FieldNames.PUBLISHER,
         FieldNames.TITLE,
