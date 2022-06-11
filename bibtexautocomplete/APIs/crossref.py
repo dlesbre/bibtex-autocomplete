@@ -93,12 +93,15 @@ class CrossrefLookup(JSON_DAT_Lookup):
     def get_value(self, result: SafeJSON) -> BibtexEntry:
         """Extract bibtex data from JSON output"""
         year, month = self.get_date(result)
+        title = result["container-title"][0].to_str()
+        is_journal = result["type"].to_str() == "journal-article"
         values = BibtexEntry()
         values.author = self.get_authors(result["author"])
-        values.booktitle = result["container-title"][0].to_str()
+        values.booktitle = None if is_journal else title
         values.doi = result["DOI"].to_str()
         values.issn = result["ISSN"][0].to_str()
         values.isbn = result["ISBN"][0].to_str()
+        values.journal = title if is_journal else None
         values.month = month
         values.pages = result["page"].to_str()
         values.publisher = result["publisher"].to_str()
@@ -113,6 +116,7 @@ class CrossrefLookup(JSON_DAT_Lookup):
         FieldNames.DOI,
         FieldNames.ISSN,
         FieldNames.ISBN,
+        FieldNames.JOURNAL,
         FieldNames.MONTH,
         FieldNames.PAGES,
         FieldNames.PUBLISHER,
