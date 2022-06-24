@@ -57,13 +57,13 @@ The script checks that the DOIs or URLs found correspond (or redirect to) a vali
 
 Can be installed with [pip](https://pypi.org/project/pip/) :
 
-```
+```console
 pip install bibtexautocomplete
 ```
 
 You should now be able to run the script using either command:
 
-```
+```console 
 btac --version
 python3 -m bibtexautocomplete --version
 ```
@@ -78,8 +78,8 @@ This package has two dependencies (automatically installed by pip) :
 ## Usage
 
 The command line tool can be used as follows:
-```
-btac [-flags] <input_files>
+```console
+btac [--flags] <input_files>
 ```
 
 **Examples :**
