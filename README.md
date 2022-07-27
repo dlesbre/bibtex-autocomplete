@@ -86,7 +86,7 @@ btac [--flags] <input_files>
 
 - `btac my/db.bib` : reads from `./my/db.bib`, writes to  `./my/db.btac.bib`
 - `btac -i db.bib` : reads from `db.bib` and overwrites it (inplace flag)
-- `btac db1.bib db2.bib -o out1.bib -o out2.bib` reads multiple files and write their outputs to `out1.bib` and `out2.bib` respectively
+- `btac db1.bib db2.bib -o out1.bib -o out2.bib` reads multiple files and write their outputs to `out1.bib` and `out2.bib` respectively.
 
 
 **Optional arguments:**
@@ -108,6 +108,9 @@ btac [--flags] <input_files>
   Restrict which fields you wish to autocomplete. Field is a bibtex field (e.g. `author`, `doi`,...). So if you only wish to add missing doi's used `-c doi`.
 
 **Output formatting:**
+
+Unfortunately [bibtexparser](https://pypi.org/project/bibtexparser/) doesn't preserve format information, so this script will reformat your bibtex file.
+Here are a few options you can use to control the output format:
 
 - `--fa --align-values` pad fieldnames to align all values
 
