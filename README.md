@@ -88,6 +88,7 @@ btac [--flags] <input_files>
 - `btac -i db.bib` : reads from `db.bib` and overwrites it (inplace flag)
 - `btac db1.bib db2.bib -o out1.bib -o out2.bib` reads multiple files and write their outputs to `out1.bib` and `out2.bib` respectively.
 
+**Note:** the [parser](https://pypi.org/project/bibtexparser/) doesn't preserve format information, so this script will reformat your files. Some formatting options (see below) are provided.
 
 **Optional arguments:**
 
