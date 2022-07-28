@@ -94,9 +94,9 @@ btac [--flags] <input_files>
 
 - `-o --output <file.bib>`
 
-  Write output to given file. Can be used multiple times when also giving multiple inputs. Maps inputs to outputs in order in that case If there are extra inputs, use default name (`old_name.btac.bib`). Ignored in inplace (`-i`) mode.
+  Write output to given file. Can be used multiple times when also giving multiple inputs. Maps inputs to outputs in order. If there are extra inputs, uses default name (`old_name.btac.bib`). Ignored in inplace (`-i`) mode.
 
-- `-q --only-query <website>` or `-Q --dont-query <website>`
+- `-q --only-query <site>` or `-Q --dont-query <site>`
 
   Restrict which websites to query from. `<site>` must be one of: `crossref`, `dblp`, `arxiv`, `researchr`, `unpaywall`. These arguments can be used multiple times, for example to only query crossref and dblp use `-q crossref -q dblp` or `-Q researchr -Q unpaywall -Q arxiv`
 
@@ -106,7 +106,7 @@ btac [--flags] <input_files>
 
 - `-c --only-complete <field>` or `-C --dont-complete <field>`
 
-  Restrict which fields you wish to autocomplete. Field is a bibtex field (e.g. `author`, `doi`,...). So if you only wish to add missing doi's used `-c doi`.
+  Restrict which fields you wish to autocomplete. Field is a bibtex field (e.g. `author`, `doi`,...). So if you only wish to add missing DOIs use `-c doi`.
 
 **Output formatting:**
 
@@ -149,7 +149,7 @@ Here are a few options you can use to control the output format:
 
   This allows to see duplicate fields from different sources that are otherwise overwritten when merged into a single entry.
 
-  The JSON file will have the following formatting:
+  The JSON file will have the following structure:
 
   ```json
   [
@@ -176,8 +176,8 @@ Here are a few options you can use to control the output format:
 - `-O --no-output` don't write any output files (except the one specified by `--dump-data`)
 
 - `-v --verbose` verbose mode shows more info. It details entries as they are being processed and shows a summary of new fields and their source at the end. Using it more then once prints debug info (up to four times).
-- `-s --silent` hide info and progressbar. Keep showing warnings and errors. Use twice to also hide warnings, thrice to also hide errors and four times to also hide critical error, effectively killing all output.
-- `-n --no-color` don't color use ANSI codes to color and stylise output
+- `-s --silent` hide info and progressbar. Keep showing warnings and errors. Use twice to also hide warnings, thrice to also hide errors and four times to also hide critical errors, effectively killing all output.
+- `-n --no-color` don't use ANSI codes to color and stylise output
 
 - `--version` show version number
 - `-h --help` show help
