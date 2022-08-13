@@ -8,7 +8,6 @@
 [![Downloads](https://pepy.tech/badge/bibtexautocomplete)](https://pepy.tech/project/bibtexautocomplete)
 [![actions](https://img.shields.io/github/workflow/status/dlesbre/bibtex-autocomplete/Python%20application?label=tests)](https://github.com/dlesbre/bibtex-autocomplete/actions/workflows/python-app.yml)
 
-
 **bibtexautocomplete** or **btac** is a python package to autocomplete BibTeX bibliographies.
 It is inspired and expanding on the solution provided by [thando](https://tex.stackexchange.com/users/182467/thando) in this [TeX stack exchange post](https://tex.stackexchange.com/questions/6810/automatically-adding-doi-fields-to-a-hand-made-bibliography).
 
@@ -20,6 +19,13 @@ It attempts to complete a BibTeX file by querying the following domains:
 - [unpaywall.org](https://unpaywall.org/)
 
 Big thanks to all of them for allowing open, easy and well-documented access to their databases.
+
+**Contents:**
+
+- [Demo](#demo)
+- [Quick overview](#quick-overview)
+- [Installation](#installation)
+- [Usage](#usage)
 
 ## Demo
 
