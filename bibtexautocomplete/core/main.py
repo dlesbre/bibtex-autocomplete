@@ -1,3 +1,4 @@
+from pathlib import Path
 from sys import stdout
 from typing import List, Optional
 
@@ -10,7 +11,14 @@ from ..utils.constants import CONNECTION_TIMEOUT, LICENSE, SCRIPT_NAME, URL, VER
 from ..utils.logger import logger
 from ..utils.only_exclude import OnlyExclude
 from .autocomplete import BibtexAutocomplete
-from .parser import HELP_TEXT, flatten, indent_string, make_output_names, parser
+from .parser import (
+    HELP_TEXT,
+    flatten,
+    get_bibfiles,
+    indent_string,
+    make_output_names,
+    parser,
+)
 
 
 def main(argv: Optional[List[str]] = None) -> None:
@@ -73,6 +81,10 @@ def main(argv: Optional[List[str]] = None) -> None:
         fields.filter(FieldConditionMixin.fields_to_complete, lambda x: x)
     )
 
+    # No input -> CWD
+    if args.input == []:
+        args.input = [Path(".")]
+    args.input = flatten(map(get_bibfiles, args.input))
     databases = BibtexAutocomplete.read(args.input)
     completer = BibtexAutocomplete(
         databases, lookups, fields, entries, args.force_overwrite

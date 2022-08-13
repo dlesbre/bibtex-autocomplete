@@ -9,10 +9,10 @@
 [![actions](https://img.shields.io/github/workflow/status/dlesbre/bibtex-autocomplete/Python%20application?label=tests)](https://github.com/dlesbre/bibtex-autocomplete/actions/workflows/python-app.yml)
 
 
-**bibtexautocomplete** or **btac** is a python package to autocomplete bibtex bibliographies.
-It is inspired and expanding on the solution provided by [thando](https://tex.stackexchange.com/users/182467/thando) in this [tex stackexchange post](https://tex.stackexchange.com/questions/6810/automatically-adding-doi-fields-to-a-hand-made-bibliography).
+**bibtexautocomplete** or **btac** is a python package to autocomplete BibTeX bibliographies.
+It is inspired and expanding on the solution provided by [thando](https://tex.stackexchange.com/users/182467/thando) in this [TeX stack exchange post](https://tex.stackexchange.com/questions/6810/automatically-adding-doi-fields-to-a-hand-made-bibliography).
 
-It attempts to complete a bibtex file by querying the following domains:
+It attempts to complete a BibTeX file by querying the following domains:
 - [www.crossref.org](https://www.crossref.org/)
 - [arxiv.org](https://arxiv.org/)
 - [dlbp.org](https://dlbp.org)
@@ -29,9 +29,9 @@ Big thanks to all of them for allowing open, easy and well-documented access to 
 
 **How does it find matches?**
 
-`btac` queries the websites using the entry doi if known otherwise the title. So entries that don't have one of those two fields *will not* be completed.
+`btac` queries the websites using the entry DOI if known otherwise the title. So entries that don't have one of those two fields *will not* be completed.
 - Titles should be the full title, they are compared excluding case and punctuation, but titles with missing words will not match.
-- If one or more authors are present, entries with no common authors will not match. Authors are compared using lower case last names only. Be sure to use one of the correct Bibtex format for the author field:
+- If one or more authors are present, entries with no common authors will not match. Authors are compared using lower case last names only. Be sure to use one of the correct BibTeX format for the author field:
   ```bibtex
   author = {First Last and Last, First and First von Last}
   ```
@@ -73,7 +73,7 @@ python3 -m bibtexautocomplete --version
 This package has two dependencies (automatically installed by pip) :
 
 - [bibtexparser](https://bibtexparser.readthedocs.io/)
-- [alive_progress](https://github.com/rsalmei/alive-progress) (>= 2.4.0) for the fancy progressbar
+- [alive_progress](https://github.com/rsalmei/alive-progress) (>= 2.4.0) for the fancy progress bar
 
 ## Usage
 
@@ -84,9 +84,13 @@ btac [--flags] <input_files>
 
 **Examples :**
 
-- `btac my/db.bib` : reads from `./my/db.bib`, writes to  `./my/db.btac.bib`
+- `btac my/db.bib` : reads from `./my/db.bib`, writes to `./my/db.btac.bib`
 - `btac -i db.bib` : reads from `db.bib` and overwrites it (inplace flag)
 - `btac db1.bib db2.bib -o out1.bib -o out2.bib` reads multiple files and write their outputs to `out1.bib` and `out2.bib` respectively.
+- `btac folder` : reads from all files ending with `.bib` in folder.
+  Excludes `.btac.bib` files unless they are the only `.bib` files present.
+  Writes to `folder/file.btac.bib` unless inplace flag is set.
+- `btac` with no inputs is same as `btac .`
 
 **Note:** the [parser](https://pypi.org/project/bibtexparser/) doesn't preserve format information, so this script will reformat your files. Some formatting options (see below) are provided.
 
@@ -102,18 +106,18 @@ btac [--flags] <input_files>
 
 - `-e --only-entry <id>` or `-E --exclude-entry <id>`
 
-  Restrict which entries should be autocomplete. `<id>` is the entry id used in your bibtex file (e.g. `@inproceedings{<id> ... }`). These arguments can also be used multiple times to select only/exclude multiple entries
+  Restrict which entries should be autocomplete. `<id>` is the entry ID used in your BibTeX file (e.g. `@inproceedings{<id> ... }`). These arguments can also be used multiple times to select only/exclude multiple entries
 
 - `-c --only-complete <field>` or `-C --dont-complete <field>`
 
-  Restrict which fields you wish to autocomplete. Field is a bibtex field (e.g. `author`, `doi`,...). So if you only wish to add missing DOIs use `-c doi`.
+  Restrict which fields you wish to autocomplete. Field is a BibTeX field (e.g. `author`, `doi`,...). So if you only wish to add missing DOIs use `-c doi`.
 
 **Output formatting:**
 
-Unfortunately [bibtexparser](https://pypi.org/project/bibtexparser/) doesn't preserve format information, so this script will reformat your bibtex file.
+Unfortunately [bibtexparser](https://pypi.org/project/bibtexparser/) doesn't preserve format information, so this script will reformat your BibTeX file.
 Here are a few options you can use to control the output format:
 
-- `--fa --align-values` pad fieldnames to align all values
+- `--fa --align-values` pad field names to align all values
 
   ```bibtex
   @article{Example,
@@ -139,7 +143,7 @@ Here are a few options you can use to control the output format:
 
 **Flags:**
 - `-i --inplace` Modify input files inplace, ignores any specified output files
-- `-f --force-overwrite`  Overwrite already present fields. The default is to overwrite a field if it is empty or absent
+- `-f --force-overwrite` Overwrite already present fields. The default is to overwrite a field if it is empty or absent
 - `-t --timeout <float>` set timeout on request in seconds, default: 10.0 s, increase this if you are getting a lot of timeouts.
 - `-S --ignore-ssl` bypass SSL verification. Use this if you encounter the error:
   ```
@@ -177,9 +181,9 @@ Here are a few options you can use to control the output format:
 
 - `-O --no-output` don't write any output files (except the one specified by `--dump-data`)
 
-- `-v --verbose` verbose mode shows more info. It details entries as they are being processed and shows a summary of new fields and their source at the end. Using it more then once prints debug info (up to four times).
-- `-s --silent` hide info and progressbar. Keep showing warnings and errors. Use twice to also hide warnings, thrice to also hide errors and four times to also hide critical errors, effectively killing all output.
-- `-n --no-color` don't use ANSI codes to color and stylise output
+- `-v --verbose` verbose mode shows more info. It details entries as they are being processed and shows a summary of new fields and their source at the end. Using it more than once prints debug info (up to four times).
+- `-s --silent` hide info and progress bar. Keep showing warnings and errors. Use twice to also hide warnings, thrice to also hide errors and four times to also hide critical errors, effectively killing all output.
+- `-n --no-color` don't use ANSI codes to color and stylize output
 
 - `--version` show version number
 - `-h --help` show help

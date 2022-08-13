@@ -8,7 +8,6 @@ PREFIX = "./tests/"
 EMPTY_BIB = PREFIX + "test_2.bib"
 
 args = [
-    [],
     ["-h"],
     ["--help"],
     ["--version"],

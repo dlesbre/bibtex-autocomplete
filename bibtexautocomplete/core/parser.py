@@ -3,8 +3,9 @@ Command-line argument parser
 """
 
 from argparse import ArgumentParser
+from os import listdir
 from pathlib import Path
-from typing import List, TypeVar
+from typing import Iterable, List, TypeVar
 
 from ..APIs import LOOKUP_NAMES
 from ..utils.constants import BTAC_FILENAME, CONNECTION_TIMEOUT, SCRIPT_NAME
@@ -13,7 +14,7 @@ from ..utils.logger import logger
 T = TypeVar("T")
 
 
-def flatten(list_of_lists: List[List[T]]) -> List[T]:
+def flatten(list_of_lists: Iterable[List[T]]) -> List[T]:
     """flatten a nested list"""
     return [val for sublist in list_of_lists for val in sublist]
 
@@ -65,6 +66,37 @@ def indent_string(indent: str) -> str:
         )
         exit(5)
     return sane
+
+
+def filter_bibs(files: list[Path]) -> list[Path]:
+    """Filter for files ending in .bib
+    Ignores generated ".btac.bib" files unless they are the only ones present"""
+    bibs = []
+    btac_bibs = []
+    for file in files:
+        if str(file).endswith(BTAC_FILENAME.format(name="", suffix=".bib")):
+            btac_bibs.append(file)
+        elif file.suffix == ".bib":
+            bibs.append(file)
+    if bibs:
+        return bibs
+    return btac_bibs
+
+
+def get_bibfiles(input: Path) -> List[Path]:
+    """Finds bibfiles contained in a folder if given as inputt"""
+    if not input.is_dir():
+        return [input]
+    try:
+        files = [input / x for x in listdir(input) if (input / x).is_file()]
+    except IOError as err:
+        logger.critical(
+            "Failed to read '{filepath}': {FgPurple}{err}{Reset}",
+            filepath=str(input),
+            err=err,
+        )
+        exit(1)
+    return filter_bibs(files)
 
 
 parser = ArgumentParser(
