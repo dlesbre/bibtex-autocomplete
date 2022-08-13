@@ -171,3 +171,22 @@ class Logger:
 
 
 logger = Logger()
+
+
+class Hint:
+    """Hints are messages displayed only once"""
+
+    prefix = "{FgBlue}Hint:{Reset} "
+    indent = " " * 6
+
+    emitted: bool
+    message: str
+
+    def __init__(self, message: str) -> None:
+        self.message = self.prefix + message.strip().replace("\n", self.indent + "\n")
+        self.emitted = False
+
+    def emit(self) -> None:
+        if not self.emitted:
+            self.emitted = True
+            logger.info(self.message)

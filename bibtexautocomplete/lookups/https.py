@@ -10,9 +10,16 @@ from urllib.parse import urlencode
 
 from ..bibtex.normalize import normalize_url
 from ..utils.constants import CONNECTION_TIMEOUT, MIN_QUERY_DELAY, USER_AGENT
-from ..utils.logger import logger
+from ..utils.logger import Hint, logger
 from ..utils.safe_json import JSONType
 from .abstract_base import AbstractDataLookup, Data, Input, Output
+
+DNS_Fail_Hint = Hint("check your internet connection or DNS server")
+SSL_Fail_Hint = Hint(
+    "run 'pip install --upgrade certifi' to update certificates\n"
+    "or run btac with the -S / --ignore-ssl flag."
+)
+TIMEOUT_Hint = Hint("you can increase timeout with -t / --timeout option.")
 
 
 class HTTPSLookup(AbstractDataLookup[Input, Output]):
@@ -63,9 +70,6 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
     response: Optional[HTTPResponse] = None
 
     _last_query_info: Dict[str, JSONType] = {}
-
-    DNS_Fail_Hint: ClassVar[bool] = False
-    SSL_Fail_Hint: ClassVar[bool] = False
 
     def get_headers(self) -> Dict[str, str]:
         """Return the headers used in an HTTPS request"""
@@ -165,6 +169,7 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
             logger.warn(
                 "connection timeout ({timeout}s)", timeout=self.connection_timeout
             )
+            TIMEOUT_Hint.emit()
             return None
         except socket.gaierror as err:
             if self.silent_fail:
@@ -175,19 +180,12 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
             if str(err) == "[Errno -3] Temporary failure in name resolution":
                 padding = "\n" + " " * (len(error_name) + 2)
                 error_msg += "{}Could not resolve '{}'".format(padding, domain)
-                if not HTTPSLookup.DNS_Fail_Hint:
-                    hint = "{FgBlue}Hint:{Reset} check your internet connection or DNS server"
-                    HTTPSLookup.DNS_Fail_Hint = True
+                hint = DNS_Fail_Hint
             elif "[SSL: CERTIFICATE_VERIFY_FAILED]" in str(err):
-                if not HTTPSLookup.SSL_Fail_Hint:
-                    hint = (
-                        "{FgBlue}Hint:{Reset} run 'pip install --upgrade certifi' to update certificates\n"
-                        + "      or run btac with the -S / --ignore-ssl flag."
-                    )
-                    HTTPSLookup.SSL_Fail_Hint = True
+                hint = SSL_Fail_Hint
             logger.warn(error_msg, err=err, error=error_name)
             if hint is not None:
-                logger.info(hint)
+                hint.emit()
             return None
         except OSError as err:
             if self.silent_fail:
