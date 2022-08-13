@@ -29,7 +29,7 @@ Big thanks to all of them for allowing open, easy and well-documented access to 
 
 ## Demo
 
-![demo.svg](https://raw.githubusercontent.com/dlesbre/bibtex-autocomplete/master/imgs/demo.svg)
+![demo.svg](https://raw.githubusercontent.com/dlesbre/bibtex-autocomplete/2d1a01f5ec94c8af9c2f3c1a810eca51bb4cce74/imgs/demo.svg)
 
 ## Quick overview
 
