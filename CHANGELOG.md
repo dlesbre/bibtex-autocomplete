@@ -1,5 +1,16 @@
 # Change Log
 
+## Version 1.1.3 - 2022-08-13
+
+- Autodetect files in directories: now `btac folder/` will autocomplete all bib
+  files in the given folder, excluding `.btac.bib` files unless they are the
+  only files present
+- `btac` with no arguments is now same as `btac .`
+- Better indent option `--fi / --indent`, now supports using a number of
+  specifying with `_`, `n` and `t` for easier console input.
+- Added a hint for timeout warnings
+- Clarified some things in README
+
 ## Version 1.1.2 - 2022-06-11
 
 - Add common authors check when matching entries: if your entries has some
