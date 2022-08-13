@@ -10,7 +10,7 @@ from ..utils.constants import CONNECTION_TIMEOUT, LICENSE, SCRIPT_NAME, URL, VER
 from ..utils.logger import logger
 from ..utils.only_exclude import OnlyExclude
 from .autocomplete import BibtexAutocomplete
-from .parser import HELP_TEXT, flatten, make_output_names, parser
+from .parser import HELP_TEXT, flatten, indent_string, make_output_names, parser
 
 
 def main(argv: Optional[List[str]] = None) -> None:
@@ -57,7 +57,7 @@ def main(argv: Optional[List[str]] = None) -> None:
     writer.align_values = args.align_values
     writer.comma_first = args.comma_first
     writer.add_trailing_comma = args.no_trailing_comma
-    writer.indent = args.indent
+    writer.indent = indent_string(args.indent)
 
     HTTPSLookup.connection_timeout = args.timeout
     HTTPSLookup.ignore_ssl = args.ignore_ssl

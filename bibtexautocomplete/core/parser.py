@@ -48,6 +48,25 @@ def make_output_names(inputs: List[Path], outputs: List[Path]) -> List[Path]:
     return outputs
 
 
+def indent_string(indent: str) -> str:
+    """Reads and formats an ident string
+    whitespace -> whitespace
+    "\\t" -> tab
+    number -> number of spaces"""
+    if indent.isnumeric():
+        return " " * int(indent)
+    sane = indent.replace("t", "\t").replace("n", "\n").replace("_", " ")
+    if not (sane.isspace() or sane == ""):
+        logger.critical(
+            (
+                "--fi/--indent should be a number or string "
+                "with spaces, '_', 't' and 'n' only.\nGot: '{}'"
+            ).format(indent)
+        )
+        exit(5)
+    return sane
+
+
 parser = ArgumentParser(
     prog=SCRIPT_NAME,
     add_help=False,
@@ -132,6 +151,8 @@ Polls the following databases:
   {FgYellow}--fc --comma-first{Reset}         comma first syntax (, title = ...)
   {FgYellow}--fl --no-trailing-comma{Reset}   don't add a last trailing comma
   {FgYellow}--fi --indent{Reset} {FgGreen}<space>{Reset}      space used for indentation, default is a tab
+        Can be specified as an number (number of space) or a string with spaces
+        and '_' 't' 'n' characters to mark space, tabs and newlines.
 
 {StBold}Flags:{Reset}
   {FgYellow}-i --inplace{Reset}          Modify input files inplace

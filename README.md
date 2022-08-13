@@ -63,7 +63,7 @@ pip install bibtexautocomplete
 
 You should now be able to run the script using either command:
 
-```console 
+```console
 btac --version
 python3 -m bibtexautocomplete --version
 ```
@@ -133,7 +133,9 @@ Here are a few options you can use to control the output format:
   ```
 
 - `--fl --no-trailing-comma` don't add the last trailing comma
-- `--fi --indent <space>` space used for indentation, default is a tab
+- `--fi --indent <space>` space used for indentation, default is a tab.
+  Can be specified as a number (number of spaces) or a string with spaces
+  and `_`, `t`, and `n` characters to mark space, tabs and newlines.
 
 **Flags:**
 - `-i --inplace` Modify input files inplace, ignores any specified output files

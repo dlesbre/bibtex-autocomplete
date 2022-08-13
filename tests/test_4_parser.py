@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from bibtexautocomplete.core.parser import make_output_name
+from bibtexautocomplete.core.parser import indent_string, make_output_name
 
 test = [
     ("ex.bib", "ex.btac.bib"),
@@ -20,3 +20,19 @@ test = [
 @pytest.mark.parametrize(("input", "expected"), test)
 def test_make_output_name(input: str, expected: str) -> None:
     assert str(make_output_name(Path(input))) == str(Path(expected))
+
+
+test = [
+    ("5", "     "),
+    ("0", ""),
+    ("", ""),
+    ("  ", "  "),
+    ("\t\t\t", "\t\t\t"),
+    ("tnt_", "\t\n\t "),
+    ("  \ttn_ ", "  \t\t\n  "),
+]
+
+
+@pytest.mark.parametrize(("input", "res"), test)
+def test_indent(input: str, res: str) -> None:
+    assert indent_string(input) == res
