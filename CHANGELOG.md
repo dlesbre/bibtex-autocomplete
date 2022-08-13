@@ -2,22 +2,28 @@
 
 ## Version 1.1.2 - 2022-06-11
 
-- Add common authors check when matching entries: if your entries has some author field then entries will no common authors will be ignored and entries with common authors will be boosted
-- Add sanity check for found URLs and DOIs, `btac` now queries them and follows a few redirection to check they resolve to an existing page
+- Add common authors check when matching entries: if your entries has some
+  author field then entries will no common authors will be ignored and entries
+  with common authors will be boosted
+- Add sanity check for found URLs and DOIs, `btac` now queries them and follows
+  a few redirections to check they resolve to an existing page
 - Some prettier messages and resolve hints for connection errors
 - Add `-S/--ignore-ssl` flag
-- Add some logic to dispatch crossref's `container-title` and unpaywall's `journal-title` between `journal` and `booktitle` fields.
+- Add some logic to dispatch crossref's `container-title` and unpaywall's
+  `journal-title` between `journal` and `booktitle` fields.
 
 ## Version 1.1.1 - 2022-05-27
 
-- Fix decoding error when opening utf-8 files on windows
-- Add extra fields `query-url`, `query-response-time` and `query-status` to data dumps file
+- Fix decoding error when opening utf-8 files on Windows
+- Add extra fields `query-url`, `query-response-time` and `query-status` to data
+  dumps file
 - Added github actions
 
 ## Version 1.1.0 - 2022-05-21
 
 - Now also queries arxiv
-- Normalize title before querying, should improve matches for title with special characters
+- Normalize title before querying, should improve matches for title with special
+  characters
 - Added `--dump-data` option
 
 ## Version 1.0.5 - 2022-04-13
@@ -35,17 +41,18 @@
 
 - Clarify new field source priorities
 - Fixed unpaywall setting unknown months to 1
-- Switch to strict mypy typechecking
+- Switch to strict mypy type checking
 - Unsupport python 3.6 as alive-progress dropped it
 - Switch back to custom logger
 
 ## Version 1.0.2 - 2022-03-21
 
 - Fixed missing submodules in upload
-- Removed color from progressbar to avoid issues
+- Removed color from progress bar to avoid issues
 - Fixed color not being reset on some terminals
 - Added wheel for real this time
-- Switch to root logger to avoid custom dependency (temporary, until alive-progress is fixed)
+- Switch to root logger to avoid custom dependency (temporary, until
+  alive-progress is fixed)
 - Rewrote README with more detail on options
 
 ## Version 1.0.1 - 2022-03-19
