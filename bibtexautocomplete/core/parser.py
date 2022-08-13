@@ -68,7 +68,7 @@ def indent_string(indent: str) -> str:
     return sane
 
 
-def filter_bibs(files: list[Path]) -> list[Path]:
+def filter_bibs(files: List[Path]) -> List[Path]:
     """Filter for files ending in .bib
     Ignores generated ".btac.bib" files unless they are the only ones present"""
     bibs = []
