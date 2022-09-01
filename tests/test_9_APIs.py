@@ -1,3 +1,5 @@
+from typing import Any, Type
+
 import pytest
 
 from bibtexautocomplete.APIs import (
@@ -9,7 +11,7 @@ from bibtexautocomplete.APIs import (
 )
 from bibtexautocomplete.APIs.doi import DOICheck, URLCheck
 from bibtexautocomplete.bibtex.entry import BibtexEntry
-from bibtexautocomplete.lookups.abstract_base import LookupType
+from bibtexautocomplete.lookups.https import HTTPSLookup
 from bibtexautocomplete.utils.logger import logger
 
 logger.set_verbosity(4)
@@ -44,8 +46,12 @@ doi3 = "10.1103/physrevb.85.115117"
 
 
 class Base:
-    Lookup: LookupType
+    Lookup: Type[HTTPSLookup[Any, Any]]
     entry = (entry2, doi2)
+
+    @pytest.fixture(autouse=True)
+    def incr_timeout(self) -> None:
+        self.Lookup.connection_timeout = 60.0
 
     def test_valid(self) -> None:
         a = self.Lookup(BibtexEntry(self.entry[0]))
