@@ -87,7 +87,7 @@ def main(argv: Optional[List[str]] = None) -> None:
     args.input = flatten(map(get_bibfiles, args.input))
     databases = BibtexAutocomplete.read(args.input)
     completer = BibtexAutocomplete(
-        databases, lookups, fields, entries, args.force_overwrite
+        databases, lookups, fields, entries, args.force_overwrite, args.prefix
     )
     try:
         completer.autocomplete(args.verbose < 0)

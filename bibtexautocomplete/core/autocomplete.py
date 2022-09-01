@@ -27,7 +27,7 @@ from ..bibtex.entry import BibtexEntry, FieldNames
 from ..bibtex.io import file_read, file_write, get_entries
 from ..bibtex.normalize import has_field
 from ..lookups.abstract_base import LookupType
-from ..utils.constants import MAX_THREAD_NB, EntryType
+from ..utils.constants import FIELD_PREFIX, MAX_THREAD_NB, EntryType
 from ..utils.logger import VERBOSE_INFO, logger
 from .data_dump import DataDump
 from .threads import LookupThread
@@ -60,6 +60,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
     fields: Container[str]
     entries: Container[str]
     force_overwrite: bool
+    prefix: str
     dumps: List[DataDump]
 
     changed_fields: int
@@ -76,6 +77,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         fields: Container[str],
         entries: Container[str],
         force_overwrite: bool,
+        prefix: bool = False,
     ):
         self.bibdatabases = bibdatabases
         self.lookups = list(lookups)
@@ -86,6 +88,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         self.changed_fields = 0
         self.changes = []
         self.dumps = []
+        self.prefix = FIELD_PREFIX if prefix else ""
 
     def __iter__(self) -> Iterator[EntryType]:
         """Iterate through entries"""
@@ -155,7 +158,9 @@ class BibtexAutocomplete(Iterable[EntryType]):
                         if result is not None:
                             to_add = self.combine(entry, result)
                             to_add = self.sanitize(to_add)
-                            entry.update(to_add)
+                            entry.update(
+                                {self.prefix + field: to_add[field] for field in to_add}
+                            )
                             changes.extend(
                                 (field, value, thread.name)
                                 for field, value in to_add.items()

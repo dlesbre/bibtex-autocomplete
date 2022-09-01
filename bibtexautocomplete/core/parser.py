@@ -132,6 +132,7 @@ parser.add_argument("--no-trailing-comma", "--fl", action="store_false")
 parser.add_argument("--indent", "--fi", default="\t")
 
 parser.add_argument("--force-overwrite", "-f", action="store_true")
+parser.add_argument("--prefix", "-p", action="store_true")
 parser.add_argument("--inplace", "-i", action="store_true")
 parser.add_argument("--timeout", "-t", type=float, default=CONNECTION_TIMEOUT)
 parser.add_argument("--verbose", "-v", action="count", default=0)
@@ -191,6 +192,10 @@ Polls the following databases:
         ignores any specified output files
   {FgYellow}-f --force-overwrite{Reset}  Overwrite already present fields
         The default is to overwrite a field if it is empty or absent
+  {FgYellow}-p --prefix{Reset}           Write new fields with a prefix
+        eg: will write "BTACtitle = ..." instead ot "title = ..." in the bib file
+        Can overwrite existing fields starting with BTACxxxx, even without the -f option.
+        Can be combined with -f to safely show info for already present fields
   {FgYellow}-t --timeout{Reset} {FgGreen}<float>{Reset}  set timeout on request, default: {TIMEOUT} s
   {FgYellow}-S --ignore-ssl{Reset}       Ignore SSL verification when performing queries
 
