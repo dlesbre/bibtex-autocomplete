@@ -55,6 +55,10 @@ def main(argv: Optional[List[str]] = None) -> None:
     logger.set_verbosity(args.verbose)
 
     args.input = flatten(args.input)
+    # No input -> CWD
+    if args.input == []:
+        args.input = [Path(".")]
+    args.input = flatten(map(get_bibfiles, args.input))
     if args.inplace:
         if args.output != []:
             logger.warn("Inplace mode, ignoring specified output files")
@@ -81,10 +85,6 @@ def main(argv: Optional[List[str]] = None) -> None:
         fields.filter(FieldConditionMixin.fields_to_complete, lambda x: x)
     )
 
-    # No input -> CWD
-    if args.input == []:
-        args.input = [Path(".")]
-    args.input = flatten(map(get_bibfiles, args.input))
     databases = BibtexAutocomplete.read(args.input)
     completer = BibtexAutocomplete(
         databases, lookups, fields, entries, args.force_overwrite, args.prefix
