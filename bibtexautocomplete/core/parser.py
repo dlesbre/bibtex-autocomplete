@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Iterable, List, TypeVar
 
 from ..APIs import LOOKUP_NAMES
+from ..bibtex.entry import FieldNamesSet
 from ..utils.constants import BTAC_FILENAME, CONNECTION_TIMEOUT, SCRIPT_NAME
 from ..utils.logger import logger
 
@@ -105,6 +106,8 @@ parser = ArgumentParser(
     usage="btac [--options] <input_files>\nSee help for a list of options.\n",
 )
 
+FIELD_NAMES = sorted(FieldNamesSet)
+
 parser.add_argument(
     "--dont-query", "-Q", action="append", default=[], choices=LOOKUP_NAMES
 )
@@ -112,16 +115,14 @@ parser.add_argument(
     "--only-query", "-q", action="append", default=[], choices=LOOKUP_NAMES
 )
 parser.add_argument(
-    "--dont-complete",
-    "-C",
-    action="append",
-    default=[],
+    "--dont-complete", "-C", action="append", default=[], choices=FIELD_NAMES
 )
 parser.add_argument(
     "--only-complete",
     "-c",
     action="append",
     default=[],
+    choices=FIELD_NAMES,
 )
 parser.add_argument("--exclude-entry", "-E", action="append", default=[])
 parser.add_argument("--only-entry", "-e", action="append", default=[])
