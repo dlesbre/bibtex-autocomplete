@@ -1,5 +1,13 @@
 # Change Log
 
+## Version 1.1.4 - 2022-09-16
+
+- Add `-p / --prefix` flag
+- Add filtered down counter (with `-e` and `-E` options) to output
+- Add warning for IDs given with `-e` and `-E` that don't appear in output
+- Fix a bug when making output names for multiple files from a directory
+- Fix script not installing on Windows CMD
+
 ## Version 1.1.3 - 2022-08-13
 
 - Autodetect files in directories: now `btac folder/` will autocomplete all bib
