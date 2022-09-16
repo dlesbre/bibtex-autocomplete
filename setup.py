@@ -18,7 +18,9 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),
-    scripts=["scripts/btac"],
+    entrypoints={
+        "console_scripts": "btac=bibtexautocomplete.main",
+    },
     install_requires=[
         "bibtexparser",
         "alive-progress>=2.4.0",
