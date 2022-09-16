@@ -29,6 +29,7 @@ from ..bibtex.normalize import has_field
 from ..lookups.abstract_base import LookupType
 from ..utils.constants import FIELD_PREFIX, MAX_THREAD_NB, EntryType
 from ..utils.logger import VERBOSE_INFO, logger
+from ..utils.only_exclude import OnlyExclude
 from .data_dump import DataDump
 from .threads import LookupThread
 
@@ -58,7 +59,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
     bibdatabases: List[BibDatabase]
     lookups: List[LookupType]
     fields: Container[str]
-    entries: Container[str]
+    entries: OnlyExclude[str]
     force_overwrite: bool
     prefix: str
     dumps: List[DataDump]
@@ -75,7 +76,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         bibdatabases: List[BibDatabase],
         lookups: Iterable[LookupType],
         fields: Container[str],
-        entries: Container[str],
+        entries: OnlyExclude[str],
         force_overwrite: bool,
         prefix: bool = False,
     ):
@@ -104,11 +105,16 @@ class BibtexAutocomplete(Iterable[EntryType]):
 
     def print_filters(self) -> None:
         """Prints entry filter effects"""
-        all = [x["ID"] for db in self.bibdatabases for x in get_entries(db)]
-        total = len(all)
+        all_entries = [x["ID"] for db in self.bibdatabases for x in get_entries(db)]
+        total = len(all_entries)
         filtered = self.count_entries()
         if total > filtered:
             logger.info("Filtered down to {} entries".format(filtered))
+        warn_only, warn_exclude = self.entries.unused(all_entries)
+        for x in sorted(warn_only):
+            logger.warn('No entry with ID "{ID}"', ID=x)
+        for x in sorted(warn_exclude):
+            logger.warn('No entry with ID "{ID}"', ID=x)
 
     @memoize
     def get_id_padding(self) -> int:

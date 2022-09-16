@@ -4,15 +4,9 @@ a list of contained elements or a list of excluded elements
 """
 
 
-from typing import Callable, Container, Iterable, Optional, Protocol, Sized, TypeVar
+from typing import Callable, Container, Iterable, List, Optional, Set, Tuple, TypeVar
 
 U = TypeVar("U", covariant=True)
-
-
-class SizedContainer(Protocol, Sized, Container[U]):
-    """Type hint for containers that define __len__"""
-
-    pass
 
 
 T = TypeVar("T")
@@ -26,12 +20,10 @@ class OnlyExclude(Container[T]):
     Implement the in operator
     and a filter iterator"""
 
-    onlys: Optional[Container[T]]
-    nots: Optional[Container[T]]
+    onlys: Optional[List[T]]
+    nots: Optional[List[T]]
 
-    def __init__(
-        self, onlys: Optional[Container[T]], nots: Optional[Container[T]]
-    ) -> None:
+    def __init__(self, onlys: Optional[List[T]], nots: Optional[List[T]]) -> None:
         """Create a new instance with onlys or nots.
         If both are specified, onlys takes precedence.
         Not that an empty container is not None,
@@ -41,9 +33,7 @@ class OnlyExclude(Container[T]):
         self.nots = nots
 
     @classmethod
-    def from_nonempty(
-        cls, onlys: SizedContainer[T], nots: SizedContainer[T]
-    ) -> "OnlyExclude[T]":
+    def from_nonempty(cls, onlys: List[T], nots: List[T]) -> "OnlyExclude[T]":
         """A different initializer, which considers empty containers to be None"""
         o = onlys if len(onlys) > 0 else None
         n = nots if len(nots) > 0 else None
@@ -61,3 +51,22 @@ class OnlyExclude(Container[T]):
         """Returns a filtered Iterator
         Note that this filter is consumed after the first use"""
         return filter(lambda x: map(x) in self, iterable)
+
+    def unused(self, iterable: Iterable[T]) -> Tuple[Set[T], Set[T]]:
+        """Return set of unused filters:
+        - set of unused only filters
+        - set of unused not filters"""
+        if self.onlys is not None:
+            unused = set(self.onlys)
+            for x in iterable:
+                if x in self.onlys:
+                    unused.discard(x)
+            nots = set() if self.nots is None else set(self.nots)
+            return unused, nots
+        if self.nots is not None:
+            unused = set(self.nots)
+            for x in iterable:
+                if x in self.nots:
+                    unused.discard(x)
+            return set(), unused
+        return set(), set()
