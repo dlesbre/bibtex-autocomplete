@@ -89,6 +89,7 @@ def main(argv: Optional[List[str]] = None) -> None:
     completer = BibtexAutocomplete(
         databases, lookups, fields, entries, args.force_overwrite, args.prefix
     )
+    completer.print_filters()
     try:
         completer.autocomplete(args.verbose < 0)
         completer.print_changes()

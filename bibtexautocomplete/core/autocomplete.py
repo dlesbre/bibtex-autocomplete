@@ -102,6 +102,14 @@ class BibtexAutocomplete(Iterable[EntryType]):
         # Its official, functional programming has infected me...
         return reduce(lambda x, _y: x + 1, self, 0)
 
+    def print_filters(self) -> None:
+        """Prints entry filter effects"""
+        all = [x["ID"] for db in self.bibdatabases for x in get_entries(db)]
+        total = len(all)
+        filtered = self.count_entries()
+        if total > filtered:
+            logger.info("Filtered down to {} entries".format(filtered))
+
     @memoize
     def get_id_padding(self) -> int:
         """Return the max length of entries' ID
