@@ -194,9 +194,9 @@ Polls the following databases:
   {FgYellow}-f --force-overwrite{Reset}  Overwrite already present fields
         The default is to overwrite a field if it is empty or absent
   {FgYellow}-p --prefix{Reset}           Write new fields with a prefix
-        eg: will write "BTACtitle = ..." instead ot "title = ..." in the bib file
+        eg: will write "BTACtitle = ..." instead of "title = ..." in the bib file.
         Can overwrite existing fields starting with BTACxxxx, even without the -f option.
-        Can be combined with -f to safely show info for already present fields
+        Can be combined with -f to safely show info for already present fields.
   {FgYellow}-t --timeout{Reset} {FgGreen}<float>{Reset}  set timeout on request, default: {TIMEOUT} s
   {FgYellow}-S --ignore-ssl{Reset}       Ignore SSL verification when performing queries
 

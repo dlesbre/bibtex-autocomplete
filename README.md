@@ -1,3 +1,5 @@
+<!-- LTeX: language=en -->
+
 # Bibtex Autocomplete
 
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg)](https://github.com/dlesbre/bibtex-autocomplete/graphs/commit-activity)
@@ -18,7 +20,8 @@ It attempts to complete a BibTeX file by querying the following domains:
 - [researchr.org](https://researchr.org/)
 - [unpaywall.org](https://unpaywall.org/)
 
-Big thanks to all of them for allowing open, easy and well-documented access to their databases.
+Big thanks to all of them for allowing open, easy and well-documented access to
+their databases.
 
 **Contents:**
 
@@ -35,29 +38,45 @@ Big thanks to all of them for allowing open, easy and well-documented access to 
 
 **How does it find matches?**
 
-`btac` queries the websites using the entry DOI if known otherwise the title. So entries that don't have one of those two fields *will not* be completed.
-- Titles should be the full title, they are compared excluding case and punctuation, but titles with missing words will not match.
-- If one or more authors are present, entries with no common authors will not match. Authors are compared using lower case last names only. Be sure to use one of the correct BibTeX format for the author field:
+`btac` queries the websites using the entry DOI if known otherwise the title. So
+entries that don't have one of those two fields *will not* be completed.
+- Titles should be the full title, they are compared excluding case and
+  punctuation, but titles with missing words will not match.
+- If one or more authors are present, entries with no common authors will not
+  match. Authors are compared using lower case last names only. Be sure to use
+  one of the correct BibTeX format for the author field:
   ```bibtex
   author = {First Last and Last, First and First von Last}
   ```
-  (see [https://www.bibtex.com/f/author-field/](https://www.bibtex.com/f/author-field/) for full details)
+  (see
+  [https://www.bibtex.com/f/author-field/](https://www.bibtex.com/f/author-field/)
+  for full details)
 
 **Disclaimers**
 
-- There is no guarantee that the script will find matches for your entries, or that the websites will have any data to add to your entries, (or even that the website data is correct, but that's not for me to say...)
+- There is no guarantee that the script will find matches for your entries, or
+  that the websites will have any data to add to your entries, (or even that the
+  website data is correct, but that's not for me to say...)
 
-- The script is designed to minimize the chance of false positives - that is adding data from another similar-ish entry to your entry. If you find any such false positive please report them using the [issue tracker](https://github.com/dlesbre/bibtex-autocomplete/issues).
+- The script is designed to minimize the chance of false positives - that is
+  adding data from another similar-ish entry to your entry. If you find any such
+  false positive please report them using the [issue
+  tracker](https://github.com/dlesbre/bibtex-autocomplete/issues).
 
 **How are entries completed?**
 
-Once responses from all websites have been found, the script will add fields from website with the following priority : crossref > arxiv > dblp > researchr > unpaywall.
+Once responses from all websites have been found, the script will add fields
+from website with the following priority : crossref > arxiv > dblp > researchr >
+unpaywall.
 
-So if both crossref's and dblp's response contain a publisher, the one from crossref will be used.
+So if both crossref's and dblp's response contain a publisher, the one from
+crossref will be used.
 
-The script will not overwrite any user given non-empty fields, unless the `-f/--force-overwrite` flag is given.
+The script will not overwrite any user given non-empty fields, unless the
+`-f/--force-overwrite` flag is given.
 
-The script checks that the DOIs or URLs found correspond (or redirect to) a valid webpage before adding them to an entry.
+The script checks that the DOIs or URLs found correspond (or redirect to) a
+valid webpage before adding them to an entry.
 
 ## Installation
 
@@ -92,36 +111,48 @@ btac [--flags] <input_files>
 
 - `btac my/db.bib` : reads from `./my/db.bib`, writes to `./my/db.btac.bib`
 - `btac -i db.bib` : reads from `db.bib` and overwrites it (inplace flag)
-- `btac db1.bib db2.bib -o out1.bib -o out2.bib` reads multiple files and write their outputs to `out1.bib` and `out2.bib` respectively.
-- `btac folder` : reads from all files ending with `.bib` in folder.
-  Excludes `.btac.bib` files unless they are the only `.bib` files present.
-  Writes to `folder/file.btac.bib` unless inplace flag is set.
+- `btac db1.bib db2.bib -o out1.bib -o out2.bib` reads multiple files and write
+  their outputs to `out1.bib` and `out2.bib` respectively.
+- `btac folder` : reads from all files ending with `.bib` in folder. Excludes
+  `.btac.bib` files unless they are the only `.bib` files present. Writes to
+  `folder/file.btac.bib` unless inplace flag is set.
 - `btac` with no inputs is same as `btac .`
 
-**Note:** the [parser](https://pypi.org/project/bibtexparser/) doesn't preserve format information, so this script will reformat your files. Some formatting options (see below) are provided.
+**Note:** the [parser](https://pypi.org/project/bibtexparser/) doesn't preserve
+format information, so this script will reformat your files. Some formatting
+options (see below) are provided.
 
 **Optional arguments:**
 
 - `-o --output <file.bib>`
 
-  Write output to given file. Can be used multiple times when also giving multiple inputs. Maps inputs to outputs in order. If there are extra inputs, uses default name (`old_name.btac.bib`). Ignored in inplace (`-i`) mode.
+  Write output to given file. Can be used multiple times when also giving
+  multiple inputs. Maps inputs to outputs in order. If there are extra inputs,
+  uses default name (`old_name.btac.bib`). Ignored in inplace (`-i`) mode.
 
 - `-q --only-query <site>` or `-Q --dont-query <site>`
 
-  Restrict which websites to query from. `<site>` must be one of: `crossref`, `dblp`, `arxiv`, `researchr`, `unpaywall`. These arguments can be used multiple times, for example to only query crossref and dblp use `-q crossref -q dblp` or `-Q researchr -Q unpaywall -Q arxiv`
+  Restrict which websites to query from. `<site>` must be one of: `crossref`,
+  `dblp`, `arxiv`, `researchr`, `unpaywall`. These arguments can be used
+  multiple times, for example to only query crossref and dblp use `-q crossref
+  -q dblp` or `-Q researchr -Q unpaywall -Q arxiv`
 
 - `-e --only-entry <id>` or `-E --exclude-entry <id>`
 
-  Restrict which entries should be autocomplete. `<id>` is the entry ID used in your BibTeX file (e.g. `@inproceedings{<id> ... }`). These arguments can also be used multiple times to select only/exclude multiple entries
+  Restrict which entries should be autocomplete. `<id>` is the entry ID used in
+  your BibTeX file (e.g. `@inproceedings{<id> ... }`). These arguments can also
+  be used multiple times to select only/exclude multiple entries
 
 - `-c --only-complete <field>` or `-C --dont-complete <field>`
 
-  Restrict which fields you wish to autocomplete. Field is a BibTeX field (e.g. `author`, `doi`,...). So if you only wish to add missing DOIs use `-c doi`.
+  Restrict which fields you wish to autocomplete. Field is a BibTeX field (e.g.
+  `author`, `doi`,...). So if you only wish to add missing DOIs use `-c doi`.
 
 **Output formatting:**
 
-Unfortunately [bibtexparser](https://pypi.org/project/bibtexparser/) doesn't preserve format information, so this script will reformat your BibTeX file.
-Here are a few options you can use to control the output format:
+Unfortunately [bibtexparser](https://pypi.org/project/bibtexparser/) doesn't
+preserve format information, so this script will reformat your BibTeX file. Here
+are a few options you can use to control the output format:
 
 - `--fa --align-values` pad field names to align all values
 
@@ -149,13 +180,21 @@ Here are a few options you can use to control the output format:
 
 **Flags:**
 - `-i --inplace` Modify input files inplace, ignores any specified output files
-- `-f --force-overwrite` Overwrite already present fields. The default is to overwrite a field if it is empty or absent
-- `-t --timeout <float>` set timeout on request in seconds, default: 10.0 s, increase this if you are getting a lot of timeouts.
+- `-p --prefix` Write new fields with a prefix. The script will add `BTACtitle =
+  ...` instead of `title = ...` in the bib file. This can be combined with `-f`
+  to safely show info for already present fields.
+
+  Note that this can overwrite existing fields starting with `BTACxxxx`, even
+  without the `-f` option.
+- `-f --force-overwrite` Overwrite already present fields. The default is to
+  overwrite a field if it is empty or absent
+- `-t --timeout <float>` set timeout on request in seconds, default: 10.0 s,
+  increase this if you are getting a lot of timeouts.
 - `-S --ignore-ssl` bypass SSL verification. Use this if you encounter the error:
   ```
   [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1129)
   ```
-  another (better) fix for this is to run `pip install --upgrade certifi` to update python's certificates.
+  Another (better) fix for this is to run `pip install --upgrade certifi` to update python's certificates.
 
 - `-d --dump-data <file.json>` writes matching entries to the given JSON files.
 
@@ -187,8 +226,12 @@ Here are a few options you can use to control the output format:
 
 - `-O --no-output` don't write any output files (except the one specified by `--dump-data`)
 
-- `-v --verbose` verbose mode shows more info. It details entries as they are being processed and shows a summary of new fields and their source at the end. Using it more than once prints debug info (up to four times).
-- `-s --silent` hide info and progress bar. Keep showing warnings and errors. Use twice to also hide warnings, thrice to also hide errors and four times to also hide critical errors, effectively killing all output.
+- `-v --verbose` verbose mode shows more info. It details entries as they are
+  being processed and shows a summary of new fields and their source at the end.
+  Using it more than once prints debug info (up to four times).
+- `-s --silent` hide info and progress bar. Keep showing warnings and errors.
+  Use twice to also hide warnings, thrice to also hide errors and four times to
+  also hide critical errors, effectively killing all output.
 - `-n --no-color` don't use ANSI codes to color and stylize output
 
 - `--version` show version number
