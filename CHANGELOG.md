@@ -1,4 +1,10 @@
+<!-- LTeX: language=en -->
+
 # Change Log
+
+## Version 1.1.5 - 2022-09-21
+
+- Fix `btac` script not installing due to bad setup.py options (#6)
 
 ## Version 1.1.4 - 2022-09-16
 
@@ -6,7 +12,7 @@
 - Add filtered down counter (with `-e` and `-E` options) to output
 - Add warning for IDs given with `-e` and `-E` that don't appear in output
 - Fix a bug when making output names for multiple files from a directory
-- Fix script not installing on Windows CMD
+- Fix script not installing on Windows CMD (#6)
 
 ## Version 1.1.3 - 2022-08-13
 
@@ -23,17 +29,17 @@
 
 - Add common authors check when matching entries: if your entries has some
   author field then entries will no common authors will be ignored and entries
-  with common authors will be boosted
+  with common authors will be boosted (#5)
 - Add sanity check for found URLs and DOIs, `btac` now queries them and follows
-  a few redirections to check they resolve to an existing page
+  a few redirections to check they resolve to an existing page (#5)
 - Some prettier messages and resolve hints for connection errors
-- Add `-S/--ignore-ssl` flag
+- Add `-S/--ignore-ssl` flag (#4)
 - Add some logic to dispatch crossref's `container-title` and unpaywall's
   `journal-title` between `journal` and `booktitle` fields.
 
 ## Version 1.1.1 - 2022-05-27
 
-- Fix decoding error when opening utf-8 files on Windows
+- Fix decoding error when opening utf-8 files on Windows (#3)
 - Add extra fields `query-url`, `query-response-time` and `query-status` to data
   dumps file
 - Added github actions
@@ -47,7 +53,7 @@
 
 ## Version 1.0.5 - 2022-04-13
 
-- Fixed a bug which prevented installation on python 3.8
+- Fixed a bug which prevented installation on python 3.8 (#2)
 - Dropped python 3.7 support (It didn't work anyway...)
 
 ## Version 1.0.4 - 2022-03-31
@@ -66,7 +72,7 @@
 
 ## Version 1.0.2 - 2022-03-21
 
-- Fixed missing submodules in upload
+- Fixed missing submodules in upload (#1)
 - Removed color from progress bar to avoid issues
 - Fixed color not being reset on some terminals
 - Added wheel for real this time
