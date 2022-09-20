@@ -18,8 +18,8 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),
-    entrypoints={
-        "console_scripts": "btac=bibtexautocomplete.main",
+    entry_points={
+        "console_scripts": "btac = bibtexautocomplete.core:main",
     },
     install_requires=[
         "bibtexparser",
