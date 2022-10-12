@@ -2,13 +2,18 @@
 
 # Bibtex Autocomplete
 
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg)](https://github.com/dlesbre/bibtex-autocomplete/graphs/commit-activity)
 [![PyPI version](https://img.shields.io/pypi/v/bibtexautocomplete.svg)](https://pypi.python.org/pypi/bibtexautocomplete/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/bibtexautocomplete.svg)](https://pypi.python.org/pypi/bibtexautocomplete/)
 [![License](https://img.shields.io/pypi/l/bibtexautocomplete.svg)](https://github.com/dlesbre/bibtex-autocomplete/blob/master/LICENSE)
 [![PyPI status](https://img.shields.io/pypi/status/bibtexautocomplete.svg)](https://pypi.python.org/pypi/bibtexautocomplete/)
 [![Downloads](https://pepy.tech/badge/bibtexautocomplete)](https://pepy.tech/project/bibtexautocomplete)
+
+
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg)](https://github.com/dlesbre/bibtex-autocomplete/graphs/commit-activity)
+[![Commit](https://img.shields.io/github/last-commit/dlesbre/bibtex-autocomplete)](https://github.com/dlesbre/bibtex-autocomplete/graphs/commit-activity)
 [![actions](https://img.shields.io/github/workflow/status/dlesbre/bibtex-autocomplete/Python%20application?label=tests)](https://github.com/dlesbre/bibtex-autocomplete/actions/workflows/python-app.yml)
+[![issues](https://img.shields.io/github/issues/dlesbre/bibtex-autocomplete)](https://github.com/dlesbre/bibtex-autocomplete/issues)
+[![pull requests](https://img.shields.io/github/issues-pr/dlesbre/bibtex-autocomplete)](https://github.com/dlesbre/bibtex-autocomplete/pulls)
 
 **bibtexautocomplete** or **btac** is a python package to autocomplete BibTeX bibliographies.
 It is inspired and expanding on the solution provided by [thando](https://tex.stackexchange.com/users/182467/thando) in this [TeX stack exchange post](https://tex.stackexchange.com/questions/6810/automatically-adding-doi-fields-to-a-hand-made-bibliography).
