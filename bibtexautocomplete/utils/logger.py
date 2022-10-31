@@ -40,9 +40,9 @@ class Logger:
 
     logger: logging.Logger
 
-    def __init__(self) -> None:
+    def __init__(self, logger_name: str) -> None:
         # create logger
-        self.logger = logging.getLogger(NAME)
+        self.logger = logging.getLogger(logger_name)
         # Errors got to STDERR
         self.error_handler = logging.StreamHandler(stderr)
         self.error_handler.addFilter(LevelFilter(logging.WARN, logging.CRITICAL))
@@ -170,7 +170,7 @@ class Logger:
         self.to_logger(level, title)
 
 
-logger = Logger()
+logger = Logger(NAME)
 
 
 class Hint:
