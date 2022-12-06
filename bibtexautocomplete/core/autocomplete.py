@@ -168,7 +168,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                     )
                 bar.text = ansi_format(
                     " ".join(thread_positions)
-                    + f" {{StBold}}found {self.changed_fields} new fields{{Reset}}"
+                    + f" {{StBold}}Found {self.changed_fields} new fields{{Reset}}"
                 )
                 if not step:
                     condition.wait()
