@@ -30,12 +30,12 @@ their databases.
 
 **Contents:**
 
-- [Bibtex Autocomplete](#bibtex-autocomplete)
-  - [Demo](#demo)
-  - [Quick overview](#quick-overview)
-  - [Installation](#installation)
-    - [Dependencies](#dependencies)
-  - [Usage](#usage)
+- [Demo](#demo)
+- [Quick overview](#quick-overview)
+- [Installation](#installation)
+  - [Dependencies](#dependencies)
+- [Usage](#usage)
+- [Command line arguments](#command-line-arguments)
 
 ## Demo
 
@@ -129,6 +129,13 @@ btac [--flags] <input_files>
 format information, so this script will reformat your files. Some formatting
 options (see below) are provided.
 
+**Slow responses:** I found that crossref responds significantly slower than the
+other websites. It often takes longer than the 20s timeout.
+- You can increase timeout with `btac ... -t 60` (60s) or `btac ... -t -1` (no timeout)
+- You can disable crossref queries with `btac ... -Q crossref`
+
+## Command line arguments
+
 **Optional arguments:**
 
 - `-o --output <file.bib>`
@@ -195,7 +202,7 @@ are a few options you can use to control the output format:
   without the `-f` option.
 - `-f --force-overwrite` Overwrite already present fields. The default is to
   overwrite a field if it is empty or absent
-- `-t --timeout <float>` set timeout on request in seconds, default: 10.0 s,
+- `-t --timeout <float>` set timeout on request in seconds, default: 20.0 s,
   increase this if you are getting a lot of timeouts. Set it to -1 for no timeout.
 - `-S --ignore-ssl` bypass SSL verification. Use this if you encounter the error:
   ```
