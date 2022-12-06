@@ -65,7 +65,7 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
     }
     headers: Dict[str, str] = {}
 
-    connection_timeout: float = CONNECTION_TIMEOUT
+    connection_timeout: Optional[float] = CONNECTION_TIMEOUT
 
     response: Optional[HTTPResponse] = None
 

@@ -198,6 +198,7 @@ Polls the following databases:
         Can overwrite existing fields starting with BTACxxxx, even without the -f option.
         Can be combined with -f to safely show info for already present fields.
   {FgYellow}-t --timeout{Reset} {FgGreen}<float>{Reset}  set timeout on request, default: {TIMEOUT} s
+        Set to -1 for no timeout.
   {FgYellow}-S --ignore-ssl{Reset}       Ignore SSL verification when performing queries
 
   {FgYellow}-d --dump-data{Reset} {FgGreen}<file.json>{Reset} writes all data from matching entries to

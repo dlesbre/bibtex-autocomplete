@@ -71,7 +71,7 @@ def main(argv: Optional[List[str]] = None) -> None:
     writer.add_trailing_comma = args.no_trailing_comma
     writer.indent = indent_string(args.indent)
 
-    HTTPSLookup.connection_timeout = args.timeout
+    HTTPSLookup.connection_timeout = args.timeout if args.timeout > 0.0 else None
     HTTPSLookup.ignore_ssl = args.ignore_ssl
     lookups = (
         OnlyExclude[str]

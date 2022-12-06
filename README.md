@@ -30,10 +30,12 @@ their databases.
 
 **Contents:**
 
-- [Demo](#demo)
-- [Quick overview](#quick-overview)
-- [Installation](#installation)
-- [Usage](#usage)
+- [Bibtex Autocomplete](#bibtex-autocomplete)
+  - [Demo](#demo)
+  - [Quick overview](#quick-overview)
+  - [Installation](#installation)
+    - [Dependencies](#dependencies)
+  - [Usage](#usage)
 
 ## Demo
 
@@ -194,7 +196,7 @@ are a few options you can use to control the output format:
 - `-f --force-overwrite` Overwrite already present fields. The default is to
   overwrite a field if it is empty or absent
 - `-t --timeout <float>` set timeout on request in seconds, default: 10.0 s,
-  increase this if you are getting a lot of timeouts.
+  increase this if you are getting a lot of timeouts. Set it to -1 for no timeout.
 - `-S --ignore-ssl` bypass SSL verification. Use this if you encounter the error:
   ```
   [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1129)
