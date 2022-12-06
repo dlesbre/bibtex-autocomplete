@@ -27,7 +27,6 @@ from ..bibtex.entry import BibtexEntry, FieldNames
 from ..bibtex.io import file_read, file_write, get_entries
 from ..bibtex.normalize import has_field
 from ..lookups.abstract_base import LookupType
-from ..utils.ansi import ansi_format
 from ..utils.constants import FIELD_PREFIX, MAX_THREAD_NB, EntryType
 from ..utils.logger import VERBOSE_INFO, logger
 from ..utils.only_exclude import OnlyExclude
@@ -164,11 +163,11 @@ class BibtexAutocomplete(Iterable[EntryType]):
                     if position >= thread.position:
                         step = False
                     thread_positions.append(
-                        f"[{{FgBlue}}{thread.lookup.name}{{Reset}}: {thread.position}/{nb_entries}]"
+                        f"[{thread.lookup.name}: {thread.position}/{nb_entries}]"
                     )
-                bar.text = ansi_format(
+                bar.text = (
                     " ".join(thread_positions)
-                    + f" {{StBold}}Found {self.changed_fields} new fields{{Reset}}"
+                    + f" Found {self.changed_fields} new fields"
                 )
                 if not step:
                     condition.wait()
