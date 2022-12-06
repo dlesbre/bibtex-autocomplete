@@ -27,6 +27,7 @@ from ..bibtex.entry import BibtexEntry, FieldNames
 from ..bibtex.io import file_read, file_write, get_entries
 from ..bibtex.normalize import has_field
 from ..lookups.abstract_base import LookupType
+from ..utils.ansi import ansi_format
 from ..utils.constants import FIELD_PREFIX, MAX_THREAD_NB, EntryType
 from ..utils.logger import VERBOSE_INFO, logger
 from ..utils.only_exclude import OnlyExclude
@@ -144,6 +145,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
             monitor_end="[{percent:.0%}]",
             stats="(eta: {eta})",
             stats_end="",
+            dual_line=True,
         ) as bar:
             # Create all threads
             for lookup in self.lookups:
@@ -153,14 +155,24 @@ class BibtexAutocomplete(Iterable[EntryType]):
             for thread in threads:
                 thread.start()
             position = 0
-            while position < self.count_entries():
+            nb_entries = self.count_entries()
+            while position < nb_entries:
                 # Check if all threads have resolved the current entry
+                step = True
+                thread_positions = []
                 for thread in threads:
                     if position >= thread.position:
-                        # if not wait - releases and reacquires lock
-                        condition.wait()
-                        break
-                else:
+                        step = False
+                    thread_positions.append(
+                        f"[{{FgBlue}}{thread.lookup.name}{{Reset}}: {thread.position}/{nb_entries}]"
+                    )
+                bar.text = ansi_format(
+                    " ".join(thread_positions)
+                    + f" {{StBold}}found {self.changed_fields} new fields{{Reset}}"
+                )
+                if not step:
+                    condition.wait()
+                else:  # Take a step
                     # else update entry with the results
                     changes: List[Tuple[str, str, str]] = []
                     entry = entries[position]
@@ -189,7 +201,6 @@ class BibtexAutocomplete(Iterable[EntryType]):
                         entry=entry["ID"].ljust(padding),
                         nb=len(changes),
                     )
-                    bar.text = f"{self.changed_fields} new fields"
                     self.dumps.append(dump)
                     position += 1
         logger.info(
