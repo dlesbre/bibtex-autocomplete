@@ -50,7 +50,7 @@ class CrossrefLookup(JSON_DAT_Lookup):
             return None
         try:
             return float(interval[:-1]) / float(limit)
-        except ValueError or ZeroDivisionError:
+        except (ValueError, ZeroDivisionError):
             return None
 
     def get_results(self, data: bytes) -> Optional[Iterable[SafeJSON]]:
