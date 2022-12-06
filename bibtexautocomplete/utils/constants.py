@@ -24,7 +24,7 @@ EMAIL = "dorian.lesbre" + chr(64) + "gmail.com"
 
 # Minimum delay between queries to same host, to avoid surcharging server
 MIN_QUERY_DELAY = 0.02  # s, so 50 per second
-CONNECTION_TIMEOUT = 10.0  # seconds
+CONNECTION_TIMEOUT = 20.0  # seconds
 
 USER_AGENT = f"{NAME}/{VERSION_STR} ({URL}; mailto:{EMAIL})"
 
