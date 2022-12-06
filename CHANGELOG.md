@@ -2,6 +2,12 @@
 
 # Change Log
 
+## Version ??? - Not-yet-released
+
+- Allow for infinite timeout with `-t -1`
+- Increase default timeout to 20s as crossref consistently times out
+- Add per DB progress meters below the progress bas
+
 ## Version 1.1.5 - 2022-09-21
 
 - Fix `btac` script not installing due to bad setup.py options (#6)
