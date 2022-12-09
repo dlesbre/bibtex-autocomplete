@@ -51,7 +51,7 @@ class Base:
 
     @pytest.fixture(autouse=True)
     def incr_timeout(self) -> None:
-        self.Lookup.connection_timeout = 60.0
+        self.Lookup.connection_timeout = 120.0
 
     def test_valid(self) -> None:
         a = self.Lookup(BibtexEntry(self.entry[0]))
