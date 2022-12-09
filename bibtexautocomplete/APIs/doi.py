@@ -45,6 +45,13 @@ class DOICheck(
     ConditionMixin[str, Optional[bool]],
     HTTPSRateCapedLookup[str, Optional[bool]],
 ):
+    """
+    Queries https://doi.org/api/handles/<doi> to check DOI exists
+    and get redirection URL, then checks the redirection URL returns 200
+    or redirects to an URL that does.
+
+    Example URL: https://doi.org/api/handles/10.1109/tro.2004.829459
+    """
 
     name = "doi_checker"
     silent_fail = True
@@ -82,7 +89,8 @@ class DOICheck(
             return None
         for value in json["values"].iter_list():
             if value["type"].to_str() == "URL":
-                return self.check_url(value["data"]["value"].to_str())
+                if self.check_url(value["data"]["value"].to_str()):
+                    return True
         return None
 
     def check_url(self, url: Optional[str]) -> bool:
