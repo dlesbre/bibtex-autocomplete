@@ -27,7 +27,7 @@ from ..bibtex.entry import BibtexEntry, FieldNames
 from ..bibtex.io import file_read, file_write, get_entries
 from ..bibtex.normalize import has_field
 from ..lookups.abstract_base import LookupType
-from ..utils.constants import FIELD_PREFIX, MAX_THREAD_NB, EntryType
+from ..utils.constants import BULLET, FIELD_PREFIX, MAX_THREAD_NB, EntryType
 from ..utils.logger import VERBOSE_INFO, logger
 from ..utils.only_exclude import OnlyExclude
 from .data_dump import DataDump
@@ -48,9 +48,6 @@ def memoize(method: Callable[[T], Q]) -> Callable[[T], Q]:
         return cast(Q, getattr(self, attribute))
 
     return new_method
-
-
-BULLET = "{FgBlue}{StBold}*{Reset} "
 
 
 class BibtexAutocomplete(Iterable[EntryType]):
@@ -94,8 +91,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
     def __iter__(self) -> Iterator[EntryType]:
         """Iterate through entries"""
         for db in self.bibdatabases:
-            for entry in filter(lambda x: x["ID"] in self.entries, get_entries(db)):
-                yield entry
+            yield from filter(lambda x: x["ID"] in self.entries, get_entries(db))
 
     @memoize
     def count_entries(self) -> int:
@@ -130,7 +126,6 @@ class BibtexAutocomplete(Iterable[EntryType]):
         Iterate through entries, performing all lookups"""
         logger.header("Completing entries")
         total = self.count_entries() * len(self.lookups)
-        padding = self.get_id_padding()
         entries = list(self)
         condition = Condition()
         assert len(self.lookups) < MAX_THREAD_NB
@@ -169,38 +164,10 @@ class BibtexAutocomplete(Iterable[EntryType]):
                     " ".join(thread_positions)
                     + f" Found {self.changed_fields} new fields"
                 )
-                if not step:
+                if not step:  # Some threads have not found data for current entry
                     condition.wait()
-                else:  # Take a step
-                    # else update entry with the results
-                    changes: List[Tuple[str, str, str]] = []
-                    entry = entries[position]
-                    dump = DataDump(entry["ID"])
-                    iterator = reversed(threads) if self.force_overwrite else threads
-                    for thread in iterator:
-                        result, info = thread.result[position]
-                        dump.add_entry(thread.lookup.name, result, info)
-                        if result is not None:
-                            to_add = self.combine(entry, result)
-                            to_add = self.sanitize(to_add)
-                            entry.update(
-                                {self.prefix + field: to_add[field] for field in to_add}
-                            )
-                            changes.extend(
-                                (field, value, thread.name)
-                                for field, value in to_add.items()
-                            )
-                    dump.new_fields = len(changes)
-                    if changes != []:
-                        self.changed_entries += 1
-                        self.changed_fields += len(changes)
-                        self.changes.append((entry["ID"], changes))
-                    logger.verbose_info(
-                        BULLET + "{StBold}{entry}{StBoldOff} {nb} new fields",
-                        entry=entry["ID"].ljust(padding),
-                        nb=len(changes),
-                    )
-                    self.dumps.append(dump)
+                else:  # update data for current entry
+                    self.update_entry(entries[position], threads, position)
                     position += 1
         logger.info(
             "Modified {changed_entries} / {count_entries} entries"
@@ -209,6 +176,36 @@ class BibtexAutocomplete(Iterable[EntryType]):
             count_entries=self.count_entries(),
             changed_fields=self.changed_fields,
         )
+
+    def update_entry(
+        self, entry: EntryType, threads: List[LookupThread], position: int
+    ) -> None:
+        """Reads all data the threads have found on a new entry,
+        and uses it to update the entry with new fields"""
+        changes: List[Tuple[str, str, str]] = []
+        dump = DataDump(entry["ID"])
+        iterator = reversed(threads) if self.force_overwrite else threads
+        for thread in iterator:
+            result, info = thread.result[position]
+            dump.add_entry(thread.lookup.name, result, info)
+            if result is not None:
+                to_add = self.combine(entry, result)
+                to_add = self.sanitize(to_add)
+                entry.update({self.prefix + field: to_add[field] for field in to_add})
+                changes.extend(
+                    (field, value, thread.name) for field, value in to_add.items()
+                )
+        dump.new_fields = len(changes)
+        if changes != []:
+            self.changed_entries += 1
+            self.changed_fields += len(changes)
+            self.changes.append((entry["ID"], changes))
+        logger.verbose_info(
+            BULLET + "{StBold}{entry}{StBoldOff} {nb} new fields",
+            entry=entry["ID"].ljust(self.get_id_padding()),
+            nb=len(changes),
+        )
+        self.dumps.append(dump)
 
     def combine(self, entry: EntryType, new_info: BibtexEntry) -> Dict[str, str]:
         """Adds the information in info to entry.

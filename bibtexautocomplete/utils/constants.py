@@ -43,3 +43,6 @@ QUERY_MAX_RESULTS = 3
 
 # Prefix added to fields with -p / --prefix option
 FIELD_PREFIX = "BTAC"
+
+# Bullet printed to the screen when printing a list
+BULLET = "{FgBlue}{StBold}*{Reset} "
