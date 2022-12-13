@@ -2,21 +2,42 @@
 
 # Bibtex Autocomplete
 
-[![PyPI version](https://img.shields.io/pypi/v/bibtexautocomplete.svg)](https://pypi.python.org/pypi/bibtexautocomplete/)
-[![PyPI pyversions](https://img.shields.io/pypi/pyversions/bibtexautocomplete.svg)](https://pypi.python.org/pypi/bibtexautocomplete/)
-[![License](https://img.shields.io/pypi/l/bibtexautocomplete.svg)](https://github.com/dlesbre/bibtex-autocomplete/blob/master/LICENSE)
-[![PyPI status](https://img.shields.io/pypi/status/bibtexautocomplete.svg)](https://pypi.python.org/pypi/bibtexautocomplete/)
-[![Downloads](https://pepy.tech/badge/bibtexautocomplete)](https://pepy.tech/project/bibtexautocomplete)
+[![PyPI version][version-shield]][pypi-link]
+[![PyPI pyversions][pyversion-shield]][pypi-link]
+[![License][license-shield]](./LICENSE)
+[![PyPI status][status-shield]][pypi-link]
+[![Downloads][download-shield]](https://pepy.tech/project/bibtexautocomplete)
 
+[![Maintenance][maintain-shield]][commit-link]
+[![Commit][commit-shield]][commit-link]
+[![actions][pipeline-shield]][pipeline-link]
+[![issues][issues-shield]][issues-link]
+[![pull requests][pr-shield]][pr-link]
 
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg)](https://github.com/dlesbre/bibtex-autocomplete/graphs/commit-activity)
-[![Commit](https://img.shields.io/github/last-commit/dlesbre/bibtex-autocomplete)](https://github.com/dlesbre/bibtex-autocomplete/graphs/commit-activity)
-[![actions](https://img.shields.io/github/workflow/status/dlesbre/bibtex-autocomplete/Python%20application?label=tests)](https://github.com/dlesbre/bibtex-autocomplete/actions/workflows/python-app.yml)
-[![issues](https://img.shields.io/github/issues/dlesbre/bibtex-autocomplete)](https://github.com/dlesbre/bibtex-autocomplete/issues)
-[![pull requests](https://img.shields.io/github/issues-pr/dlesbre/bibtex-autocomplete)](https://github.com/dlesbre/bibtex-autocomplete/pulls)
+[version-shield]:   https://img.shields.io/pypi/v/bibtexautocomplete.svg
+[pyversion-shield]: https://img.shields.io/pypi/pyversions/bibtexautocomplete.svg
+[license-shield]:   https://img.shields.io/pypi/l/bibtexautocomplete.svg
+[status-shield]:    https://img.shields.io/pypi/status/bibtexautocomplete.svg
+[download-shield]:  https://pepy.tech/badge/bibtexautocomplete
+[pypi-link]: https://pypi.python.org/pypi/bibtexautocomplete/
 
-**bibtexautocomplete** or **btac** is a python package to autocomplete BibTeX bibliographies.
-It is inspired and expanding on the solution provided by [thando](https://tex.stackexchange.com/users/182467/thando) in this [TeX stack exchange post](https://tex.stackexchange.com/questions/6810/automatically-adding-doi-fields-to-a-hand-made-bibliography).
+[maintain-shield]: https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg
+[commit-shield]: https://img.shields.io/github/last-commit/dlesbre/bibtex-autocomplete
+[commit-link]: https://github.com/dlesbre/bibtex-autocomplete/graphs/commit-activity
+
+[pipeline-shield]: https://img.shields.io/github/workflow/status/dlesbre/bibtex-autocomplete/Python%20application?label=tests
+[pipeline-link]: https://github.com/dlesbre/bibtex-autocomplete/actions/workflows/python-app.yml
+
+[issues-shield]: https://img.shields.io/github/issues/dlesbre/bibtex-autocomplete
+[issues-link]: https://github.com/dlesbre/bibtex-autocomplete/issues
+
+[pr-shield]: https://img.shields.io/github/issues-pr/dlesbre/bibtex-autocomplete
+[pr-link]: https://github.com/dlesbre/bibtex-autocomplete/pulls
+
+**bibtexautocomplete** or **btac** is a python package to autocomplete BibTeX
+bibliographies. It is inspired and expanding on the solution provided by
+[thando](https://tex.stackexchange.com/users/182467/thando) in this
+[TeX stack exchange post](https://tex.stackexchange.com/questions/6810/automatically-adding-doi-fields-to-a-hand-made-bibliography).
 
 It attempts to complete a BibTeX file by querying the following domains:
 - [www.crossref.org](https://www.crossref.org/)
