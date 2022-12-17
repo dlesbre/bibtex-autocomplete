@@ -25,7 +25,7 @@
 [commit-shield]: https://img.shields.io/github/last-commit/dlesbre/bibtex-autocomplete
 [commit-link]: https://github.com/dlesbre/bibtex-autocomplete/graphs/commit-activity
 
-[pipeline-shield]: https://img.shields.io/github/workflow/status/dlesbre/bibtex-autocomplete/Python%20application?label=tests
+[pipeline-shield]: https://img.shields.io/github/actions/workflow/status/dlesbre/bibtex-autocomplete/python-app.yml?branch=master&label=tests
 [pipeline-link]: https://github.com/dlesbre/bibtex-autocomplete/actions/workflows/python-app.yml
 
 [issues-shield]: https://img.shields.io/github/issues/dlesbre/bibtex-autocomplete
