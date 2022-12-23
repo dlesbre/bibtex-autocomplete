@@ -39,7 +39,7 @@ BTAC_FILENAME = "{name}.btac{suffix}"
 
 # Most APIs allow to limit the number of results returned for a search query
 # This allows for smaller data transfers
-QUERY_MAX_RESULTS = 3
+QUERY_MAX_RESULTS = 10
 
 # Prefix added to fields with -p / --prefix option
 FIELD_PREFIX = "BTAC"
