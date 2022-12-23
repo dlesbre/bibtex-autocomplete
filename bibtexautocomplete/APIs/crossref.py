@@ -28,6 +28,8 @@ class CrossrefLookup(JSON_DAT_Lookup):
     domain = "api.crossref.org"
     path = "/works"
 
+    single_author_queries = False  # Crossref is a bit slow, don't do too many queries
+
     def get_path(self) -> str:
         if self.doi is not None:
             return self.path + "/" + self.doi

@@ -82,13 +82,16 @@ class TitleAuthorQueryMixin(
     Performs parent queries if any
     if self.title:
       performs a single query if self.author is not None
-      performs a query per author (resetting self.author to just one author) if more than one author
+      performs a query per author
+        (resetting self.author to just one author)
+        if more than one author and self.single_author_queries is set
       unset self.author
       performs a single query
     """
 
     entry: BibtexEntry
     author_join: str = " "
+    single_author_queries: bool = True
     title: Optional[str] = None
     author: Optional[str] = None
 
@@ -109,7 +112,7 @@ class TitleAuthorQueryMixin(
             return None
         # Perform one query with all authors
         yield None
-        if len(authors) > 1:
+        if len(authors) > 1 and self.single_author_queries:
             for ii, author in enumerate(authors):
                 # Perform one query per author, with at most 10 queries
                 if ii > self.max_author_queries:
