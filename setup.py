@@ -23,7 +23,7 @@ setup(
     },
     install_requires=[
         "bibtexparser",
-        "alive-progress>=2.4.0",
+        "alive-progress>=3.0.0",
     ],
     extras_require={
         "dev": [
@@ -59,6 +59,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Operating System :: OS Independent",
         "Topic :: Text Processing :: Markup :: LaTeX",
         "Topic :: Utilities",
