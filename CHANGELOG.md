@@ -2,7 +2,7 @@
 
 # Change Log
 
-## Version ??? - Not-yet-released
+## Version 1.1.6 - 2023-01-06
 
 - Allow for infinite timeout with `-t -1`
 - Increase default timeout to 20s as crossref consistently times out
