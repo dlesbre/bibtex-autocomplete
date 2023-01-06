@@ -101,7 +101,10 @@ So if both crossref's and dblp's response contain a publisher, the one from
 crossref will be used.
 
 The script will not overwrite any user given non-empty fields, unless the
-`-f/--force-overwrite` flag is given.
+`-f/--force-overwrite` flag is given. If you want to check what fields are
+added, you can use `-v/--verbose` to have them printed to stdout (with
+source information), or `-p/--prefix` to have the new fields be prefixed with
+`BTAC` in the output file.
 
 The script checks that the DOIs or URLs found correspond (or redirect to) a
 valid webpage before adding them to an entry.
