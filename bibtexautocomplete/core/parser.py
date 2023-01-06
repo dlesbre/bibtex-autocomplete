@@ -157,16 +157,19 @@ Polls the following databases:
 {StBold}Usage:{Reset}
   {StBold}{FgYellow}{NAME}{Reset} {FgYellow}[--flags] <input_files>{Reset}
 
-{StBold}Example:{Reset}
+{StBold}Examples:{Reset}
   {StBold}{FgYellow}{NAME}{Reset} {FgYellow}my_bib.bib{Reset}         writes to my_bib.btac.bib
   {StBold}{FgYellow}{NAME}{Reset} {FgYellow}-i my_bib.bib{Reset}      inplace modify
-  {StBold}{FgYellow}{NAME}{Reset} {FgYellow}a.bib -o b.bib c.bib -o d.bib{Reset}
-      writes completed a.bib in b.bib and c.bib in d.bib
+  {StBold}{FgYellow}{NAME}{Reset} {FgYellow}a.bib -o b.bib c.bib -o d.bib e.bib{Reset}
+      writes completed a.bib in b.bib; c.bib in d.bib; and e.bib in e.btac.bib
+  {StBold}{FgYellow}{NAME}{Reset} {FgYellow}dir/{Reset}            completes all '.bib' files in dir,
+      ignores any '.btac.bib' files, not recursive on subfolders.
+  {StBold}{FgYellow}{NAME}{Reset}                    same as 'btac .'
 
 {StBold}Optional arguments:{Reset} can all be used multiple times
   {FgYellow}-o --output{Reset} {FgGreen}<file.bib>{Reset}      Write output to given file
         With multiple input/outputs they are mapped in appearance order
-        Extra inputs are dumped on stdout
+        Extra inputs use default output name <filename>.btac.bib
 
   {FgYellow}-q --only-query{Reset} {FgGreen}<website>{Reset}   Only query the given sites
   {FgYellow}-Q --dont-query{Reset} {FgGreen}<website>{Reset}   Don't query the given sites
@@ -185,7 +188,7 @@ Polls the following databases:
   {FgYellow}--fc --comma-first{Reset}         comma first syntax (, title = ...)
   {FgYellow}--fl --no-trailing-comma{Reset}   don't add a last trailing comma
   {FgYellow}--fi --indent{Reset} {FgGreen}<space>{Reset}      space used for indentation, default is a tab
-        Can be specified as an number (number of space) or a string with spaces
+        Can be specified as an number (number of spaces) or a string with spaces
         and '_' 't' 'n' characters to mark space, tabs and newlines.
 
 {StBold}Flags:{Reset}
