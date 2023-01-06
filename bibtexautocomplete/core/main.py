@@ -7,7 +7,14 @@ from ..bibtex.io import writer
 from ..lookups.condition_mixin import FieldConditionMixin
 from ..lookups.https import HTTPSLookup
 from ..utils.ansi import ANSICodes, ansi_format
-from ..utils.constants import CONNECTION_TIMEOUT, LICENSE, SCRIPT_NAME, URL, VERSION_STR
+from ..utils.constants import (
+    CONNECTION_TIMEOUT,
+    LICENSE,
+    SCRIPT_NAME,
+    URL,
+    VERSION_DATE,
+    VERSION_STR,
+)
 from ..utils.logger import logger
 from ..utils.only_exclude import OnlyExclude
 from .autocomplete import BibtexAutocomplete
@@ -39,6 +46,7 @@ def main(argv: Optional[List[str]] = None) -> None:
                 HELP_TEXT,
                 TIMEOUT=CONNECTION_TIMEOUT,
                 VERSION=VERSION_STR,
+                VERSION_DATE=VERSION_DATE,
                 LOOKUPS=LOOKUP_NAMES,
                 NAME=SCRIPT_NAME,
                 URL=URL,
@@ -47,7 +55,11 @@ def main(argv: Optional[List[str]] = None) -> None:
         )
         return
     if args.version:
-        print("{NAME} version {VERSION}".format(NAME=SCRIPT_NAME, VERSION=VERSION_STR))
+        print(
+            "{NAME} version {VERSION} ({VERSION_DATE})".format(
+                NAME=SCRIPT_NAME, VERSION=VERSION_STR, VERSION_DATE=VERSION_DATE
+            )
+        )
         return
 
     if args.silent:

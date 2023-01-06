@@ -149,10 +149,14 @@ parser.add_argument("--no-output", "-O", action="store_true")
 parser.add_argument("--output", "-o", type=Path, action="append", default=[])
 parser.add_argument("input", nargs="*", type=Path, action="append", default=[])
 
-HELP_TEXT = """{StBold}{FgYellow}{NAME}{Reset} {StBold}version {VERSION}{Reset}
-Program to autocomplete bibtex entries by searching online databases.
-Polls the following databases:
+HELP_TEXT = """{StBold}{FgYellow}{NAME}{Reset} {StBold}version {VERSION} ({VERSION_DATE}){Reset}
+
+BibTex AutoComplete is a command line script to find and add missing fields (doi, publisher...) to
+a bibtex bibliography by searching online databases. It gets data by searching:
   {LOOKUPS}
+
+More information and demo:
+  {StUnderline}{URL}{Reset}
 
 {StBold}Usage:{Reset}
   {StBold}{FgYellow}{NAME}{Reset} {FgYellow}[--flags] <input_files>{Reset}
@@ -200,6 +204,7 @@ Polls the following databases:
         eg: will write "BTACtitle = ..." instead of "title = ..." in the bib file.
         Can overwrite existing fields starting with BTACxxxx, even without the -f option.
         Can be combined with -f to safely show info for already present fields.
+
   {FgYellow}-t --timeout{Reset} {FgGreen}<float>{Reset}  set timeout on request, default: {TIMEOUT} s
         Set to -1 for no timeout.
   {FgYellow}-S --ignore-ssl{Reset}       Ignore SSL verification when performing queries
