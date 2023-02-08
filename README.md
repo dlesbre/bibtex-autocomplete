@@ -72,7 +72,7 @@ entries that don't have one of those two fields *will not* be completed.
   punctuation, but titles with missing words will not match.
 - If one or more authors are present, entries with no common authors will not
   match. Authors are compared using lower case last names only. Be sure to use
-  one of the correct BibTeX format for the author field:
+  one of the correct BibTeX formats for the author field:
   ```bibtex
   author = {First Last and Last, First and First von Last}
   ```
