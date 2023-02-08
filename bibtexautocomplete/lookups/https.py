@@ -2,7 +2,8 @@
 Lookup for HTTPS queries
 """
 
-from http.client import HTTPResponse, HTTPSConnection, socket  # type: ignore
+from http.client import HTTPResponse, HTTPSConnection
+from socket import gaierror, timeout
 from ssl import _create_unverified_context
 from time import sleep, time
 from typing import Any, ClassVar, Dict, Optional
@@ -163,7 +164,7 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
             )
             data = self.response.read()
             connection.close()
-        except socket.timeout:
+        except timeout:
             if self.silent_fail:
                 return None
             logger.warn(
@@ -171,7 +172,7 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
             )
             TIMEOUT_Hint.emit()
             return None
-        except socket.gaierror as err:
+        except gaierror as err:
             if self.silent_fail:
                 return None
             error_name = "CONNECTION ERROR"
