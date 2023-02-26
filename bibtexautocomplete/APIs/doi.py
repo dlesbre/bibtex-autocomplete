@@ -10,6 +10,7 @@ from ..bibtex.normalize import normalize_doi, normalize_str_weak, normalize_url
 from ..lookups.abstract_base import Data
 from ..lookups.condition_mixin import ConditionMixin
 from ..lookups.https import HTTPSRateCapedLookup, RedirectFollower
+from ..utils.logger import logger
 from ..utils.safe_json import SafeJSON
 
 
@@ -97,10 +98,17 @@ class DOICheck(
         if url is not None:
             checker = URLCheck(url)
             final = checker.query()
-            if final is not None:
-                text = normalize_str_weak(final.data.decode())
-                # Some website, namely springer, don't send 404 for invalid DOIs...
+            if final is not None and checker.response is not None:
+                # don't try to read content if not text
+                info = checker.response.headers
+                if info.get_content_maintype() != "text":
+                    return True
+                # Some websites, namely springer, don't send 404 for invalid DOIs...
                 # See: https://link.springer.com/deleted
+                try:
+                    text = normalize_str_weak(final.data.decode())
+                except UnicodeDecodeError:
+                    logger.warn("Can't decode text content from URL {}".format(url))
                 for elem in self.not_available_checks:
                     if elem in text:
                         return False
