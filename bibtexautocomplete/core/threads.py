@@ -16,6 +16,7 @@ class LookupThread(Thread):
     lookup: LookupType
     entries: List[EntryType] = []  # Read only
     condition: Condition
+    entry_name: Optional[str]
     result: List[
         Tuple[
             Optional[BibtexEntry],
@@ -48,7 +49,9 @@ class LookupThread(Thread):
         logger.very_verbose_debug("Starting thread {name}", name=self.name)
         self.condition.acquire()
         while self.position < self.nb_entries:
-            lookup = self.lookup(BibtexEntry(self.entries[self.position]))
+            entry = self.entries[self.position]
+            self.entry_name = entry.get("ID")
+            lookup = self.lookup(BibtexEntry(entry))
             self.condition.release()
 
             result = lookup.query()
