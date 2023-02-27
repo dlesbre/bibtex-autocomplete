@@ -2,6 +2,11 @@
 
 # Change Log
 
+## Version 1.1.7 - 2023-02-27
+
+- Fix trying to decode non-text doi response (issue #8)
+- Add entry name to error/warning messages
+
 ## Version 1.1.6 - 2023-01-06
 
 - Allow for infinite timeout with `-t -1`
