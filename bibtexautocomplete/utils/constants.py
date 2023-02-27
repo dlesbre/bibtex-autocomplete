@@ -8,6 +8,7 @@ NAME = "bibtexautocomplete"
 SCRIPT_NAME = "btac"
 AUTHOR = "Dorian Lesbre"
 URL = "https://github.com/dlesbre/bibtex-autocomplete"
+ISSUES_URL = URL + "/issues"
 LICENSE = "MIT"
 DESCRIPTION = "Module to complete bibtex files by polling online databases"
 

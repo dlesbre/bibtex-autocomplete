@@ -190,7 +190,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
             dump.add_entry(thread.lookup.name, result, info)
             if result is not None:
                 to_add = self.combine(entry, result)
-                to_add = self.sanitize(to_add)
+                to_add = self.sanitize(entry["ID"], to_add)
                 entry.update({self.prefix + field: to_add[field] for field in to_add})
                 changes.extend(
                     (field, value, thread.name) for field, value in to_add.items()
@@ -226,18 +226,34 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 changes[field] = s_value
         return changes
 
-    def sanitize(self, changes: Dict[str, str]) -> Dict[str, str]:
+    def sanitize(self, id: str, changes: Dict[str, str]) -> Dict[str, str]:
         """Runs sanity checks on new_info if needed"""
         doi = changes.get(FieldNames.DOI)
         url = changes.get(FieldNames.URL)
         if doi is not None:
-            doi_checker = DOICheck(doi)
-            if doi_checker.query() is not True:
-                del changes[FieldNames.DOI]
+            try:
+                doi_checker = DOICheck(doi)
+                if doi_checker.query() is not True:
+                    del changes[FieldNames.DOI]
+            except Exception as err:
+                logger.traceback(
+                    f"Uncaught exception when checking DOI resolution\n"
+                    f"Entry = {id}\n"
+                    f"DOI = {doi}",
+                    err,
+                )
         if url is not None:
-            checker = URLCheck(url)
-            if checker.query() is None:
-                del changes[FieldNames.URL]
+            try:
+                checker = URLCheck(url)
+                if checker.query() is None:
+                    del changes[FieldNames.URL]
+            except Exception as err:
+                logger.traceback(
+                    f"Uncaught exception when checking URL resolution\n"
+                    f"Entry = {id}\n"
+                    f"URL = {url}",
+                    err,
+                )
         return changes
 
     def print_changes(self) -> None:

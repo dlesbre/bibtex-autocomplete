@@ -5,10 +5,11 @@ Defining and configuring the logger
 import logging
 from sys import stderr, stdout
 from threading import current_thread, main_thread
+from traceback import format_exc
 from typing import Any
 
-from .ansi import ansi_format
-from .constants import NAME
+from .ansi import ansi_format, ansiless_len
+from .constants import ISSUES_URL, NAME
 
 Level = int
 
@@ -34,6 +35,13 @@ logging.addLevelName(VERBOSE_DEBUG, "VERBOSE_DEBUG")
 logging.addLevelName(VERY_VERBOSE_DEBUG, "VERY_VERBOSE_DEBUG")
 
 DEFAULT_LEVEL = logging.INFO
+
+
+def prefix_indent(prefix: str, message: str) -> str:
+    """Adds a prefix to the first line of message
+    Indents all subsequent lines with spaces to be aligned to prefix"""
+    len = ansiless_len(prefix)
+    return prefix + message.replace("\n", "\n" + " " * len)
 
 
 class Logger:
@@ -62,12 +70,10 @@ class Logger:
         current = current_thread()
         if current is not main_thread():
             info = ansi_format("[{FgBlue}" + current.name + "{Reset}] ")
-            len_info = len(current.name) + 3
             entry_name = current.entry_name if hasattr(current, "entry_name") else None
             if isinstance(entry_name, str):
                 info += entry_name + ": "
-                len_info += len(entry_name) + 2
-            message = info + message.replace("\n", "\n" + " " * len_info)
+            message = prefix_indent(info, message)
         return message
 
     def to_logger(self, level: int, message: str, *args: Any, **kwargs: Any) -> None:
@@ -85,7 +91,7 @@ class Logger:
             "{FgPurple}{error}:{Reset} " + message,
             *args,
             error=error,
-            **kwargs
+            **kwargs,
         )
 
     def error(
@@ -97,7 +103,7 @@ class Logger:
             "{FgRed}{error}:{Reset} " + message,
             error=error,
             *args,
-            **kwargs
+            **kwargs,
         )
 
     def critical(
@@ -109,7 +115,7 @@ class Logger:
             "{FgRed}{error}:{Reset} " + message,
             *args,
             error=error,
-            **kwargs
+            **kwargs,
         )
 
     def info(self, message: str, *args: Any, **kwargs: Any) -> None:
@@ -172,6 +178,38 @@ class Logger:
             + "{Reset}"
         )
         self.to_logger(level, title)
+
+    def traceback(self, message: str, _err: Exception) -> None:
+        prefix = ansi_format("{FgRed} | {Reset}")
+        message = message.replace(
+            "\n", "\n" + ansi_format("{Reset}" + prefix + "{StBold}")
+        )
+        m = message.split("\n")
+        # Hack to ensure second line is erased
+        if len(m):
+            m[0] = m[0].ljust(80)
+            message = "\n".join(m)
+        self.error(
+            "\n"
+            + prefix
+            + "{StBold}{tmessage}{Reset}\n"
+            + prefix
+            + "\n"
+            + prefix
+            + "{FgRed}{exn}{FgReset}\n"
+            + prefix
+            + "\n"
+            + prefix
+            + "{StBold}You can report this bug at {StUnderline}{ISSUES_URL}{Reset}"
+            + "\n"
+            + prefix,
+            error="UNEXPECTED ERROR",
+            tmessage=message,
+            ISSUES_URL=ISSUES_URL,
+            exn=format_exc()
+            .strip()
+            .replace("\n", "\n" + prefix + ansi_format("{FgRed}")),
+        )
 
 
 logger = Logger(NAME)

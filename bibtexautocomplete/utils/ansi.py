@@ -83,5 +83,12 @@ class ANSICodes:
             codes = cls.EmptyCodes
         return string.format(*args, **kwargs, **codes)
 
+    @classmethod
+    def ansiless_len(cls, string: str) -> int:
+        """Length of a string without counting ANSI sequences"""
+        codes = cls.EmptyCodes
+        return len(string.format(**codes))
+
 
 ansi_format = ANSICodes.ansi_format
+ansiless_len = ANSICodes.ansiless_len
