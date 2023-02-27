@@ -236,10 +236,13 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 if doi_checker.query() is not True:
                     del changes[FieldNames.DOI]
             except Exception as err:
+                if FieldNames.DOI in changes:
+                    del changes[FieldNames.DOI]
                 logger.traceback(
                     f"Uncaught exception when checking DOI resolution\n"
                     f"Entry = {id}\n"
-                    f"DOI = {doi}",
+                    f"DOI = {doi}\n\n"
+                    "As a result, this DOI will NOT be added to the entry",
                     err,
                 )
         if url is not None:
@@ -248,10 +251,13 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 if checker.query() is None:
                     del changes[FieldNames.URL]
             except Exception as err:
+                if FieldNames.URL in changes:
+                    del changes[FieldNames.URL]
                 logger.traceback(
                     f"Uncaught exception when checking URL resolution\n"
                     f"Entry = {id}\n"
-                    f"URL = {url}",
+                    f"URL = {url}\n\n"
+                    "As a result, this URL will NOT be added to the entry",
                     err,
                 )
         return changes

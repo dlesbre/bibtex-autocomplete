@@ -181,9 +181,7 @@ class Logger:
 
     def traceback(self, message: str, _err: Exception) -> None:
         prefix = ansi_format("{FgRed} | {Reset}")
-        message = message.replace(
-            "\n", "\n" + ansi_format("{Reset}" + prefix + "{StBold}")
-        )
+        message = message.replace("\n", "\n" + prefix)
         m = message.split("\n")
         # Hack to ensure second line is erased
         if len(m):
@@ -192,7 +190,7 @@ class Logger:
         self.error(
             "\n"
             + prefix
-            + "{StBold}{tmessage}{Reset}\n"
+            + "{tmessage}\n"
             + prefix
             + "\n"
             + prefix
