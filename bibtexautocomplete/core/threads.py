@@ -54,7 +54,16 @@ class LookupThread(Thread):
             lookup = self.lookup(BibtexEntry(entry))
             self.condition.release()
 
-            result = lookup.query()
+            try:
+                result = lookup.query()
+            except Exception as err:
+                result = None
+                logger.traceback(
+                    "Uncaught exception when trying to autocomplete entry\n"
+                    f"Entry = {self.entry_name}\n"
+                    f"Website = {self.name}",
+                    err,
+                )
 
             self.condition.acquire()
             self.result.append((result, lookup.get_last_query_info()))
