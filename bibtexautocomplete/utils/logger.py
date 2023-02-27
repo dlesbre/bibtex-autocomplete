@@ -62,10 +62,11 @@ class Logger:
         current = current_thread()
         if current is not main_thread():
             info = ansi_format("[{FgBlue}" + current.name + "{Reset}] ")
+            len_info = len(current.name) + 3
             entry_name = current.entry_name if hasattr(current, "entry_name") else None
             if isinstance(entry_name, str):
                 info += entry_name + ": "
-            len_info = len(current.name) + 3
+                len_info += len(entry_name) + 2
             message = info + message.replace("\n", "\n" + " " * len_info)
         return message
 
