@@ -6,7 +6,7 @@ import unicodedata
 from datetime import date
 from re import compile, search, sub
 from typing import Dict, List, Optional, Tuple
-from urllib.parse import urlsplit
+from urllib.parse import parse_qsl, urlencode, urlsplit
 
 from ..utils.constants import EntryType
 
@@ -293,5 +293,5 @@ def normalize_url(url: str) -> Optional[Tuple[str, str]]:
     domain = split.netloc
     path = split.path
     if split.query != "":
-        path += "?" + split.query
+        path += "?" + urlencode(parse_qsl(split.query))
     return domain, path
