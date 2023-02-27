@@ -2,6 +2,11 @@
 
 # Change Log
 
+## Version 1.1.8 - 2023-02-27
+
+- Add global exception catches to resume work if a single lookup fails
+- Fix websites returning invalid URLs leading to errors (issue #8, part 2)
+
 ## Version 1.1.7 - 2023-02-27
 
 - Fix trying to decode non-text doi response (issue #8)

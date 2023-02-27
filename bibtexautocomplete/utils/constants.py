@@ -14,7 +14,7 @@ DESCRIPTION = "Module to complete bibtex files by polling online databases"
 
 VERSION_MAJOR = 1
 VERSION_MINOR = 1
-VERSION_PATCH = 7
+VERSION_PATCH = 8
 
 VERSION_DATE = "2023-02-27"
 
