@@ -1,5 +1,3 @@
-<!-- LTeX: language=en -->
-
 # Bibtex Autocomplete
 
 [![PyPI version][version-shield]][pypi-link]

@@ -1,5 +1,3 @@
-<!-- LTeX: language=en -->
-
 # Change Log
 
 ## Version 1.1.8 - 2023-02-27
@@ -16,7 +14,7 @@
 
 - Allow for infinite timeout with `-t -1`
 - Increase default timeout to 20s as crossref consistently times out
-- Add per DB progress meters below the progress bas
+- Add per DB progress meters below the progress bar
 
 ## Version 1.1.5 - 2022-09-21
 
