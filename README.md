@@ -2,7 +2,7 @@
 
 [![PyPI version][version-shield]][pypi-link]
 [![PyPI pyversions][pyversion-shield]][pypi-link]
-[![License][license-shield]](./LICENSE)
+[![License][license-shield]](https://choosealicense.com/licenses/mit/)
 [![PyPI status][status-shield]][pypi-link]
 [![Downloads][download-shield]](https://pepy.tech/project/bibtexautocomplete)
 

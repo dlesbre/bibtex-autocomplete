@@ -154,7 +154,7 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
                 "response-status": self.response.status,
             }
             logger.debug(
-                "response: {status}{reason} in {delay}s",
+                "response {status}{reason} in {delay}s",
                 status=self.response.status,
                 reason=" " + self.response.reason if self.response.reason else "",
                 delay=delay,
