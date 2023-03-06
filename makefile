@@ -155,3 +155,6 @@ docker-build: ## Build the docker image
 docker-run: ## Run the docker image (requires building first)
 	$(call print,Running docker image)
 	$(DOCKER) run --rm -it $(DOCKER_IMG_NAME)
+
+.PHONY: docker
+docker: docker-build docker-run ## Build and run the docker image
