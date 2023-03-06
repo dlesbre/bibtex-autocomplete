@@ -45,7 +45,14 @@ class DBLPLookup(JSON_AT_Lookup):
         authors = info["authors"]["author"]
         formatted = []
         for author in authors.iter_list():
-            aut = Author.from_name(author["text"].to_str())
+            name = author["text"].to_str()
+            if name is None:
+                continue
+            # Some DBLP authors have a 4-digit disambiguation number
+            # Added to their names..., ex : "Ralf Jung 0002"
+            if len(name) > 4 and name[-4:].isnumeric():
+                name = name[:-4].strip()
+            aut = Author.from_name(name)
             if aut is not None:
                 formatted.append(aut)
         return formatted

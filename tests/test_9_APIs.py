@@ -10,9 +10,11 @@ from bibtexautocomplete.APIs import (
     UnpaywallLookup,
 )
 from bibtexautocomplete.APIs.doi import DOICheck, URLCheck
+from bibtexautocomplete.bibtex.author import Author
 from bibtexautocomplete.bibtex.entry import BibtexEntry
 from bibtexautocomplete.lookups.https import HTTPSLookup
 from bibtexautocomplete.utils.logger import logger
+from bibtexautocomplete.utils.safe_json import SafeJSON
 
 logger.set_verbosity(4)
 
@@ -89,6 +91,21 @@ class TestCrossref(Base):
 
 class TestDBLP(Base):
     Lookup = DBLPLookup
+
+    def test_strip_number(self) -> None:
+        json = SafeJSON.from_str(
+            """ {
+            "authors": {
+                "author": [
+                {
+                    "@pid": "54/4483-2",
+                    "text": "Ralf Jung 0002"
+                }
+                ]
+            }
+            }"""
+        )
+        assert self.Lookup.get_authors(json) == [Author("Jung", "Ralf")]
 
 
 class TestResearchr(Base):
