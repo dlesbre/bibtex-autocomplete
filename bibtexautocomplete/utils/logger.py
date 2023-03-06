@@ -72,7 +72,7 @@ class Logger:
             info = ansi_format("[{FgBlue}" + current.name + "{Reset}] ")
             entry_name = current.entry_name if hasattr(current, "entry_name") else None
             if isinstance(entry_name, str):
-                info += entry_name + ": "
+                info += ansi_format("{StBold}{StUnderline}" + entry_name + ":{Reset} ")
             message = prefix_indent(info, message)
         return message
 
