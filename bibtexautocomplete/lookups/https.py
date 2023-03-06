@@ -216,7 +216,7 @@ class RedirectFollower(HTTPSLookup[Input, Output]):
 
     def get_data(self) -> Optional[Data]:
         data = super().get_data()
-        while data is not None and data.code in [301, 302, 303]:
+        while data is not None and data.code in [301, 302, 303, 307]:
             if self.response is None:
                 return data
             location = self.response.getheader("Location")
@@ -227,7 +227,7 @@ class RedirectFollower(HTTPSLookup[Input, Output]):
             if self.depth >= self.max_depth:
                 logger.warn("Redirection depth exceeded")
                 return None
-            split = normalize_url(location)
+            split = normalize_url(location, "https://" + self.domain + self.path)
             if split is None:
                 return data
             self.domain = split[0]

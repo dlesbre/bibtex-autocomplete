@@ -4,11 +4,12 @@ Functions used to normalize bibtex fields
 
 import unicodedata
 from datetime import date
-from re import compile, search, sub
+from re import search, sub
 from typing import Dict, List, Optional, Tuple
-from urllib.parse import parse_qsl, urlencode, urlsplit
+from urllib.parse import parse_qsl, urlencode, urljoin, urlsplit
 
 from ..utils.constants import EntryType
+from ..utils.logger import logger
 
 
 def make_plain(value: Optional[str]) -> Optional[str]:
@@ -273,25 +274,22 @@ def normalize_month(month: str) -> str:
     return month
 
 
-URL_REGEX = compile(
-    "((http|https)://)(www.)?"
-    + "[a-zA-Z0-9@:%._\\+~#?&//=]"
-    + "{2,256}\\.[a-z]"
-    + "{2,6}\\b([-a-zA-Z0-9@:%"
-    + "._\\+~#?&//=]*)"
-)
-
-
-def normalize_url(url: str) -> Optional[Tuple[str, str]]:
+def normalize_url(
+    url: str, previous: Optional[str] = None
+) -> Optional[Tuple[str, str]]:
     """Splits and url into domain/path
     Returns none if url is not valid"""
-    if not search(URL_REGEX, url):
-        return None
+    if previous is not None:
+        # resolve relative URLs
+        url = urljoin(previous, url)
     split = urlsplit(url)
-    if split.netloc == "":
+    if split.netloc == "" or split.scheme == "":
+        logger.debug("INVALID URL: {url}")
         return None
     domain = split.netloc
     path = split.path
     if split.query != "":
         path += "?" + urlencode(parse_qsl(split.query))
+    if split.fragment != "":
+        path += "#" + split.fragment
     return domain, path

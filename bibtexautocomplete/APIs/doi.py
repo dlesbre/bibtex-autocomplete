@@ -107,10 +107,11 @@ class DOICheck(
                 # See: https://link.springer.com/deleted
                 try:
                     text = normalize_str_weak(final.data.decode())
+                    for elem in self.not_available_checks:
+                        if elem in text:
+                            logger.debug("INVALID TEXT IN RESPONSE PAGE")
+                            return False
                 except UnicodeDecodeError:
                     logger.warn("Can't decode text content from URL {}".format(url))
-                for elem in self.not_available_checks:
-                    if elem in text:
-                        return False
                 return True
         return False
