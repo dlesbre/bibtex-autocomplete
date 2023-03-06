@@ -108,8 +108,11 @@ dois = [
     ("not a valid doi", False),
     ("https://doi.org/10.1109/5.771073", True),
     ("10.1109/5.771073", True),
-    ("10.1007/978-1-4684-5287-7", False),
+    ("10.1007/978-1-4684-5287-7", False),  # springer deleted
     ("10.1007/3-540-46425-5_21", True),
+    # previous false negatives
+    ("10.1017/s0956796818000151", True),
+    ("10.1007/978-3-642-29044-2", True),
 ]
 
 
@@ -128,6 +131,15 @@ urls = [
     ("https://sfkmlj.jl.fs", False),
     ("NOT AN URL", False),
     ("http//sfdq.com/fp", False),
+    # Previous false negatives
+    (
+        "https://hal.archives-ouvertes.fr/hal-01945446/file/jung2018iris.pdf",
+        True,
+    ),
+    (
+        "https://link.springer.com/content/pdf/bfm:978-1-4615-4625-2/1?pdf=chapter%20toc",
+        True,
+    ),
 ]
 
 
