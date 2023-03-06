@@ -62,7 +62,7 @@ class DOICheck(
     path = "/api/handles/"
 
     not_available_checks = [
-        "not available",
+        "DOI not available",
         "not found",
     ]
 
@@ -109,7 +109,7 @@ class DOICheck(
                     text = normalize_str_weak(final.data.decode())
                     for elem in self.not_available_checks:
                         if elem in text:
-                            logger.debug("INVALID TEXT IN RESPONSE PAGE")
+                            logger.debug("INVALID TEXT IN RESPONSE PAGE " + elem)
                             return False
                 except UnicodeDecodeError:
                     logger.warn("Can't decode text content from URL {}".format(url))
