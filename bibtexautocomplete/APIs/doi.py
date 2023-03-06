@@ -62,7 +62,7 @@ class DOICheck(
     path = "/api/handles/"
 
     not_available_checks = [
-        "DOI not available",
+        "doi not available",
         "not found",
     ]
 

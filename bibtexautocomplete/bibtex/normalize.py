@@ -279,12 +279,13 @@ def normalize_url(
 ) -> Optional[Tuple[str, str]]:
     """Splits and url into domain/path
     Returns none if url is not valid"""
+    url_copy = url
     if previous is not None:
         # resolve relative URLs
         url = urljoin(previous, url)
     split = urlsplit(url)
     if split.netloc == "" or split.scheme == "":
-        logger.debug("INVALID URL: {url}")
+        logger.debug(f"INVALID URL: {url_copy}, FROM {previous}")
         return None
     domain = split.netloc
     path = split.path
