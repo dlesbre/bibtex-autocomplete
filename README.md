@@ -1,14 +1,3 @@
-ISSUES :
-
-- capitalize Authors
-- Authors with number in DBLP
-- relative link redirects ??
-- Warning when skipping entries ?
-- DOI and URL parallelism
-- Non-standard fields (abstract, arXiv id, ...)
-- https://dblp.org/search/publ/api?format=json&h=10&q=iris+from+the+ground+up+a+modular+foundation+for+higher+order+concurrent+separation+logic
-- btac field
-
 # Bibtex Autocomplete
 
 [![PyPI version][version-shield]][pypi-link]
