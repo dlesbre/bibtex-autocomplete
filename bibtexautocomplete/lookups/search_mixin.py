@@ -55,7 +55,6 @@ class SearchResultMixin(Generic[result]):
         - res:result is also passed in case get_value forgets some data.
         """
         raise NotImplementedError("should be overridden in child class")
-        return match_score(self.entry, entry)
 
     def process_data(self, data: Data) -> Optional[BibtexEntry]:
         """Iterate through results until one matches"""
