@@ -23,4 +23,10 @@ __all__ = (
     "LookupType",
     "LOOKUPS",
     "LOOKUP_NAMES",
+    "CrossrefLookup",
+    "SemanticScholarLookup",
+    "ArxivLookup",
+    "DBLPLookup",
+    "ResearchrLookup",
+    "UnpaywallLookup",
 )

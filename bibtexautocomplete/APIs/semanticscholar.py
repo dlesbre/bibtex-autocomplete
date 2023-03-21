@@ -19,7 +19,7 @@ class SemanticScholarLookup(JSON_DT_Lookup):
     DOI mode:
     https://api.semanticscholar.org/graph/v1/paper/DOI:10.1109/tro.2004.829459?fields=paperId%2CexternalIds%2Curl%2Ctitle%2Cvenue%2Cyear%2CisOpenAccess%2CopenAccessPdf%2CfieldsOfStudy%2Cs2FieldsOfStudy%2CpublicationVenue%2CpublicationTypes%2CpublicationDate%2Cjournal%2Cauthors
     Author + title:
-    https://api.crossref.org/works?rows=3&query.title=Reactive+Path+Deformation+for+Nonholonomic+Mobile+Robots&query.author=Lamiraux
+    https://api.semanticscholar.org/graph/v1/paper/search?fields=paperId%2CexternalIds%2Curl%2Ctitle%2Cvenue%2Cyear%2CopenAccessPdf%2CpublicationVenue%2CpublicationTypes%2CpublicationDate%2Cjournal%2Cauthors&limit=10&query=Reactive+Path+Deformation+for+Nonholonomic+Mobile+Robots
     """
 
     # List of field names requested on search, case sensitive
