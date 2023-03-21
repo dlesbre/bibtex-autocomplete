@@ -140,12 +140,14 @@ btac [--flags] <input_files>
 
 - `btac my/db.bib` : reads from `./my/db.bib`, writes to `./my/db.btac.bib`
 - `btac -i db.bib` : reads from `db.bib` and overwrites it (inplace flag)
-- `btac db1.bib db2.bib -o out1.bib -o out2.bib` reads multiple files and write
-  their outputs to `out1.bib` and `out2.bib` respectively.
+- `btac db1.bib db2.bib db3.bib -o out1.bib -o out2.bib` reads `db1.bib`,
+  `db2.bib` and `db3.bib`, and write their outputs to `out1.bib`, `out2.bib`
+  and `db3.btac.bib` respectively.
 - `btac folder` : reads from all files ending with `.bib` in folder. Excludes
   `.btac.bib` files unless they are the only `.bib` files present. Writes to
   `folder/file.btac.bib` unless inplace flag is set.
 - `btac` with no inputs is same as `btac .`
+- `btac -v ...` verbose mode, pretty prints all new fields when done
 
 **Note:** the [parser](https://pypi.org/project/bibtexparser/) doesn't preserve
 format information, so this script will reformat your files. Some formatting
