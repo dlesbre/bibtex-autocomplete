@@ -135,7 +135,7 @@ class DATQueryMixin(TitleAuthorQueryMixin, DOIQueryMixin):
     pass
 
 
-class DTQueryMixin(TitleAuthorQueryMixin, DOIQueryMixin):
+class DTQueryMixin(TitleQueryMixin, DOIQueryMixin):
     """DOI - Title Mixin
     queries in order:
     - if doi, with doi, with title (if any)
