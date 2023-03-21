@@ -13,7 +13,7 @@ from ..utils.safe_json import SafeJSON
 
 class CrossrefLookup(JSON_DAT_Lookup):
     """Lookup info on https://www.crossref.org
-    Uses the crossref REST API, documentated here:
+    Uses the crossref REST API, documented here:
     https://api.crossref.org/swagger-ui/index.html
 
     example URLs:

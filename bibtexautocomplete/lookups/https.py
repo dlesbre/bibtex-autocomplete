@@ -97,13 +97,19 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
             return self.host
         return self.get_domain()
 
+    def get_base_path(self) -> str:
+        """Return the base path (without parameter)
+        default to simply using self.path"""
+        return self.path
+
     def get_path(self) -> str:
         """Return the path to connect to
         override this if not using self.path"""
         params = self.get_params()
+        path = self.get_base_path()
         if params:
-            return self.path + "?" + urlencode(params, safe=self.safe)
-        return self.path
+            return path + "?" + urlencode(params, safe=self.safe)
+        return path
 
     def get_params(self) -> Dict[str, str]:
         """Url parameters, can use self.entry to set them

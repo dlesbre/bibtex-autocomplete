@@ -27,7 +27,7 @@ class ResearchrLookup(JSON_AT_Lookup):
     domain = "researchr.org"
     path = "/api/search/publication/"
 
-    def get_path(self) -> str:
+    def get_base_path(self) -> str:
         search = ""
         if self.author is not None:
             search += self.author + " "

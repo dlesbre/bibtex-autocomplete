@@ -3,7 +3,6 @@ Lookup info from https://unpaywall.org/
 """
 
 from typing import Dict, Iterable, List, Optional
-from urllib.parse import urlencode
 
 from ..bibtex.author import Author
 from ..bibtex.entry import BibtexEntry, FieldNames
@@ -44,12 +43,11 @@ class UnpaywallLookup(JSON_DT_Lookup):
             base["query"] = self.title
         return base
 
-    def get_path(self) -> str:
+    def get_base_path(self) -> str:
         base = self.path
-        params = "?" + urlencode(self.get_params())
         if self.doi is not None:
-            return base + self.doi + params
-        return base + "search/" + params
+            return base + self.doi
+        return base + "search/"
 
     def get_results(self, data: bytes) -> Optional[Iterable[SafeJSON]]:
         json = SafeJSON.from_bytes(data)

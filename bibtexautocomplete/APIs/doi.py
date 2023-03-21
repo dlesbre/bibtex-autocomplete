@@ -4,7 +4,7 @@ used to check that dois are valid
 """
 
 from typing import Optional
-from urllib.parse import quote, urlencode
+from urllib.parse import quote
 
 from ..bibtex.normalize import normalize_doi, normalize_str_weak, normalize_url
 from ..lookups.abstract_base import Data
@@ -79,8 +79,8 @@ class DOICheck(
             return True
         return False
 
-    def get_path(self) -> str:
-        return self.path + quote(self.doi) + "?" + urlencode(self.params)
+    def get_base_path(self) -> str:
+        return self.path + quote(self.doi)
 
     def process_data(self, data: Data) -> Optional[bool]:
         if data.code != 200:
