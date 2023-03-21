@@ -3,6 +3,7 @@ Bibtexautocomplete
 main class used to manage calls to different lookups
 """
 
+from datetime import datetime
 from functools import reduce
 from json import dump as json_dump
 from pathlib import Path
@@ -27,7 +28,13 @@ from ..bibtex.entry import BibtexEntry, FieldNames
 from ..bibtex.io import file_read, file_write, get_entries
 from ..bibtex.normalize import has_field
 from ..lookups.abstract_base import LookupType
-from ..utils.constants import BULLET, FIELD_PREFIX, MAX_THREAD_NB, EntryType
+from ..utils.constants import (
+    BULLET,
+    FIELD_PREFIX,
+    MARKED_FIELD,
+    MAX_THREAD_NB,
+    EntryType,
+)
 from ..utils.logger import VERBOSE_INFO, logger
 from ..utils.only_exclude import OnlyExclude
 from .data_dump import DataDump
@@ -59,6 +66,8 @@ class BibtexAutocomplete(Iterable[EntryType]):
     entries: OnlyExclude[str]
     force_overwrite: bool
     prefix: str
+    mark: bool
+    filter: Callable[[EntryType], bool]
     dumps: List[DataDump]
 
     changed_fields: int
@@ -75,6 +84,8 @@ class BibtexAutocomplete(Iterable[EntryType]):
         fields: Container[str],
         entries: OnlyExclude[str],
         force_overwrite: bool,
+        mark: bool = False,
+        ignore_mark: bool = False,
         prefix: bool = False,
     ):
         self.bibdatabases = bibdatabases
@@ -87,11 +98,18 @@ class BibtexAutocomplete(Iterable[EntryType]):
         self.changes = []
         self.dumps = []
         self.prefix = FIELD_PREFIX if prefix else ""
+        self.mark = mark
+        if ignore_mark:
+            self.filter = lambda x: x["ID"] in self.entries
+        else:
+            self.filter = (
+                lambda x: x["ID"] in self.entries and MARKED_FIELD.lower() not in x
+            )
 
     def __iter__(self) -> Iterator[EntryType]:
         """Iterate through entries"""
         for db in self.bibdatabases:
-            yield from filter(lambda x: x["ID"] in self.entries, get_entries(db))
+            yield from filter(self.filter, get_entries(db))
 
     @memoize
     def count_entries(self) -> int:
@@ -206,6 +224,8 @@ class BibtexAutocomplete(Iterable[EntryType]):
             nb=len(changes),
         )
         self.dumps.append(dump)
+        if self.mark:
+            entry[MARKED_FIELD] = datetime.today().strftime("%Y-%m-%d")
 
     def combine(self, entry: EntryType, new_info: BibtexEntry) -> Dict[str, str]:
         """Adds the information in info to entry.

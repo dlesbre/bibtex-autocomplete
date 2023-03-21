@@ -45,5 +45,9 @@ QUERY_MAX_RESULTS = 10
 # Prefix added to fields with -p / --prefix option
 FIELD_PREFIX = "BTAC"
 
+# Field used to mark entries, the value is mostly irrelevant
+# As only field presence is tested
+MARKED_FIELD = FIELD_PREFIX + "queried"
+
 # Bullet printed to the screen when printing a list
 BULLET = "{FgBlue}{StBold}*{Reset} "

@@ -135,8 +135,13 @@ parser.add_argument("--indent", "--fi", default="\t")
 parser.add_argument("--force-overwrite", "-f", action="store_true")
 parser.add_argument("--prefix", "-p", action="store_true")
 parser.add_argument("--inplace", "-i", action="store_true")
+
+parser.add_argument("--mark", "-m", action="store_true")
+parser.add_argument("--ignore-mark", "-M", action="store_true")
+
 parser.add_argument("--timeout", "-t", type=float, default=CONNECTION_TIMEOUT)
 parser.add_argument("--verbose", "-v", action="count", default=0)
+
 parser.add_argument("--silent", "-s", action="store_true")
 parser.add_argument("--no-color", "-n", action="store_true")
 parser.add_argument("--ignore-ssl", "-S", action="store_true")
@@ -201,9 +206,13 @@ More information and demo:
   {FgYellow}-f --force-overwrite{Reset}  Overwrite already present fields
         The default is to overwrite a field if it is empty or absent
   {FgYellow}-p --prefix{Reset}           Write new fields with a prefix
-        eg: will write "BTACtitle = ..." instead of "title = ..." in the bib file.
+        eg: will write "{PREFIX}title = ..." instead of "title = ..." in the bib file.
         Can overwrite existing fields starting with BTACxxxx, even without the -f option.
         Can be combined with -f to safely show info for already present fields.
+
+  {FgYellow}-m --mark{Reset}             Add a "{MARKEDFIELD}" field to queried entries.
+        Entries with such a field are not queried in subsequent calls to btac
+  {FgYellow}-M --ignore-mark{Reset}      Also query entries with a "{MARKEDFIELD}" field
 
   {FgYellow}-t --timeout{Reset} {FgGreen}<float>{Reset}  set timeout on request, default: {TIMEOUT} s
         Set to -1 for no timeout.

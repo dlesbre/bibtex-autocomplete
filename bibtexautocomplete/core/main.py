@@ -9,7 +9,9 @@ from ..lookups.https import HTTPSLookup
 from ..utils.ansi import ANSICodes, ansi_format
 from ..utils.constants import (
     CONNECTION_TIMEOUT,
+    FIELD_PREFIX,
     LICENSE,
+    MARKED_FIELD,
     SCRIPT_NAME,
     URL,
     VERSION_DATE,
@@ -51,6 +53,8 @@ def main(argv: Optional[List[str]] = None) -> None:
                 NAME=SCRIPT_NAME,
                 URL=URL,
                 LICENSE=LICENSE,
+                MARKEDFIELD=MARKED_FIELD,
+                PREFIX=FIELD_PREFIX,
             )
         )
         return
@@ -99,7 +103,14 @@ def main(argv: Optional[List[str]] = None) -> None:
 
     databases = BibtexAutocomplete.read(args.input)
     completer = BibtexAutocomplete(
-        databases, lookups, fields, entries, args.force_overwrite, args.prefix
+        databases,
+        lookups,
+        fields,
+        entries,
+        args.force_overwrite,
+        mark=args.mark,
+        ignore_mark=args.ignore_mark,
+        prefix=args.prefix,
     )
     completer.print_filters()
     try:
