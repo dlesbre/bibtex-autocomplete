@@ -41,7 +41,7 @@ def prefix_indent(prefix: str, message: str) -> str:
     """Adds a prefix to the first line of message
     Indents all subsequent lines with spaces to be aligned to prefix"""
     len = ansiless_len(prefix)
-    return prefix + message.replace("\n", "\n" + " " * len)
+    return ansi_format(prefix) + message.replace("\n", "\n" + " " * len)
 
 
 class Logger:
@@ -69,10 +69,10 @@ class Logger:
         """Add thread name to message if not in main thread"""
         current = current_thread()
         if current is not main_thread():
-            info = ansi_format("[{FgBlue}" + current.name + "{Reset}] ")
+            info = "[{FgBlue}" + current.name + "{Reset}] "
             entry_name = current.entry_name if hasattr(current, "entry_name") else None
             if isinstance(entry_name, str):
-                info += ansi_format("{StUnderline}" + entry_name + ":{Reset} ")
+                info += "{StUnderline}" + entry_name + ":{Reset} "
             message = prefix_indent(info, message)
         return message
 
