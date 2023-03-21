@@ -5,12 +5,14 @@ from .arxiv import ArxivLookup
 from .crossref import CrossrefLookup
 from .dblp import DBLPLookup
 from .researchr import ResearchrLookup
+from .semanticscholar import SemanticScholarLookup
 from .unpaywall import UnpaywallLookup
 
 # List of lookup to use, in the order they will be used
 LOOKUPS: List[LookupType] = [
     CrossrefLookup,
     ArxivLookup,
+    SemanticScholarLookup,
     DBLPLookup,
     ResearchrLookup,
     UnpaywallLookup,
@@ -21,9 +23,4 @@ __all__ = (
     "LookupType",
     "LOOKUPS",
     "LOOKUP_NAMES",
-    "CrossrefLookup",
-    "ArxivLookup",
-    "DBLPLookup",
-    "ResearchrLookup",
-    "UnpaywallLookup",
 )
