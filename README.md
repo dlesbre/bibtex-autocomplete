@@ -55,6 +55,9 @@ their databases.
   - [Dependencies](#dependencies)
 - [Usage](#usage)
 - [Command line arguments](#command-line-arguments)
+  - [Query filtering](#query-filtering)
+  - [Output formatting](#output-formatting)
+  - [Optional flags](#optional-flags)
 
 ## Demo
 
@@ -160,13 +163,13 @@ other websites. It often takes longer than the 20s timeout.
 
 ## Command line arguments
 
-**Optional arguments:**
-
 - `-o --output <file.bib>`
 
   Write output to given file. Can be used multiple times when also giving
   multiple inputs. Maps inputs to outputs in order. If there are extra inputs,
   uses default name (`old_name.btac.bib`). Ignored in inplace (`-i`) mode.
+
+### Query filtering
 
 - `-q --only-query <site>` or `-Q --dont-query <site>`
 
@@ -186,7 +189,18 @@ other websites. It often takes longer than the 20s timeout.
   Restrict which fields you wish to autocomplete. Field is a BibTeX field (e.g.
   `author`, `doi`,...). So if you only wish to add missing DOIs use `-c doi`.
 
-**Output formatting:**
+- `-m --mark` and `-M --ignore-mark`
+
+  This is useful to avoid repeated queries if you want to run `btac` many times
+  on the same (large) file.
+
+  By default, `btac` ignores any entry with a `BTACqueried` field. `--ignore-mark`
+  overrides this behavior.
+
+  When `--mark` is set, `btac` adds a `BTACqueried = {yyyy-mm-dd}` field to each entry
+  it queries.
+
+### Output formatting
 
 Unfortunately [bibtexparser](https://pypi.org/project/bibtexparser/) doesn't
 preserve format information, so this script will reformat your BibTeX file. Here
@@ -216,7 +230,8 @@ are a few options you can use to control the output format:
   Can be specified as a number (number of spaces) or a string with spaces
   and `_`, `t`, and `n` characters to mark space, tabs and newlines.
 
-**Flags:**
+### Optional flags
+
 - `-i --inplace` Modify input files inplace, ignores any specified output files
 - `-p --prefix` Write new fields with a prefix. The script will add `BTACtitle =
   ...` instead of `title = ...` in the bib file. This can be combined with `-f`
