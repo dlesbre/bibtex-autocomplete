@@ -65,7 +65,9 @@ class TitleQueryMixin(
     title: Optional[str] = None
 
     def iter_queries(self) -> Iterator[None]:
-        self.title = self.entry.title
+        self.title = (
+            None if self.entry.title is None else normalize_str(self.entry.title)
+        )
         # Perform parent queries with title set
         for x in super().iter_queries():
             yield x
