@@ -1,5 +1,13 @@
 # Change Log
 
+## Version ???
+
+- Add `--mark` and `--ignore-mark` option and behavior
+- Remove DBLP author disambiguation numbers (DBLP would sometimes return `John
+  Doe 0002`, which you don't want in your file)
+- Fix rejection of some valid DOIs on URL check
+- A few under the hood improvements and code cleanup
+
 ## Version 1.1.8 - 2023-02-27
 
 - Add global exception catches to resume work if a single lookup fails
