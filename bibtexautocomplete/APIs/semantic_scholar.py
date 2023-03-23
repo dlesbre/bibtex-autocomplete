@@ -55,6 +55,10 @@ class SemanticScholarLookup(JSON_DT_Lookup):
     domain = "api.semanticscholar.org"
     path = "/graph/v1/paper"
 
+    # Limited to 100 requests per 5 minutes (300s)
+    # so an average of 1 query every 3 seconds
+    query_delay: float = 3.0  # = (5 * 60) / 100
+
     def get_base_path(self) -> str:
         if self.doi is not None:
             return self.path + "/DOI:" + self.doi

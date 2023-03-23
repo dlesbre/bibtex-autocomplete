@@ -5,7 +5,7 @@ from .arxiv import ArxivLookup
 from .crossref import CrossrefLookup
 from .dblp import DBLPLookup
 from .researchr import ResearchrLookup
-from .semanticscholar import SemanticScholarLookup
+from .semantic_scholar import SemanticScholarLookup
 from .unpaywall import UnpaywallLookup
 
 # List of lookup to use, in the order they will be used
