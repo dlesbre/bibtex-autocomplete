@@ -101,7 +101,8 @@ from website with the following priority :
 crossref > arxiv > semantic scholar > dblp > researchr > unpaywall.
 
 So if both crossref's and dblp's response contain a publisher, the one from
-crossref will be used.
+crossref will be used. This order can be changed using the `-q --only-query`
+option (see [query filtering](#query-filtering)).
 
 The script will not overwrite any user given non-empty fields, unless the
 `-f/--force-overwrite` flag is given. If you want to check what fields are
@@ -176,9 +177,13 @@ other websites. It often takes longer than the 20s timeout.
 - `-q --only-query <site>` or `-Q --dont-query <site>`
 
   Restrict which websites to query from. `<site>` must be one of: `crossref`,
-  `dblp`, `s2` `arxiv`, `researchr`, `unpaywall`. These arguments can be used
+  `arxiv`, `s2`, `dblp`, `researchr`, `unpaywall`. These arguments can be used
   multiple times, for example to only query crossref and dblp use `-q crossref
   -q dblp` or `-Q researchr -Q unpaywall -Q arxiv -Q s2`
+
+  Additionally, you can use `-q` to change the completion priority.
+  So `-q unpaywall -q researchr -q dblp -q s2 -q arxiv -q crossref` reverses the
+  default order.
 
 - `-e --only-entry <id>` or `-E --exclude-entry <id>`
 
