@@ -1,14 +1,14 @@
 # Change Log
 
-## Version ???
+## Version 1.2.0 - 2023-04-14
 
+- Add semantic scholar lookup
 - Add `--mark` and `--ignore-mark` option and behavior
+- Allow using `-q --only-query` to change lookup order
 - Remove DBLP author disambiguation numbers (DBLP would sometimes return `John
   Doe 0002`, which you don't want in your file)
 - Fix rejection of some valid DOIs on URL check
 - A few under the hood improvements and code cleanup
-- Add semantic scholar lookup
-- Allow using `-q --only-query` to change lookup order
 
 ## Version 1.1.8 - 2023-02-27
 
