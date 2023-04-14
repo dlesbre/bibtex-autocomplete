@@ -7,6 +7,7 @@ from bibtexautocomplete.APIs import (
     CrossrefLookup,
     DBLPLookup,
     ResearchrLookup,
+    SemanticScholarLookup,
     UnpaywallLookup,
 )
 from bibtexautocomplete.APIs.doi import DOICheck, URLCheck
@@ -119,6 +120,10 @@ class TestUnpaywall(Base):
 class TestArxiv(Base):
     Lookup = ArxivLookup
     entry = (entry3, doi3)
+
+
+class TestSemanticScholar(Base):
+    Lookup = SemanticScholarLookup
 
 
 dois = [
