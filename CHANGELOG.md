@@ -7,6 +7,7 @@
   Doe 0002`, which you don't want in your file)
 - Fix rejection of some valid DOIs on URL check
 - A few under the hood improvements and code cleanup
+- Add semantic scholar lookup
 
 ## Version 1.1.8 - 2023-02-27
 
