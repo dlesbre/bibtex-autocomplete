@@ -1,9 +1,10 @@
 """Tests for functions/classes in bibtexautcomplete/defs"""
 
-from typing import List
+from typing import List, Set, Tuple
 
 import pytest
 
+from bibtexautocomplete.utils.functions import list_sort_using, list_unduplicate
 from bibtexautocomplete.utils.only_exclude import OnlyExclude
 from bibtexautocomplete.utils.safe_json import SafeJSON
 
@@ -67,3 +68,24 @@ def test_SafeJSON() -> None:
         elif key == "4":
             for i, x in enumerate(val.iter_list()):
                 assert (i == 0) == x.to_bool()
+
+
+test_undup = [
+    ([], ([], set())),
+    ([1, 7, 6], ([1, 7, 6], set())),
+    ([1, 5, 6, 5, 7], ([1, 5, 6, 7], {5})),
+]
+
+
+@pytest.mark.parametrize(("test", "result"), test_undup)
+def test_list_unduplicate(test: List[int], result: Tuple[List[int], Set[int]]) -> None:
+    assert list_unduplicate(test) == result
+
+
+test_sort = [([1, 5, 9, 7], [9, 7, 5, 1]), ([], [])]
+
+
+@pytest.mark.parametrize(("test", "result"), test_sort)
+def test_sort_using(test: List[int], result: List[int]) -> None:
+    reference = [9, 8, 7, 6, 5, 4, 3, 2, 1]
+    assert list_sort_using(test, reference, lambda x: x) == result

@@ -17,6 +17,7 @@ from ..utils.constants import (
     VERSION_DATE,
     VERSION_STR,
 )
+from ..utils.functions import list_sort_using, list_unduplicate
 from ..utils.logger import logger
 from ..utils.only_exclude import OnlyExclude
 from .autocomplete import BibtexAutocomplete
@@ -94,6 +95,14 @@ def main(argv: Optional[List[str]] = None) -> None:
         .from_nonempty(args.only_query, args.dont_query)
         .filter(LOOKUPS, lambda x: x.name)
     )
+    if args.only_query != []:
+        # remove duplicate from list
+        args.only_query, dups = list_unduplicate(args.only_query)
+        if dups:
+            # Print set without leading and ending brace
+            logger.warn("Duplicate '-q' arguments ignored: {set}", set=str(dups)[1:-1])
+        lookups = list_sort_using(lookups, args.only_query, lambda x: x.name)
+
     fields = OnlyExclude[str].from_nonempty(args.only_complete, args.dont_complete)
     entries = OnlyExclude[str].from_nonempty(args.only_entry, args.exclude_entry)
 
