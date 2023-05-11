@@ -45,7 +45,6 @@ def prefix_indent(prefix: str, message: str) -> str:
 
 
 class Logger:
-
     logger: logging.Logger
 
     def __init__(self, logger_name: str) -> None:
@@ -158,7 +157,8 @@ class Logger:
         """Set verbosity:
         0 is default
         1, 2, 3 show more and more info
-        -1, -2, -3, -4 show less and less (warning, error, critical errors, then nothing)"""
+        -1, -2, -3, -4 show less and less (warning, error, critical errors, then nothing)
+        """
         maxi = max(self.verbosity)
         mini = min(self.verbosity)
         if verbosity > maxi:

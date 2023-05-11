@@ -6,7 +6,6 @@ from typing import Any
 
 
 class ANSICodes:
-
     use_ansi: bool = True
 
     Codes = {

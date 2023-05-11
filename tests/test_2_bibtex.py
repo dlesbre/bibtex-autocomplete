@@ -137,7 +137,6 @@ def test_BibtexEntry_author_get(author: str, res: List[Author]) -> None:
 
 @pytest.mark.parametrize(("author", "res"), authors)
 def test_BibtexEntry_editor_get(author: str, res: List[Author]) -> None:
-
     b = BibtexEntry({FieldNames.EDITOR: author})
     assert b.editor == res
 

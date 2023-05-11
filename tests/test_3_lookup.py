@@ -8,7 +8,6 @@ from bibtexautocomplete.lookups.multiple_mixin import DATQueryMixin, DTQueryMixi
 
 
 class SearchEval(AbstractLookup[BibtexEntry, BibtexEntry]):
-
     index: int = 0
     expected: List[Dict[str, Optional[str]]] = []
 
