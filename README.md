@@ -196,6 +196,18 @@ other websites. It often takes longer than the 20s timeout.
   Restrict which fields you wish to autocomplete. Field is a BibTeX field (e.g.
   `author`, `doi`,...). So if you only wish to add missing DOIs use `-c doi`.
 
+- `-w --overwrite <field>` or `-W --dont-overwrite <field>`
+
+  Force overwriting of the selected fields. If using `-W author -W journal`
+  your force overwrite of all fields except `author` and `journal`. The
+  default is to override nothing.
+
+  For example `btac -C doi -w author` means complete all fields save DOI,
+  and only overwrite author fields
+
+  You can also use the `-f` flag to overwrite everything or the `-p` flag to add
+  a prefix to new fields, thus avoiding overwrites.
+
 - `-m --mark` and `-M --ignore-mark`
 
   This is useful to avoid repeated queries if you want to run `btac` many times

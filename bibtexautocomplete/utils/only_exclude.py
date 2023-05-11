@@ -22,6 +22,7 @@ class OnlyExclude(Container[T]):
 
     onlys: Optional[List[T]]
     nots: Optional[List[T]]
+    default: bool = True
 
     def __init__(self, onlys: Optional[List[T]], nots: Optional[List[T]]) -> None:
         """Create a new instance with onlys or nots.
@@ -40,12 +41,13 @@ class OnlyExclude(Container[T]):
         return cls(o, n)  # We need the class for type instanciation
 
     def __contains__(self, obj: T) -> bool:  # type: ignore[override]
-        """Check if obj is valid given the exclusion rules"""
+        """Check if obj is valid given the exclusion rules
+        returns self.default if neither onlys nor nots is set"""
         if self.onlys is not None:
             return obj in self.onlys
         if self.nots is not None:
             return obj not in self.nots
-        return True
+        return self.default
 
     def filter(self, iterable: Iterable[Q], map: Callable[[Q], T]) -> Iterable[Q]:
         """Returns a filtered Iterator

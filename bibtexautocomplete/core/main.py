@@ -3,6 +3,7 @@ from sys import stdout
 from typing import List, Optional
 
 from ..APIs import LOOKUP_NAMES, LOOKUPS
+from ..bibtex.entry import SearchedFields
 from ..bibtex.io import writer
 from ..lookups.condition_mixin import FieldConditionMixin
 from ..lookups.https import HTTPSLookup
@@ -106,9 +107,16 @@ def main(argv: Optional[List[str]] = None) -> None:
     fields = OnlyExclude[str].from_nonempty(args.only_complete, args.dont_complete)
     entries = OnlyExclude[str].from_nonempty(args.only_entry, args.exclude_entry)
 
+    overwrite = OnlyExclude[str].from_nonempty(args.overwrite, args.dont_overwrite)
+    overwrite.default = False
+
     FieldConditionMixin.fields_to_complete = set(
         fields.filter(FieldConditionMixin.fields_to_complete, lambda x: x)
     )
+
+    FieldConditionMixin.overwrites = set(fields.filter(SearchedFields, lambda x: x))
+    if args.force_overwrite:
+        FieldConditionMixin.overwrites = SearchedFields
 
     databases = BibtexAutocomplete.read(args.input)
     completer = BibtexAutocomplete(
@@ -116,7 +124,8 @@ def main(argv: Optional[List[str]] = None) -> None:
         lookups,
         fields,
         entries,
-        args.force_overwrite,
+        force_overwrite=overwrite,
+        force_overwrite_all=args.force_overwrite,
         mark=args.mark,
         ignore_mark=args.ignore_mark,
         prefix=args.prefix,

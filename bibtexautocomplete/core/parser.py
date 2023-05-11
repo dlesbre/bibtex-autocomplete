@@ -118,12 +118,15 @@ parser.add_argument(
     "--dont-complete", "-C", action="append", default=[], choices=FIELD_NAMES
 )
 parser.add_argument(
-    "--only-complete",
-    "-c",
-    action="append",
-    default=[],
-    choices=FIELD_NAMES,
+    "--only-complete", "-c", action="append", default=[], choices=FIELD_NAMES
 )
+parser.add_argument(
+    "--dont-overwrite", "-W", action="append", default=[], choices=FIELD_NAMES
+)
+parser.add_argument(
+    "--overwrite", "-w", action="append", default=[], choices=FIELD_NAMES
+)
+
 parser.add_argument("--exclude-entry", "-E", action="append", default=[])
 parser.add_argument("--only-entry", "-e", action="append", default=[])
 
@@ -193,6 +196,12 @@ More information and demo:
   {FgYellow}-C --dont-complete{Reset} {FgGreen}<field>{Reset}  Don't complete the given fields
         Field is a bibtex field (e.g. 'author', 'doi',...)
 
+  {FgYellow}-w --overwrite{Reset} {FgGreen}<field>{Reset}       Overwrite the given fields,
+        even if already present. Default is to overwrite nothing. See also "-f" flag
+  {FgYellow}-W --dont-overwrite{Reset} {FgGreen}<field>{Reset}  Don't overwrite the given field
+        Implicitly forces overwrite of all others.
+        Field is a bibtex field (e.g. 'author', 'doi',...)
+
 {StBold}Output formatting:{Reset}
   {FgYellow}--fa --align-values{Reset}        pad fieldnames to align all values
   {FgYellow}--fc --comma-first{Reset}         comma first syntax (, title = ...)
@@ -204,8 +213,8 @@ More information and demo:
 {StBold}Flags:{Reset}
   {FgYellow}-i --inplace{Reset}          Modify input files inplace
         ignores any specified output files
-  {FgYellow}-f --force-overwrite{Reset}  Overwrite already present fields
-        The default is to overwrite a field if it is empty or absent
+  {FgYellow}-f --force-overwrite{Reset}  Overwrite all already present fields
+        Supercedes any and all -w or -W arguments.
   {FgYellow}-p --prefix{Reset}           Write new fields with a prefix
         eg: will write "{PREFIX}title = ..." instead of "title = ..." in the bib file.
         Can overwrite existing fields starting with BTACxxxx, even without the -f option.

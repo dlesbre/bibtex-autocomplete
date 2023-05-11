@@ -44,12 +44,13 @@ class FieldConditionMixin(
     # list of fields that can be added to an entry by this lookup
     fields: Set[str]
 
+    overwrites: Set[str] = set()
     fields_to_complete: Set[str] = SearchedFields
 
     def condition(self) -> bool:
         """Only return True if there exists a field in self.fields
-        that is not in self.entry"""
+        that is not in self.entry or that is in overwrites"""
         for field in self.fields.intersection(self.fields_to_complete):
-            if field not in self.entry:
+            if field not in self.entry or field in self.overwrites:
                 return True
         return False

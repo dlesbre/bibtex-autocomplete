@@ -15,6 +15,7 @@ from typing import (
     Iterable,
     Iterator,
     List,
+    NamedTuple,
     Tuple,
     TypeVar,
     cast,
@@ -57,6 +58,22 @@ def memoize(method: Callable[[T], Q]) -> Callable[[T], Q]:
     return new_method
 
 
+class Changes(NamedTuple):
+    """An atomic change to the bib file"""
+
+    field: str
+    new_value: str
+    source: str  # Name of one of the lookups
+
+
+def not_in_change_list(field: str, change_list: List[Changes]) -> bool:
+    """Checks if the given field is already listed in the given list of changes"""
+    for change in change_list:
+        if change.field == field:
+            return False
+    return True
+
+
 class BibtexAutocomplete(Iterable[EntryType]):
     """Main class used to dispatch calls to the relevant lookups"""
 
@@ -64,7 +81,8 @@ class BibtexAutocomplete(Iterable[EntryType]):
     lookups: List[LookupType]
     fields: Container[str]
     entries: OnlyExclude[str]
-    force_overwrite: bool
+    force_overwrite: Container[str]
+    force_overwrite_all: bool
     prefix: str
     mark: bool
     filter: Callable[[EntryType], bool]
@@ -75,7 +93,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
 
     # Ordered list of (entry, changes) where
     # changes is a list of (field, new_value, source)
-    changes: List[Tuple[str, List[Tuple[str, str, str]]]]
+    changes: List[Tuple[str, List[Changes]]]
 
     def __init__(
         self,
@@ -83,7 +101,8 @@ class BibtexAutocomplete(Iterable[EntryType]):
         lookups: Iterable[LookupType],
         fields: Container[str],
         entries: OnlyExclude[str],
-        force_overwrite: bool,
+        force_overwrite: Container[str] = [],
+        force_overwrite_all: bool = False,
         mark: bool = False,
         ignore_mark: bool = False,
         prefix: bool = False,
@@ -93,6 +112,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         self.fields = fields
         self.entries = entries
         self.force_overwrite = force_overwrite
+        self.force_overwrite_all = force_overwrite_all
         self.changed_entries = 0
         self.changed_fields = 0
         self.changes = []
@@ -200,18 +220,27 @@ class BibtexAutocomplete(Iterable[EntryType]):
     ) -> None:
         """Reads all data the threads have found on a new entry,
         and uses it to update the entry with new fields"""
-        changes: List[Tuple[str, str, str]] = []
+        changes: List[Changes] = []
+
         dump = DataDump(entry["ID"])
-        iterator = reversed(threads) if self.force_overwrite else threads
-        for thread in iterator:
+        for thread in threads:
             result, info = thread.result[position]
             dump.add_entry(thread.lookup.name, result, info)
             if result is not None:
                 to_add = self.combine(entry, result)
                 to_add = self.sanitize(entry["ID"], to_add)
+                # Filter to_add to remove values already set
+                # This is to avoid changing the resolution order when forcing overwrite
+                # (Non overwrite fields are never added by combine if they are set in entry)
+                to_add = {
+                    field: value
+                    for field, value in to_add.items()
+                    if not_in_change_list(field, changes)
+                }
                 entry.update({self.prefix + field: to_add[field] for field in to_add})
                 changes.extend(
-                    (field, value, thread.name) for field, value in to_add.items()
+                    Changes(field, value, thread.name)
+                    for field, value in to_add.items()
                 )
         dump.new_fields = len(changes)
         if changes != []:
@@ -242,7 +271,11 @@ class BibtexAutocomplete(Iterable[EntryType]):
             if s_value.strip() == "":
                 continue
             # Is it present on entry
-            if self.force_overwrite or (not has_field(entry, field)):
+            if (
+                self.force_overwrite_all
+                or (field in self.force_overwrite)
+                or (not has_field(entry, field))
+            ):
                 changes[field] = s_value
         return changes
 
