@@ -1,5 +1,11 @@
 # Change Log
 
+## Version 1.2.1 - 2023-05-12
+
+- Add `-w --overwrite` and `-W --dont-overwrite` flags
+- Fix flag `-f` being ignored in query pre-condition checks, leading
+  to skipping queries even if new data could be obtained.
+
 ## Version 1.2.0 - 2023-04-14
 
 - Add semantic scholar lookup
