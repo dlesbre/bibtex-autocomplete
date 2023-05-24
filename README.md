@@ -32,8 +32,13 @@
 [pr-shield]: https://img.shields.io/github/issues-pr/dlesbre/bibtex-autocomplete
 [pr-link]: https://github.com/dlesbre/bibtex-autocomplete/pulls
 
-**bibtexautocomplete** or **btac** is a python package to autocomplete BibTeX
-bibliographies. It is inspired and expanding on the solution provided by
+**bibtexautocomplete** or **btac** is a simple script to autocomplete BibTeX
+bibliographies. It reads a BibTeX file and looks online for any additionnal data
+to add to each entry. If you have a bibliography that is missing DOI information 
+or want to add URLs to your entries, then `btac` might be able to help. You can also
+use it to quickly generate BibTeX entries from minimal data (e.g. just a title).
+
+It is inspired and expanding on the solution provided by
 [thando](https://tex.stackexchange.com/users/182467/thando) in this
 [TeX stack exchange post](https://tex.stackexchange.com/questions/6810/automatically-adding-doi-fields-to-a-hand-made-bibliography).
 
@@ -144,20 +149,19 @@ btac [--flags] <input_files>
 
 **Examples :**
 
-- `btac my/db.bib` : reads from `./my/db.bib`, writes to `./my/db.btac.bib`
+- `btac my/db.bib` : reads from `./my/db.bib`, writes to `./my/db.btac.bib`.
+  A different output file can be specified with `-o`.
 - `btac -i db.bib` : reads from `db.bib` and overwrites it (inplace flag)
-- `btac db1.bib db2.bib db3.bib -o out1.bib -o out2.bib` reads `db1.bib`,
-  `db2.bib` and `db3.bib`, and write their outputs to `out1.bib`, `out2.bib`
-  and `db3.btac.bib` respectively.
 - `btac folder` : reads from all files ending with `.bib` in folder. Excludes
   `.btac.bib` files unless they are the only `.bib` files present. Writes to
   `folder/file.btac.bib` unless inplace flag is set.
-- `btac` with no inputs is same as `btac .`
+- `btac` with no inputs is same as `btac .`, reads file from current working directory
+- `btac -c doi ...` only completes DOI fields, leave others unchanged
 - `btac -v ...` verbose mode, pretty prints all new fields when done
 
 **Note:** the [parser](https://pypi.org/project/bibtexparser/) doesn't preserve
-format information, so this script will reformat your files. Some formatting
-options (see below) are provided.
+format information, so this script will reformat your files. Some [formatting
+options](#output-formatting) are provided to control output format.
 
 **Slow responses:** I found that crossref responds significantly slower than the
 other websites. It often takes longer than the 20s timeout.
@@ -171,6 +175,10 @@ other websites. It often takes longer than the 20s timeout.
   Write output to given file. Can be used multiple times when also giving
   multiple inputs. Maps inputs to outputs in order. If there are extra inputs,
   uses default name (`old_name.btac.bib`). Ignored in inplace (`-i`) mode.
+  
+  For example `btac db1.bib db2.bib db3.bib -o out1.bib -o out2.bib` reads `db1.bib`,
+  `db2.bib` and `db3.bib`, and write their outputs to `out1.bib`, `out2.bib`
+  and `db3.btac.bib` respectively.
 
 ### Query filtering
 
@@ -187,7 +195,7 @@ other websites. It often takes longer than the 20s timeout.
 
 - `-e --only-entry <id>` or `-E --exclude-entry <id>`
 
-  Restrict which entries should be autocomplete. `<id>` is the entry ID used in
+  Restrict which entries should be autocompleted. `<id>` is the entry ID used in
   your BibTeX file (e.g. `@inproceedings{<id> ... }`). These arguments can also
   be used multiple times to select only/exclude multiple entries
 
@@ -200,10 +208,10 @@ other websites. It often takes longer than the 20s timeout.
 
   Force overwriting of the selected fields. If using `-W author -W journal`
   your force overwrite of all fields except `author` and `journal`. The
-  default is to override nothing.
+  default is to override nothing (only complete absent and blank fields).
 
-  For example `btac -C doi -w author` means complete all fields save DOI,
-  and only overwrite author fields
+  For a more complex example `btac -C doi -w author` means complete all fields 
+  save DOI, and only overwrite author fields
 
   You can also use the `-f` flag to overwrite everything or the `-p` flag to add
   a prefix to new fields, thus avoiding overwrites.
@@ -259,7 +267,7 @@ are a few options you can use to control the output format:
   Note that this can overwrite existing fields starting with `BTACxxxx`, even
   without the `-f` option.
 - `-f --force-overwrite` Overwrite already present fields. The default is to
-  overwrite a field if it is empty or absent
+  overwrite a field only if it is empty or absent
 - `-t --timeout <float>` set timeout on request in seconds, default: 20.0 s,
   increase this if you are getting a lot of timeouts. Set it to -1 for no timeout.
 - `-S --ignore-ssl` bypass SSL verification. Use this if you encounter the error:
@@ -297,6 +305,7 @@ are a few options you can use to control the output format:
   ```
 
 - `-O --no-output` don't write any output files (except the one specified by `--dump-data`)
+  can be used with `-v/--verbose` mode to only print a list of changes to the terminal
 
 - `-v --verbose` verbose mode shows more info. It details entries as they are
   being processed and shows a summary of new fields and their source at the end.
