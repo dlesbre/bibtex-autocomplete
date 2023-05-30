@@ -96,11 +96,18 @@ flake8: ## Run flake8 on all files
 	find tests -type f -name "*.py" -exec flake8 {} ';'
 
 .PHONY: format
-format:
+format: ## Format files with black and isort
 	$(call print,Running black)
 	black ./bibtexautocomplete/ ./tests/
 	$(call print,Running isort)
 	isort ./bibtexautocomplete/ ./tests/
+
+.PHONY: format-check
+format-check: ## Check that all files are formatted
+	$(call print,Running black)
+	black ./bibtexautocomplete/ ./tests/ --check
+	$(call print,Running isort)
+	isort ./bibtexautocomplete/ ./tests/ --check
 
 # =================================================
 # Installation

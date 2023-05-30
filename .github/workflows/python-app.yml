@@ -30,7 +30,7 @@ jobs:
     - name: Lint with flake8
       run: make flake8
     - name: Run formatters
-      run: make format
+      run: make format-check
     - name: Typecheck with mypy
       run: make mypy
     - name: Check script
