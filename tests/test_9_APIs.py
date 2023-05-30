@@ -13,7 +13,7 @@ from bibtexautocomplete.APIs import (
 from bibtexautocomplete.APIs.doi import DOICheck, URLCheck
 from bibtexautocomplete.bibtex.author import Author
 from bibtexautocomplete.bibtex.entry import BibtexEntry
-from bibtexautocomplete.lookups.https import HTTPSLookup
+from bibtexautocomplete.lookups.https import HTTPSRateCapedLookup
 from bibtexautocomplete.utils.logger import logger
 from bibtexautocomplete.utils.safe_json import SafeJSON
 
@@ -49,12 +49,14 @@ doi3 = "10.1103/physrevb.85.115117"
 
 
 class Base:
-    Lookup: Type[HTTPSLookup[Any, Any]]
+    Lookup: Type[HTTPSRateCapedLookup[Any, Any]]
     entry = (entry2, doi2)
 
     @pytest.fixture(autouse=True)
     def incr_timeout(self) -> None:
+        logger.set_verbosity(4)
         self.Lookup.connection_timeout = 120.0
+        self.Lookup.query_delay = 20.0
 
     def test_valid(self) -> None:
         a = self.Lookup(BibtexEntry(self.entry[0]))
