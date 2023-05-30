@@ -32,7 +32,7 @@ class FieldConditionMixin(
     ConditionMixin[BibtexEntry, BibtexEntry], AbstractEntryLookup
 ):
     """Mixin used to query only if there exists a field in self.fields
-    that does not exists in self.entry
+    that does not exists in self.entry, or is in self.overwrites
 
     inherit from this before the base class
     e.g. class MyLookup(..., FieldConditionMixin, ..., MyLookup):
