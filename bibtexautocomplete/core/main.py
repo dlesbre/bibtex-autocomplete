@@ -110,7 +110,9 @@ def main(argv: Optional[List[str]] = None) -> None:
     overwrite = OnlyExclude[str].from_nonempty(args.overwrite, args.dont_overwrite)
     overwrite.default = False
 
-    FieldConditionMixin.fields_to_complete = set(fields.filter(SearchedFields, lambda x: x))
+    FieldConditionMixin.fields_to_complete = set(
+        fields.filter(SearchedFields, lambda x: x)
+    )
     FieldConditionMixin.overwrites = set(overwrite.filter(SearchedFields, lambda x: x))
 
     if args.force_overwrite:
