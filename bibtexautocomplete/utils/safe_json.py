@@ -5,10 +5,9 @@ No operations will raise any error, invalid operations will simply return None
 
 
 from json import JSONDecodeError, JSONDecoder
-from typing import Any, Dict, Iterator, List, Optional, Tuple, TypeVar, Union
+from typing import Dict, Iterator, List, Optional, Tuple, Union
 
-JSONType = Union[Dict[str, Any], List[Any], int, float, str, bool, None]
-S = TypeVar("S", bound=JSONType)
+JSONType = Union[Dict[str, "JSONType"], List["JSONType"], int, float, str, bool, None]
 
 
 class SafeJSON:
@@ -83,13 +82,13 @@ class SafeJSON:
             return self.value
         return None
 
-    def to_list(self) -> Optional[List[Any]]:
+    def to_list(self) -> Optional[List[JSONType]]:
         """Returns the value if it is an list, None otherwise"""
         if isinstance(self.value, list):
             return self.value
         return None
 
-    def to_dict(self) -> Optional[Dict[str, Any]]:
+    def to_dict(self) -> Optional[Dict[str, JSONType]]:
         """Returns the value if it is a dict, None otherwise"""
         if isinstance(self.value, dict):
             return self.value
