@@ -34,7 +34,7 @@
 
 **bibtexautocomplete** or **btac** is a simple script to autocomplete BibTeX
 bibliographies. It reads a BibTeX file and looks online for any additionnal data
-to add to each entry. If you have a bibliography that is missing DOI information 
+to add to each entry. If you have a bibliography that is missing DOI information
 or want to add URLs to your entries, then `btac` might be able to help. You can also
 use it to quickly generate BibTeX entries from minimal data (e.g. just a title).
 
@@ -46,7 +46,7 @@ It attempts to complete a BibTeX file by querying the following domains:
 - [www.crossref.org](https://www.crossref.org/)
 - [arxiv.org](https://arxiv.org/)
 - [semanticscholar.org](https://www.semanticscholar.org/)
-- [dlbp.org](https://dlbp.org)
+- [dblp.org](https://dblp.org)
 - [researchr.org](https://researchr.org/)
 - [unpaywall.org](https://unpaywall.org/)
 
@@ -175,7 +175,7 @@ other websites. It often takes longer than the 20s timeout.
   Write output to given file. Can be used multiple times when also giving
   multiple inputs. Maps inputs to outputs in order. If there are extra inputs,
   uses default name (`old_name.btac.bib`). Ignored in inplace (`-i`) mode.
-  
+
   For example `btac db1.bib db2.bib db3.bib -o out1.bib -o out2.bib` reads `db1.bib`,
   `db2.bib` and `db3.bib`, and write their outputs to `out1.bib`, `out2.bib`
   and `db3.btac.bib` respectively.
@@ -210,7 +210,7 @@ other websites. It often takes longer than the 20s timeout.
   your force overwrite of all fields except `author` and `journal`. The
   default is to override nothing (only complete absent and blank fields).
 
-  For a more complex example `btac -C doi -w author` means complete all fields 
+  For a more complex example `btac -C doi -w author` means complete all fields
   save DOI, and only overwrite author fields
 
   You can also use the `-f` flag to overwrite everything or the `-p` flag to add

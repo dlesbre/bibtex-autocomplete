@@ -1,5 +1,5 @@
 """
-Lookup info from https://dlbp.org
+Lookup info from https://dblp.org
 """
 
 from typing import Dict, Iterable, List
@@ -12,7 +12,7 @@ from ..utils.safe_json import SafeJSON
 
 
 class DBLPLookup(JSON_AT_Lookup):
-    """Lookup for info on https://dlbp.org
+    """Lookup for info on https://dblp.org
     Uses the API documented here:
     https://dblp.org/faq/13501473.html
 
