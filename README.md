@@ -16,7 +16,7 @@
 [pyversion-shield]: https://img.shields.io/pypi/pyversions/bibtexautocomplete.svg
 [license-shield]:   https://img.shields.io/pypi/l/bibtexautocomplete.svg
 [status-shield]:    https://img.shields.io/pypi/status/bibtexautocomplete.svg
-[download-shield]:  https://pepy.tech/badge/bibtexautocomplete
+[download-shield]:  https://static.pepy.tech/badge/bibtexautocomplete
 [pypi-link]: https://pypi.python.org/pypi/bibtexautocomplete/
 
 [maintain-shield]: https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg
