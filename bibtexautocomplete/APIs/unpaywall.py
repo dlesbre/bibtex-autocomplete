@@ -96,6 +96,8 @@ class UnpaywallLookup(JSON_DT_Lookup):
 
         return values
 
+    # Set of fields we can get from a query.
+    # If all are already present on an entry, the query can be skipped.
     fields = {
         FieldNames.AUTHOR,
         FieldNames.BOOKTITLE,

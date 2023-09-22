@@ -70,6 +70,8 @@ class ResearchrLookup(JSON_AT_Lookup):
         values.year = result["year"].to_str()
         return values
 
+    # Set of fields we can get from a query.
+    # If all are already present on an entry, the query can be skipped.
     fields = {
         FieldNames.ADDRESS,
         FieldNames.AUTHOR,
