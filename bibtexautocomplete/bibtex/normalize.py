@@ -179,3 +179,15 @@ def normalize_url(
     if split.fragment != "":
         path += "#" + split.fragment
     return domain, path
+
+
+def normalize_year(year: str) -> Optional[int]:
+    """Returns year as an int if it can be determined"""
+    year = year.strip()
+    if year.isnumeric():
+        y = int(year)
+        if y <= 100:
+            # Not normalized...
+            return None
+        return y
+    return None

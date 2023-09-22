@@ -7,7 +7,14 @@ from typing import Any, Iterator, List, Optional, Set, Tuple
 
 from ..utils.constants import EntryType
 from .author import Author
-from .normalize import get_field, has_data, has_field, normalize_doi, normalize_month
+from .normalize import (
+    get_field,
+    has_data,
+    has_field,
+    normalize_doi,
+    normalize_month,
+    normalize_year,
+)
 
 
 class FieldNames:
@@ -203,7 +210,7 @@ class BibtexEntry:
     def get_month(self) -> Optional[str]:
         month = get_field(self._entry, FieldNames.MONTH)
         if month is None:
-            return month
+            return None
         return normalize_month(month)
 
     def set_month(self, month: Optional[str]) -> None:
@@ -214,3 +221,21 @@ class BibtexEntry:
                 return None
         if FieldNames.MONTH in self._entry:
             del self._entry[FieldNames.MONTH]
+
+    def get_year(self) -> Optional[str]:
+        year = get_field(self._entry, FieldNames.YEAR)
+        if year is None:
+            return None
+        n = normalize_year(year)
+        if n is None:
+            return year
+        return str(n)
+
+    def set_year(self, year: Optional[str]) -> None:
+        if year is not None:
+            n = normalize_year(year)
+            year = year if n is None else str(n)
+            self._entry[FieldNames.YEAR] = year
+            return None
+        if FieldNames.YEAR in self._entry:
+            del self._entry[FieldNames.YEAR]

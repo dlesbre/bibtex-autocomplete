@@ -5,7 +5,7 @@ Function to determine how likely two entries are the same
 from typing import Set, Tuple
 
 from .entry import BibtexEntry
-from .normalize import normalize_str, normalize_str_weak
+from .normalize import normalize_str, normalize_str_weak, normalize_year
 
 CERTAIN_MATCH = 1000  # Any score above is certain
 NO_MATCH = 0  # Any score below is no match
@@ -77,10 +77,13 @@ def match_score(a: BibtexEntry, b: BibtexEntry) -> int:
             else:
                 score += MATCH_AUTHORS_INTERSECTS
         if a.year is not None and b.year is not None:
-            if a.year != b.year:
-                # Different years
-                return NO_MATCH
-            score += MATCH_YEAR
+            a_year = normalize_year(a.year)
+            b_year = normalize_year(b.year)
+            if a_year is not None and b_year is not None:
+                if a_year != b_year:
+                    # Different years
+                    return NO_MATCH
+                score += MATCH_YEAR
         # Could check additional fields here
         return score
     return NO_MATCH
