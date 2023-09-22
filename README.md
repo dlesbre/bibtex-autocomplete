@@ -86,6 +86,7 @@ entries that don't have one of those two fields *will not* be completed.
   (see
   [https://www.bibtex.com/f/author-field/](https://www.bibtex.com/f/author-field/)
   for full details)
+- If the year is known, entries with different years will also not match.
 
 **Disclaimers**
 

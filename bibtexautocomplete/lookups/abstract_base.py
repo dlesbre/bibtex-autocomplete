@@ -37,6 +37,10 @@ Output = TypeVar("Output", covariant=True)
 
 
 class LookupProtocol(Protocol, Generic[Input, Output]):
+    """Minimal lookup, as used by the rest of the program,
+    The generic "Input" and "Output" types are often "BibtexEntry",
+    with exception for the URL and DOI validator lookups"""
+
     name: ClassVar[str]  # used to identify the lookup, also appears in help string
 
     def query(self) -> Optional[Output]:
