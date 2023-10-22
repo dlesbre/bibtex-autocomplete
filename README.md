@@ -73,9 +73,11 @@ their databases.
 
 **How does it find matches?**
 
-`btac` queries the websites using the entry DOI if known otherwise the title. So
+`btac` queries the websites using the entry DOI (if known) or its title. So
 entries that don't have one of those two fields *will not* be completed.
-- Titles should be the full title, they are compared excluding case and
+- DOIs are only used if they can be recognized, so the `doi` field should
+  contain "10.xxxx/yyyy" or an URL ending with it.
+- Titles should be the full title. They are compared excluding case and
   punctuation, but titles with missing words will not match.
 - If one or more authors are present, entries with no common authors will not
   match. Authors are compared using lower case last names only. Be sure to use
