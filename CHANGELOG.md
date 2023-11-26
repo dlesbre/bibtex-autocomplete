@@ -1,6 +1,6 @@
 # Change Log
 
-## Version ??? - Not yet released
+## Version 1.2.2 - 2023-11-26
 
 - Add year check to match algorithm, entry with different year will not match
 - Fix some logic in relating to overwrite `-w/-W` arguments
