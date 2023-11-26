@@ -12,6 +12,8 @@
 [![issues][issues-shield]][issues-link]
 [![pull requests][pr-shield]][pr-link]
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10207745.svg)](https://doi.org/10.5281/zenodo.10207745)
+
 [version-shield]:   https://img.shields.io/pypi/v/bibtexautocomplete.svg
 [pyversion-shield]: https://img.shields.io/pypi/pyversions/bibtexautocomplete.svg
 [license-shield]:   https://img.shields.io/pypi/l/bibtexautocomplete.svg
@@ -33,7 +35,7 @@
 [pr-link]: https://github.com/dlesbre/bibtex-autocomplete/pulls
 
 **bibtexautocomplete** or **btac** is a simple script to autocomplete BibTeX
-bibliographies. It reads a BibTeX file and looks online for any additionnal data
+bibliographies. It reads a BibTeX file and looks online for any additional data
 to add to each entry. If you have a bibliography that is missing DOI information
 or want to add URLs to your entries, then `btac` might be able to help. You can also
 use it to quickly generate BibTeX entries from minimal data (e.g. just a title).
