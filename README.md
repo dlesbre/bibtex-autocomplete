@@ -138,6 +138,16 @@ btac --version
 python3 -m bibtexautocomplete --version
 ```
 
+**Note:** `pip` no longer allows installing scripts globally in systems with other
+package managers (like most Linux distros). You can install the script locally in
+a [virtual environment](https://docs.python.org/3/library/venv.html) or globally
+using [pipx](https://pipx.pypa.io/stable/):
+
+```console
+sudo apt install pipx
+pipx install bibtexautocomplete
+```
+
 ### Dependencies
 
 This package has two dependencies (automatically installed by pip) :
