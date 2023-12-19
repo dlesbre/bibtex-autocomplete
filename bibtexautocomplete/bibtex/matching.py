@@ -30,7 +30,8 @@ MATCH_YEAR = CERTAIN_MATCH // 4
 
 
 def author_set(entry: BibtexEntry) -> Set[str]:
-    """Returns the set of normalized author lastname from entry"""
+    """Returns the set of normalized author lastname from entry
+    I.E. lowercase loast names, with spaces removed"""
     authors = entry.author
     last_names: Set[str] = set()
     for author in authors:
@@ -42,7 +43,9 @@ def author_set(entry: BibtexEntry) -> Set[str]:
 
 def common_authors(a: BibtexEntry, b: BibtexEntry) -> Tuple[int, int, int]:
     """Returns:
-    number of common authors, number of a authors, number of authors of b"""
+    - number of common authors;
+    - number of authors of a only,
+    - number of authors of b only"""
     authors_a = author_set(a)
     authors_b = author_set(b)
     common = authors_a.intersection(authors_b)

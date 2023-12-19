@@ -36,7 +36,19 @@ class SearchResultMixin(Generic[result]):
       defaults to [200]
     """
 
+    # HTTP codes that indicate we (likely) got valid data
     ok_codes: List[int] = [200]
+
+    # HTTP codes that shouldn't raise a warning, but indicate we got no data
+    # Typically 404 for websites that return 404 on unknown DOIs.
+    no_warning_codes: List[int] = []
+
+    def get_no_warning_codes(self) -> List[int]:
+        """return a list of HTTP codes that shouldn't raise a warning, but
+        indicate we got no data. Typically 404 for websites that return 404 on
+        unknown DOIs. Override this for dynamic setting, else just change
+        the no_warning_codes attribute"""
+        return self.no_warning_codes
 
     def get_results(self, data: bytes) -> Optional[Iterable[result]]:
         """Parse the data into a list of results to check
@@ -59,12 +71,13 @@ class SearchResultMixin(Generic[result]):
     def process_data(self, data: Data) -> Optional[BibtexEntry]:
         """Iterate through results until one matches"""
         if data.code not in self.ok_codes:
-            logger.warn(
-                "response: {FgYellow}{status}{reason}{Reset} in {delay}s",
-                status=data.code,
-                reason=" " + data.reason if data.reason else "",
-                delay=data.delay,
-            )
+            if data.code not in self.get_no_warning_codes():
+                logger.warn(
+                    "response: {FgYellow}{status}{reason}{Reset} in {delay}s",
+                    status=data.code,
+                    reason=" " + data.reason if data.reason else "",
+                    delay=data.delay,
+                )
             return None
         results = self.get_results(data.data)
         if results is None:

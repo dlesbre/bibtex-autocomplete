@@ -59,6 +59,13 @@ class SemanticScholarLookup(JSON_DT_Lookup):
     # so an average of 1 query every 3 seconds
     query_delay: float = 3.0  # = (5 * 60) / 100
 
+    def get_no_warning_codes(self) -> List[int]:
+        """Ignore 404 returned on invalid DOIs"""
+        codes = super().get_no_warning_codes()
+        if self.doi is not None:
+            codes.append(404)
+        return codes
+
     def get_base_path(self) -> str:
         if self.doi is not None:
             return self.path + "/DOI:" + self.doi
