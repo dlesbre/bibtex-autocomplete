@@ -12,7 +12,7 @@
 [![issues][issues-shield]][issues-link]
 [![pull requests][pr-shield]][pr-link]
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10207745.svg)](https://doi.org/10.5281/zenodo.10207745)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10207744.svg)](https://doi.org/10.5281/zenodo.10207744)
 
 [version-shield]:   https://img.shields.io/pypi/v/bibtexautocomplete.svg
 [pyversion-shield]: https://img.shields.io/pypi/pyversions/bibtexautocomplete.svg
@@ -34,7 +34,7 @@
 [pr-shield]: https://img.shields.io/github/issues-pr/dlesbre/bibtex-autocomplete
 [pr-link]: https://github.com/dlesbre/bibtex-autocomplete/pulls
 
-**bibtexautocomplete** or **btac** is a simple script to autocomplete BibTeX
+**bibtex-autocomplete** or **btac** is a simple script to autocomplete BibTeX
 bibliographies. It reads a BibTeX file and looks online for any additional data
 to add to each entry. If you have a bibliography that is missing DOI information
 or want to add URLs to your entries, then `btac` might be able to help. You can also
@@ -108,10 +108,10 @@ entries that don't have one of those two fields *will not* be completed.
 Once responses from all websites have been found, the script will add fields
 from website with the following priority :
 
-crossref > arxiv > semantic scholar > dblp > researchr > unpaywall.
+Crossref > arXiv > Semantic scholar > DBLP > Researchr > Unpaywall.
 
-So if both crossref's and dblp's response contain a publisher, the one from
-crossref will be used. This order can be changed using the `-q --only-query`
+So if both Crossref's and DBLP's response contain a publisher, the one from
+Crossref will be used. This order can be changed using the `-q --only-query`
 option (see [query filtering](#query-filtering)).
 
 The script will not overwrite any user given non-empty fields, unless the
@@ -162,16 +162,18 @@ btac [--flags] <input_files>
   `folder/file.btac.bib` unless inplace flag is set.
 - `btac` with no inputs is same as `btac .`, reads file from current working directory
 - `btac -c doi ...` only completes DOI fields, leave others unchanged
-- `btac -v ...` verbose mode, pretty prints all new fields when done
+- `btac -v ...` verbose mode, pretty prints all new fields when done.
+  See [this image](https://raw.githubusercontent.com/dlesbre/bibtex-autocomplete/master/imgs/btac-verbose.png) for a preview of verbose output.
 
 **Note:** the [parser](https://pypi.org/project/bibtexparser/) doesn't preserve
 format information, so this script will reformat your files. Some [formatting
 options](#output-formatting) are provided to control output format.
 
-**Slow responses:** I found that crossref responds significantly slower than the
-other websites. It often takes longer than the 20s timeout.
+**Slow responses:** Sometimes due to server traffic, a source DB may take significantly longer
+to respond and slow `btac`.
 - You can increase timeout with `btac ... -t 60` (60s) or `btac ... -t -1` (no timeout)
-- You can disable crossref queries with `btac ... -Q crossref`
+- You can disable queries to the offender `btac ... -Q <website>`
+- You can try again at another time
 
 ## Command line arguments
 
@@ -191,7 +193,7 @@ other websites. It often takes longer than the 20s timeout.
 
   Restrict which websites to query from. `<site>` must be one of: `crossref`,
   `arxiv`, `s2`, `dblp`, `researchr`, `unpaywall`. These arguments can be used
-  multiple times, for example to only query crossref and dblp use `-q crossref
+  multiple times, for example to only query Crossref and DBLP use `-q crossref
   -q dblp` or `-Q researchr -Q unpaywall -Q arxiv -Q s2`
 
   Additionally, you can use `-q` to change the completion priority.
@@ -315,6 +317,10 @@ are a few options you can use to control the output format:
 - `-v --verbose` verbose mode shows more info. It details entries as they are
   being processed and shows a summary of new fields and their source at the end.
   Using it more than once prints debug info (up to four times).
+
+  Verbose mode looks like this:
+
+  ![verbose-output.png](https://raw.githubusercontent.com/dlesbre/bibtex-autocomplete/master/imgs/btac-verbose.png)
 - `-s --silent` hide info and progress bar. Keep showing warnings and errors.
   Use twice to also hide warnings, thrice to also hide errors and four times to
   also hide critical errors, effectively killing all output.
