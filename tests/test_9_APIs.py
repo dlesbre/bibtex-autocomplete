@@ -6,6 +6,7 @@ from bibtexautocomplete.APIs import (
     ArxivLookup,
     CrossrefLookup,
     DBLPLookup,
+    OpenAlexLookup,
     ResearchrLookup,
     SemanticScholarLookup,
     UnpaywallLookup,
@@ -122,6 +123,10 @@ class TestUnpaywall(Base):
 class TestArxiv(Base):
     Lookup = ArxivLookup
     entry = (entry3, doi3)
+
+
+class TestOpenAlex(Base):
+    Lookup = OpenAlexLookup
 
 
 class TestSemanticScholar(Base):
