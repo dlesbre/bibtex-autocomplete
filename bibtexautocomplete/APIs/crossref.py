@@ -25,6 +25,8 @@ class CrossrefLookup(JSON_DAT_Lookup):
 
     name = "crossref"
 
+    # ============= Performing Queries =====================
+
     domain = "api.crossref.org"
     path = "/works"
 
@@ -54,6 +56,8 @@ class CrossrefLookup(JSON_DAT_Lookup):
             return float(interval[:-1]) / float(limit)
         except (ValueError, ZeroDivisionError):
             return None
+
+    # ============= Parsing results into entries =====================
 
     def get_results(self, data: bytes) -> Optional[Iterable[SafeJSON]]:
         """Return the result list"""

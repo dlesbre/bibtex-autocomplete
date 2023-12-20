@@ -24,6 +24,8 @@ class DBLPLookup(JSON_AT_Lookup):
 
     name = "dblp"
 
+    # ============= Performing Queries =====================
+
     domain = "dblp.org"
     path = "/search/publ/api"
 
@@ -34,6 +36,8 @@ class DBLPLookup(JSON_AT_Lookup):
         if self.title is not None:
             search += self.title + " "
         return {"format": "json", "h": str(QUERY_MAX_RESULTS), "q": search.strip()}
+
+    # ============= Parsing results into entries =====================
 
     def get_results(self, data: bytes) -> Iterable[SafeJSON]:
         """Return the result list"""

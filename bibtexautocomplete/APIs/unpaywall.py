@@ -27,6 +27,8 @@ class UnpaywallLookup(JSON_DT_Lookup):
 
     name = "unpaywall"
 
+    # ============= Performing Queries =====================
+
     domain = "api.unpaywall.org"
     path = "/v2/"
 
@@ -48,6 +50,8 @@ class UnpaywallLookup(JSON_DT_Lookup):
         if self.doi is not None:
             return base + self.doi
         return base + "search/"
+
+    # ============= Parsing results into entries =====================
 
     def get_results(self, data: bytes) -> Optional[Iterable[SafeJSON]]:
         json = SafeJSON.from_bytes(data)

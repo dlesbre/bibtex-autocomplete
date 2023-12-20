@@ -52,6 +52,8 @@ class SemanticScholarLookup(JSON_DT_Lookup):
 
     name = "s2"
 
+    # ============= Performing Queries =====================
+
     domain = "api.semanticscholar.org"
     path = "/graph/v1/paper"
 
@@ -80,6 +82,8 @@ class SemanticScholarLookup(JSON_DT_Lookup):
             base["query"] = self.title
             return base
         return base
+
+    # ============= Parsing results into entries =====================
 
     def get_results(self, data: bytes) -> Optional[Iterable[SafeJSON]]:
         """Return the result list"""

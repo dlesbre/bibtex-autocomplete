@@ -24,6 +24,8 @@ class ResearchrLookup(JSON_AT_Lookup):
 
     name = "researchr"
 
+    # ============= Performing Queries =====================
+
     domain = "researchr.org"
     path = "/api/search/publication/"
 
@@ -34,6 +36,8 @@ class ResearchrLookup(JSON_AT_Lookup):
         if self.title is not None:
             search += self.title + " "
         return self.path + quote_plus(search.strip())
+
+    # ============= Parsing results into entries =====================
 
     def get_results(self, data: bytes) -> Iterable[SafeJSON]:
         """Return the result list"""

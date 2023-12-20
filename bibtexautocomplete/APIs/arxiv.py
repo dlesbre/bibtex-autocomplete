@@ -23,6 +23,8 @@ class ArxivLookup(XML_T_Lookup):
 
     name = "arxiv"
 
+    # ============= Performing Queries =====================
+
     domain = "export.arxiv.org"
     path = "/api/query"
     accept = "application/xml"
@@ -41,6 +43,8 @@ class ArxivLookup(XML_T_Lookup):
             "start": "0",
             "max_results": str(QUERY_MAX_RESULTS),
         }
+
+    # ============= Parsing results into entries =====================
 
     def get_results(self, data: bytes) -> Optional[Iterable[Element]]:
         """Return the result list"""
