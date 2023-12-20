@@ -186,7 +186,8 @@ More information and demo:
   {FgYellow}-q --only-query{Reset} {FgGreen}<website>{Reset}   Only query the given sites,
         also change completion priority.
   {FgYellow}-Q --dont-query{Reset} {FgGreen}<website>{Reset}   Don't query the given sites
-        Website must be one of: {LOOKUPS}
+        Website must be one of:
+        {LOOKUPS}
 
   {FgYellow}-e --only-entry{Reset}    {FgGreen}<id>{Reset}     Only perform lookup these entries
   {FgYellow}-E --exclude-entry{Reset} {FgGreen}<id>{Reset}     Don't perform lookup these entries

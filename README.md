@@ -45,6 +45,7 @@ It is inspired and expanding on the solution provided by
 [TeX stack exchange post](https://tex.stackexchange.com/questions/6810/automatically-adding-doi-fields-to-a-hand-made-bibliography).
 
 It attempts to complete a BibTeX file by querying the following domains:
+- [openalex.org](https://openalex.org/)
 - [www.crossref.org](https://www.crossref.org/)
 - [arxiv.org](https://arxiv.org/)
 - [semanticscholar.org](https://www.semanticscholar.org/)
@@ -108,7 +109,7 @@ entries that don't have one of those two fields *will not* be completed.
 Once responses from all websites have been found, the script will add fields
 from website with the following priority :
 
-Crossref > arXiv > Semantic scholar > DBLP > Researchr > Unpaywall.
+OpenAlex > Crossref > arXiv > Semantic scholar > DBLP > Researchr > Unpaywall.
 
 So if both Crossref's and DBLP's response contain a publisher, the one from
 Crossref will be used. This order can be changed using the `-q --only-query`
@@ -201,10 +202,11 @@ to respond and slow `btac`.
 
 - `-q --only-query <site>` or `-Q --dont-query <site>`
 
-  Restrict which websites to query from. `<site>` must be one of: `crossref`,
-  `arxiv`, `s2`, `dblp`, `researchr`, `unpaywall`. These arguments can be used
-  multiple times, for example to only query Crossref and DBLP use `-q crossref
-  -q dblp` or `-Q researchr -Q unpaywall -Q arxiv -Q s2`
+  Restrict which websites to query from. `<site>` must be one of: `openalex`,
+  `crossref`, `arxiv`, `s2`, `dblp`, `researchr`, `unpaywall`. These arguments
+  can be used multiple times, for example to only query Crossref and DBLP use
+  `-q crossref -q dblp` or
+  `-Q openalex -Q researchr -Q unpaywall -Q arxiv -Q s2`
 
   Additionally, you can use `-q` to change the completion priority.
   So `-q unpaywall -q researchr -q dblp -q s2 -q arxiv -q crossref` reverses the
