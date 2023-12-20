@@ -12,7 +12,7 @@ from ..utils.safe_json import SafeJSON
 
 class SemanticScholarLookup(JSON_DT_Lookup):
     """Lookup info on https://www.semanticscholar.org/
-    Uses the crossref REST API, documented here:
+    Uses the API, documented here:
     https://api.semanticscholar.org/api-docs/
 
     example URLs:

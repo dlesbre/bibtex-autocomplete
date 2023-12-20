@@ -95,6 +95,10 @@ authors = [
         "Lewis, C. S. and Douglas Adams",
         [Author("Lewis", "C. S."), Author("Adams", "Douglas")],
     ),
+    (
+        "Martin Luther King and M. L. King",
+        [Author("King", "Martin Luther"), Author("King", "M. L.")],
+    ),
     ("", []),
 ]
 
