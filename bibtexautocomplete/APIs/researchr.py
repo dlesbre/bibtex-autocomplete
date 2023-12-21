@@ -8,6 +8,7 @@ from urllib.parse import quote_plus
 from ..bibtex.author import Author
 from ..bibtex.entry import BibtexEntry, FieldNames
 from ..lookups.lookups import JSON_AT_Lookup
+from ..utils.functions import make_pages
 from ..utils.safe_json import SafeJSON
 
 
@@ -65,9 +66,7 @@ class ResearchrLookup(JSON_AT_Lookup):
         values.month = result["month"].to_str()
         values.number = result["number"].to_str()
         values.organization = result["organization"].to_str()
-        values.pages = (
-            f"{page_1}-{page_n}" if page_1 is not None and page_n is not None else None
-        )
+        values.pages = make_pages(page_1, page_n)
         values.publisher = result["publisher"].to_str()
         values.title = result["title"].to_str()
         values.volume = result["volume"].to_str()

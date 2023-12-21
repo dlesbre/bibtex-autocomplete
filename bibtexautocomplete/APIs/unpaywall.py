@@ -8,6 +8,7 @@ from ..bibtex.author import Author
 from ..bibtex.entry import BibtexEntry, FieldNames
 from ..lookups.lookups import JSON_DT_Lookup
 from ..utils.constants import EMAIL
+from ..utils.functions import split_iso_date
 from ..utils.safe_json import SafeJSON
 
 
@@ -74,18 +75,18 @@ class UnpaywallLookup(JSON_DT_Lookup):
     def get_value(self, result: SafeJSON) -> BibtexEntry:
         result = result["response"]
         date = result["published_date"].to_str()  # ISO format YYYY-MM-DD
-        year = str(result["year"].to_int())
         month = None
         if date is not None:
-            if year is None and len(date) >= 4:
-                year = date[0:4]
-            # Unknown month are set to first january...
-            if date[4:] != "-01-01" and len(date) >= 7:
-                month = date[5:7]
-        values = BibtexEntry()
+            year, month = split_iso_date(date)
+            if month is not None and date[4:] == "-01-01" and len(date) >= 7:
+                month = None
+        if year is None:
+            year = result["year"].force_str()
 
         title = result["journal_name"].to_str()
         is_journal = result["genre"].to_str() == "journal-article"
+
+        values = BibtexEntry()
 
         values.author = self.get_authors(result["z_authors"])
         values.booktitle = None if is_journal else title

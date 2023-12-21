@@ -7,6 +7,7 @@ from ..bibtex.author import Author
 from ..bibtex.entry import BibtexEntry, FieldNames
 from ..lookups.lookups import JSON_DT_Lookup
 from ..utils.constants import QUERY_MAX_RESULTS
+from ..utils.functions import split_iso_date
 from ..utils.safe_json import SafeJSON
 
 
@@ -109,10 +110,7 @@ class SemanticScholarLookup(JSON_DT_Lookup):
         pub_date = result["publicationDate"].to_str()
         # date format should be YYYY-MM-DD
         if pub_date is not None:
-            if len(pub_date) >= 4 and pub_date[:4].isnumeric():
-                year = pub_date[:4]
-            if len(pub_date) >= 7 and pub_date[5:7].isnumeric():
-                month = pub_date[5:7]
+            year, month = split_iso_date(pub_date)
         if year is None:
             year = result["year"].to_str()
         return year, month

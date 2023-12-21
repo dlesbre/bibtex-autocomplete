@@ -10,6 +10,7 @@ from ..bibtex.author import Author
 from ..bibtex.entry import BibtexEntry, FieldNames
 from ..lookups.lookups import XML_T_Lookup
 from ..utils.constants import QUERY_MAX_RESULTS
+from ..utils.functions import split_iso_date
 
 
 class ArxivLookup(XML_T_Lookup):
@@ -90,10 +91,7 @@ class ArxivLookup(XML_T_Lookup):
         year: Optional[str] = None
         month: Optional[str] = None
         if isinstance(date, str):
-            if len(date) >= 4 and date[0:4].isnumeric():
-                year = date[0:4]
-                if len(date) >= 7 and date[5:7].isnumeric():
-                    month = date[5:7]
+            year, month = split_iso_date(date)
         return year, month
 
     def get_link(self, elem: Element) -> Optional[str]:

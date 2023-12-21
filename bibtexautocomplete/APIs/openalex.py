@@ -7,6 +7,7 @@ from ..bibtex.author import Author
 from ..bibtex.entry import BibtexEntry, FieldNames
 from ..lookups.lookups import JSON_DT_Lookup
 from ..utils.constants import QUERY_MAX_RESULTS
+from ..utils.functions import make_pages, split_iso_date
 from ..utils.safe_json import SafeJSON
 
 
@@ -81,10 +82,7 @@ class OpenAlexLookup(JSON_DT_Lookup):
         pub_date = result["publication_date"].to_str()
         # date format should be YYYY-MM-DD
         if pub_date is not None:
-            if len(pub_date) >= 4 and pub_date[:4].isnumeric():
-                year = pub_date[:4]
-            if len(pub_date) >= 7 and pub_date[5:7].isnumeric():
-                month = pub_date[5:7]
+            year, month = split_iso_date(pub_date)
         if year is None:
             year = str(result["publication_year"].to_int())
         return year, month
@@ -107,11 +105,7 @@ class OpenAlexLookup(JSON_DT_Lookup):
 
         first_page = result["biblio"]["first_page"].to_str()
         last_page = result["biblio"]["last_page"].to_str()
-        pages = None
-        if first_page is not None and last_page is not None:
-            pages = first_page + "--" + last_page
-        elif first_page is not None:
-            pages = first_page
+        pages = make_pages(first_page, last_page)
 
         values = BibtexEntry()
         values.author = self.get_authors(result["authorships"])
