@@ -6,7 +6,7 @@ from typing import Dict, Iterable, List, Optional, Tuple
 from ..bibtex.author import Author
 from ..bibtex.entry import BibtexEntry, FieldNames
 from ..lookups.lookups import JSON_DT_Lookup
-from ..utils.constants import EMAIL, QUERY_MAX_RESULTS
+from ..utils.constants import QUERY_MAX_RESULTS
 from ..utils.safe_json import SafeJSON
 
 
@@ -46,7 +46,7 @@ class OpenAlexLookup(JSON_DT_Lookup):
         return self.path
 
     def get_params(self) -> Dict[str, str]:
-        base = {"mailto": EMAIL}
+        base = super().get_params()
         if self.doi is not None:
             return base
         if self.title is not None:
