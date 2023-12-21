@@ -16,9 +16,9 @@ LOOKUPS: List[LookupType] = [
     CrossrefLookup,
     ArxivLookup,
     SemanticScholarLookup,
+    UnpaywallLookup,
     DBLPLookup,
     ResearchrLookup,
-    UnpaywallLookup,
     InpireHEPLookup,
 ]
 LOOKUP_NAMES = [cls.name for cls in LOOKUPS]
