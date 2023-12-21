@@ -4,6 +4,7 @@ from ..lookups.abstract_base import LookupType
 from .arxiv import ArxivLookup
 from .crossref import CrossrefLookup
 from .dblp import DBLPLookup
+from .inspire import InpireHEPLookup
 from .openalex import OpenAlexLookup
 from .researchr import ResearchrLookup
 from .semantic_scholar import SemanticScholarLookup
@@ -18,6 +19,7 @@ LOOKUPS: List[LookupType] = [
     DBLPLookup,
     ResearchrLookup,
     UnpaywallLookup,
+    InpireHEPLookup,
 ]
 LOOKUP_NAMES = [cls.name for cls in LOOKUPS]
 
@@ -32,4 +34,5 @@ __all__ = (
     "DBLPLookup",
     "ResearchrLookup",
     "UnpaywallLookup",
+    "InpireHEPLookup",
 )
