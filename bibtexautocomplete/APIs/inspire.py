@@ -35,7 +35,8 @@ class InpireHEPLookup(JSON_DT_Lookup):
 
     def get_no_warning_codes(self) -> List[int]:
         """Ignore 404 returned on invalid DOIs"""
-        codes = super().get_no_warning_codes()
+        codes = []
+        codes.extend(super().get_no_warning_codes())
         if self.doi is not None:
             codes.append(404)
         return codes

@@ -36,7 +36,8 @@ class OpenAlexLookup(JSON_DT_Lookup):
 
     def get_no_warning_codes(self) -> List[int]:
         """Ignore 404 returned on invalid DOIs"""
-        codes = super().get_no_warning_codes()
+        codes = []
+        codes.extend(super().get_no_warning_codes())
         if self.doi is not None:
             codes.append(404)
         return codes
@@ -47,13 +48,13 @@ class OpenAlexLookup(JSON_DT_Lookup):
         return self.path
 
     def get_params(self) -> Dict[str, str]:
-        base = super().get_params()
+        base = dict()
+        base.update(super().get_params())
         if self.doi is not None:
             return base
         if self.title is not None:
             base["filter"] = "title.search:" + self.title
             base["per-page"] = str(QUERY_MAX_RESULTS)
-            return base
         return base
 
     # ============= Parsing results into entries =====================

@@ -39,7 +39,8 @@ class UnpaywallLookup(JSON_DT_Lookup):
     title: Optional[str] = None
 
     def get_params(self) -> Dict[str, str]:
-        base = super().get_params()
+        base = dict()
+        base.update(super().get_params())
         if self.doi is None:
             if self.title is None:
                 raise ValueError("query with no title or doi")

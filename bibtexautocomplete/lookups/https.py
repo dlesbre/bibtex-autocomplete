@@ -207,7 +207,8 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
         )
 
     def get_last_query_info(self) -> Dict[str, JSONType]:
-        base = super().get_last_query_info()
+        base = dict()
+        base.update(super().get_last_query_info())
         base.update(self._last_query_info)
         return base
 
