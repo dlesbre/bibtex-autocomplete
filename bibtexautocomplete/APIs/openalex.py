@@ -6,7 +6,7 @@ from typing import Dict, Iterable, List, Optional, Tuple
 from ..bibtex.author import Author
 from ..bibtex.entry import BibtexEntry, FieldNames
 from ..lookups.lookups import JSON_DT_Lookup
-from ..utils.constants import EMAIL
+from ..utils.constants import EMAIL, QUERY_MAX_RESULTS
 from ..utils.safe_json import SafeJSON
 
 
@@ -51,6 +51,7 @@ class OpenAlexLookup(JSON_DT_Lookup):
             return base
         if self.title is not None:
             base["filter"] = "title.search:" + self.title
+            base["per-page"] = str(QUERY_MAX_RESULTS)
             return base
         return base
 
@@ -120,7 +121,7 @@ class OpenAlexLookup(JSON_DT_Lookup):
         values.month = month
         values.number = result["biblio"]["issue"].to_str()
         values.pages = pages
-        values.publisher = location["source"]["host_organisation_name"].to_str()
+        values.publisher = location["source"]["host_organization_name"].to_str()
         values.title = result["display_name"].to_str()
         values.url = url
         values.volume = result["biblio"]["volume"].to_str()
@@ -135,7 +136,9 @@ class OpenAlexLookup(JSON_DT_Lookup):
         FieldNames.ISSN,
         FieldNames.JOURNAL,
         FieldNames.MONTH,
+        FieldNames.NUMBER,
         FieldNames.PAGES,
+        FieldNames.PUBLISHER,
         FieldNames.TITLE,
         FieldNames.URL,
         FieldNames.VOLUME,
