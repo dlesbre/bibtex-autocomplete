@@ -31,7 +31,7 @@ USER_AGENT = f"{NAME}/{VERSION_STR} ({URL}; mailto:{EMAIL})"
 
 EntryType = Dict[str, str]  # Type of a bibtex entry
 
-MAX_THREAD_NB = 8  # Max number of threads
+MAX_THREAD_NB = 10  # Max number of threads
 
 # Renaming pattern for nex files
 # name is the filename, without extension ("ex" for "ex.bib")

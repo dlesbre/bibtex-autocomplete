@@ -195,9 +195,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 for thread in threads:
                     if position >= thread.position:
                         step = False
-                    thread_positions.append(
-                        f"[{thread.lookup.name}: {thread.position}/{nb_entries}]"
-                    )
+                    thread_positions.append(f"[{thread.lookup.name}:{thread.position}]")
                 bar.text = (
                     " ".join(thread_positions)
                     + f" Found {self.changed_fields} new fields"

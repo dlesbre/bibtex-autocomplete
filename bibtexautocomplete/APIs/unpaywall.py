@@ -76,6 +76,7 @@ class UnpaywallLookup(JSON_DT_Lookup):
         result = result["response"]
         date = result["published_date"].to_str()  # ISO format YYYY-MM-DD
         month = None
+        year = None
         if date is not None:
             year, month = split_iso_date(date)
             if month is not None and date[4:] == "-01-01" and len(date) >= 7:
