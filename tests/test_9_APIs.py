@@ -6,6 +6,7 @@ from bibtexautocomplete.APIs import (
     ArxivLookup,
     CrossrefLookup,
     DBLPLookup,
+    InpireHEPLookup,
     OpenAlexLookup,
     ResearchrLookup,
     SemanticScholarLookup,
@@ -47,6 +48,13 @@ entry3 = {
     "ID": "something",
 }
 doi3 = "10.1103/physrevb.85.115117"
+
+entry4 = {
+    "title": "Optimizing Secondary CLIQ for Protecting High-Field Accelerator Magnets",
+    "author": "Ravaioli, E. and Mulder, T. and Verweij, A. and Wozniak, M.",
+    "ID": "physicsstuff",
+}
+doi4 = "10.1109/tasc.2023.3336272"
 
 
 class Base:
@@ -123,6 +131,11 @@ class TestUnpaywall(Base):
 class TestArxiv(Base):
     Lookup = ArxivLookup
     entry = (entry3, doi3)
+
+
+class TestInspire(Base):
+    Lookup = InpireHEPLookup
+    entry = (entry4, doi4)
 
 
 class TestOpenAlex(Base):

@@ -52,7 +52,7 @@ It attempts to complete a BibTeX file by querying the following domains:
 - [unpaywall.org](https://unpaywall.org/): database of open access articles, ~48 million entries
 - [dblp.org](https://dblp.org): computer science, ~7 million entries
 - [researchr.org](https://researchr.org/): computer science
-- [inspirehep.net/](https://inspirehep.net/): high-energy physics, ~1.5 million entries
+- [inspirehep.net](https://inspirehep.net/): high-energy physics, ~1.5 million entries
 
 Big thanks to all of them for allowing open, easy and well-documented access to
 their databases.

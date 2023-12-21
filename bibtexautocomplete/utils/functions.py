@@ -31,8 +31,8 @@ def split_iso_date(date: str) -> Tuple[Optional[str], Optional[str]]:
     month = None
     if len(date) >= 4 and date[:4].isnumeric() and 1000 <= int(date[:4]) <= 3000:
         year = date[:4]
-    if len(date) >= 7 and date[5:7].isnumeric() and 1 <= int(date[5:7]) <= 12:
-        month = date[5:7]
+        if len(date) >= 7 and date[5:7].isnumeric() and 1 <= int(date[5:7]) <= 12:
+            month = date[5:7]
     return year, month
 
 

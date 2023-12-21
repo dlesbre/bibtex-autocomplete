@@ -1,10 +1,14 @@
 """Tests for functions/classes in bibtexautcomplete/defs"""
 
-from typing import List, Set, Tuple
+from typing import List, Optional, Set, Tuple
 
 import pytest
 
-from bibtexautocomplete.utils.functions import list_sort_using, list_unduplicate
+from bibtexautocomplete.utils.functions import (
+    list_sort_using,
+    list_unduplicate,
+    split_iso_date,
+)
 from bibtexautocomplete.utils.only_exclude import OnlyExclude
 from bibtexautocomplete.utils.safe_json import SafeJSON
 
@@ -89,3 +93,18 @@ test_sort = [([1, 5, 9, 7], [9, 7, 5, 1]), ([], [])]
 def test_sort_using(test: List[int], result: List[int]) -> None:
     reference = [9, 8, 7, 6, 5, 4, 3, 2, 1]
     assert list_sort_using(test, reference, lambda x: x) == result
+
+
+test_split = [
+    ("junk", (None, None)),
+    ("2020", ("2020", None)),
+    ("2020-01", ("2020", "01")),
+    ("2020-01-15", ("2020", "01")),
+    ("0057-01-15", (None, None)),
+    ("2020-33", ("2020", None)),
+]
+
+
+@pytest.mark.parametrize(("test", "result"), test_split)
+def test_split_iso_date(test: str, result: Tuple[Optional[str], Optional[str]]) -> None:
+    assert split_iso_date(test) == result
