@@ -259,7 +259,7 @@ class HTTPSRateCapedLookup(HTTPSLookup[Input, Output]):
         since_last_query = time() - self.last_query_time
         wait = self.query_delay - since_last_query
         if wait > 0.0:
-            logger.debug("Rate limiter: sleeping for {wait}s", wait=wait)
+            logger.debug("Rate limiter: sleeping for {wait}s", wait=round(wait, 3))
             sleep(wait)
         self.__class__.last_query_time = time()
         data = super().get_data()

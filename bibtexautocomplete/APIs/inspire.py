@@ -47,7 +47,8 @@ class InpireHEPLookup(JSON_DT_Lookup):
         return self.path + "/literature/"
 
     def get_params(self) -> Dict[str, str]:
-        base = super().get_params()
+        base = dict()
+        base.update(super().get_params())
         if self.doi is not None:
             return base
         if self.title is not None:
