@@ -7,7 +7,13 @@ No operations will raise any error, invalid operations will simply return None
 from json import JSONDecodeError, JSONDecoder
 from typing import Dict, Iterator, List, Optional, Tuple, Union
 
+from .logger import logger
+
 JSONType = Union[Dict[str, "JSONType"], List["JSONType"], int, float, str, bool, None]
+
+
+log = logger.verbose_debug
+log_verbose = logger.very_verbose_debug
 
 
 class SafeJSON:
@@ -29,7 +35,14 @@ class SafeJSON:
                 result = self.value[key]
         else:
             if isinstance(self.value, dict):
-                result = self.value.get(key)
+                if key in self.value:
+                    result = self.value[key]
+                else:
+                    log("SafeJSON: dict has no key {}", key)
+            elif self.value is not None:
+                log(
+                    "SafeJSON: access to {} on non-dict {}", repr(key), type(self.value)
+                )
         return SafeJSON(result)
 
     @staticmethod
@@ -56,42 +69,49 @@ class SafeJSON:
         """Returns the value if it is an str, None otherwise"""
         if isinstance(self.value, str):
             return self.value
+        log_verbose("SafeJSON: cannot cast {} as str", type(self.value))
         return None
 
     def force_str(self) -> Optional[str]:
         """Returns str(value) if valus is str, int, float or bool"""
         if isinstance(self.value, (str, int, bool, float)):
             return str(self.value)
+        log_verbose("SafeJSON: cannot force {} to str", type(self.value))
         return None
 
     def to_int(self) -> Optional[int]:
         """Returns the value if it is an int, None otherwise"""
         if isinstance(self.value, int):
             return self.value
+        log_verbose("SafeJSON: cannot cast {} as int", type(self.value))
         return None
 
     def to_float(self) -> Optional[float]:
         """Returns the value if it is a float, None otherwise"""
         if isinstance(self.value, float):
             return self.value
+        log_verbose("SafeJSON: cannot cast {} as float", type(self.value))
         return None
 
     def to_bool(self) -> Optional[bool]:
         """Returns the value if it is a bool, None otherwise"""
         if isinstance(self.value, bool):
             return self.value
+        log_verbose("SafeJSON: cannot cast {} as bool", type(self.value))
         return None
 
     def to_list(self) -> Optional[List[JSONType]]:
         """Returns the value if it is an list, None otherwise"""
         if isinstance(self.value, list):
             return self.value
+        log_verbose("SafeJSON: cannot cast {} as list", type(self.value))
         return None
 
     def to_dict(self) -> Optional[Dict[str, JSONType]]:
         """Returns the value if it is a dict, None otherwise"""
         if isinstance(self.value, dict):
             return self.value
+        log_verbose("SafeJSON: cannot cast {} as dict", type(self.value))
         return None
 
     def iter_list(self) -> "Iterator[SafeJSON]":
@@ -100,6 +120,8 @@ class SafeJSON:
         if isinstance(self.value, list):
             for x in self.value:
                 yield SafeJSON(x)
+        else:
+            log("SafeJSON: cannot iterate {} as list", type(self.value))
 
     def iter_dict(self) -> "Iterator[Tuple[str, SafeJSON]]":
         """Iterate through self if it is a list
@@ -107,3 +129,5 @@ class SafeJSON:
         if isinstance(self.value, dict):
             for key, val in self.value.items():
                 yield key, SafeJSON(val)
+        else:
+            log("SafeJSON: cannot iterate {} as dict", type(self.value))
