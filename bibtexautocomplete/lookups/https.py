@@ -114,7 +114,7 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
     def get_params(self) -> Dict[str, str]:
         """Url parameters, can use self.entry to set them
         override this if not using self.path"""
-        return self.params
+        return self.params.copy()
 
     def get_body(self) -> Optional[Any]:
         """Query body, can use self.entry to set them"""
