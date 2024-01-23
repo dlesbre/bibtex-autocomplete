@@ -1,5 +1,14 @@
 # Change Log
 
+## Unreleased
+
+- Add https://openalex.org/ as a source
+- Add https://inspirehep.net/ as a source
+- Fix 404 warning on DOIs not found in semantic-scholar
+- Remove researchr author disambiguation numbers (it would sometimes return
+  `John Doe 0002`, which you don't want in your file)
+- Fix author names with `von` prefix not formatted correctly
+
 ## Version 1.2.2 - 2023-11-26
 
 - Add year check to match algorithm, entry with different year will not match
