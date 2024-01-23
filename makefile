@@ -16,6 +16,7 @@ DOCKER_IMG_NAME = btac
 PRECOMMIT = pre-commit
 MYPY = mypy
 PYTEST = pytest
+QUICK_TEST = $(PYTEST) -k "not test_9_API"
 
 # set to ON/OFF to toggle ANSI escape sequences
 COLOR = ON
@@ -74,8 +75,13 @@ precommit-all: ## run precommit on all files
 	$(PRECOMMIT) run --all-files
 
 .PHONY: test
+quick-test: ## Run local tests (perform no API queries)
+	$(call print,Running pytest (skip API query test))
+	$(QUICK_TEST)
+
+.PHONY: test
 test: ## Run all tests
-	$(call print,Running pytest)
+	$(call print,Running pytest on all test)
 	$(PYTEST) --cov
 
 .PHONY: coverage
