@@ -31,7 +31,7 @@ MATCH_YEAR = CERTAIN_MATCH // 4
 
 def author_set(entry: BibtexEntry) -> Set[str]:
     """Returns the set of normalized author lastname from entry
-    I.E. lowercase loast names, with spaces removed"""
+    I.E. lowercase last names, with spaces removed"""
     authors = entry.author
     last_names: Set[str] = set()
     for author in authors:
