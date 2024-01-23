@@ -36,13 +36,14 @@
 
 **bibtex-autocomplete** or **btac** is a simple script to autocomplete BibTeX
 bibliographies. It reads a BibTeX file and looks online for any additional data
-to add to each entry. If you have a bibliography that is missing DOI information
-or want to add URLs to your entries, then `btac` might be able to help. You can also
-use it to quickly generate BibTeX entries from minimal data (e.g. just a title).
+to add to each entry. It can quickly generate entries from minimal data (a lone
+title is often sufficient to generate a full entry). You can also use it to only
+add specific fields (like DOIs, or ISSN) to a manually curated bib file.
 
-It is inspired and expanding on the solution provided by
-[thando](https://tex.stackexchange.com/users/182467/thando) in this
-[TeX stack exchange post](https://tex.stackexchange.com/questions/6810/automatically-adding-doi-fields-to-a-hand-made-bibliography).
+It is designed to be as simple to use as possible: just give it a bib file and
+let **btac** work its magic! It combines multiple sources and runs consistency
+and normalization checks on the added fields (check that URLs lead to a valid
+webpage, that DOIs exist at https://dx.doi.org/).
 
 It attempts to complete a BibTeX file by querying the following domains:
 - [openalex.org](https://openalex.org/): ~240 million entries
@@ -68,6 +69,7 @@ their databases.
   - [Query filtering](#query-filtering)
   - [Output formatting](#output-formatting)
   - [Optional flags](#optional-flags)
+- [Credit and license](#credit-and-license)
 
 ## Demo
 
@@ -343,3 +345,17 @@ are a few options you can use to control the output format:
 
 - `--version` show version number
 - `-h --help` show help
+
+## Credit and license
+
+This project was first inspired by the solution provided by
+[thando](https://tex.stackexchange.com/users/182467/thando) in this
+[TeX stack exchange post](https://tex.stackexchange.com/questions/6810/automatically-adding-doi-fields-to-a-hand-made-bibliography). I worked on as
+part of a course on
+[Web data management](https://moodle.r2.enst.fr/moodle/course/view.php?id=142) in
+2021-2022 as part of my masters ([MPRI](https://wikimpri.dptinfo.ens-cachan.fr/doku.php)).
+
+This project is free and open-source. It is distributed under terms of the
+[MIT License](https://choosealicense.com/licenses/mit/). See the
+[LICENSE](https://github.com/dlesbre/bibtex-autocomplete/blob/master/LICENSE)
+file for more information
