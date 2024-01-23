@@ -23,7 +23,7 @@ class InpireHEPLookup(JSON_DT_Lookup):
     https://inspirehep.net/api/literature?q=title+Optimizing+Secondary+CLIQ+for+protecting+High-Field+Accelerator+Magnets
     """
 
-    name = "inspire"
+    name = "hep"
 
     # ============= Performing Queries =====================
 
