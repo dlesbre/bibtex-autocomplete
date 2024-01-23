@@ -10,6 +10,7 @@ from bibtexautocomplete.bibtex.entry import (
     FieldNamesSet,
     SpecialFields,
 )
+from bibtexautocomplete.bibtex.fields import URLField
 from bibtexautocomplete.bibtex.io import file_read, write
 from bibtexautocomplete.bibtex.matching import CERTAIN_MATCH, NO_MATCH, match_score
 from bibtexautocomplete.bibtex.normalize import (
@@ -236,3 +237,22 @@ urls: List[Tuple[str, Optional[Tuple[str, str]]]] = [
 @pytest.mark.parametrize(("url", "result"), urls)
 def test_normalize_url(url: str, result: Optional[Tuple[str, str]]) -> None:
     assert normalize_url(url) == result
+
+
+urls2: List[Tuple[str, Optional[str]]] = [
+    ("http://google.com", "https://google.com"),
+    (
+        "http://google.com?query=something+space",
+        "https://google.com?query=something+space",
+    ),
+    (
+        "http://google.com?query=something%20space",
+        "https://google.com?query=something+space",
+    ),
+]
+
+
+@pytest.mark.parametrize(("url", "result"), urls2)
+def test_normalize_url2(url: str, result: Optional[str]) -> None:
+    field = URLField()
+    assert field.normalize(url) == result
