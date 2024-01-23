@@ -100,6 +100,10 @@ authors = [
         [Author("King", "Martin Luther"), Author("King", "M. L.")],
     ),
     ("", []),
+    (
+        "Peter Müller 0001 and Joakim von Wright",
+        [Author("Müller", "Peter"), Author("von Wright", "Joakim")],
+    ),
 ]
 
 

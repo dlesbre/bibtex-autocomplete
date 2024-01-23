@@ -48,11 +48,14 @@ class Author:
         else:
             namesplit = name.split()
             last = namesplit.pop()
+            if last.isnumeric():
+                # Remove disembiguation number from author strings
+                return Author.from_name(" ".join(namesplit))
             firsts = [i.replace(".", ". ").strip() for i in namesplit]
         if last in ["jnr", "jr", "junior"]:
             last = firsts.pop()
         for item in firsts:
-            if item in ["ben", "van", "der", "de", "la", "le"]:
+            if item in ["ben", "van", "von", "der", "de", "la", "le"]:
                 last = firsts.pop() + " " + last
         first = " ".join(firsts) if firsts else None
         return Author(last, first)
