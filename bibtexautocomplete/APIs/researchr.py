@@ -49,7 +49,15 @@ class ResearchrLookup(JSON_AT_Lookup):
         """Return a bibtex formatted list of authors"""
         formatted = []
         for author in authors.iter_list():
-            aut = Author.from_name(author["alias"]["name"].to_str())
+            name = author["alias"]["name"].to_str()
+            if name is None:
+                continue
+            name = name.strip()
+            # Some authors have a 4-digit disambiguation number
+            # Added to their names..., ex : "Peter Müller 0001"
+            if len(name) > 4 and name[-4:].isnumeric():
+                name = name[:-4].strip()
+            aut = Author.from_name(name)
             if aut is not None:
                 formatted.append(aut)
         return formatted

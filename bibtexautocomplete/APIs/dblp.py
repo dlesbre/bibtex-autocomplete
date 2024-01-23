@@ -52,6 +52,7 @@ class DBLPLookup(JSON_AT_Lookup):
             name = author["text"].to_str()
             if name is None:
                 continue
+            name = name.strip()
             # Some DBLP authors have a 4-digit disambiguation number
             # Added to their names..., ex : "Ralf Jung 0002"
             if len(name) > 4 and name[-4:].isnumeric():
