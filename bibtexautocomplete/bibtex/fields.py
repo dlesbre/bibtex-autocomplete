@@ -1,5 +1,5 @@
-from re import match, search
-from typing import Generic, List, Optional, Set, Tuple, TypeVar
+from re import match, search, split
+from typing import Callable, Generic, List, Optional, Set, Tuple, Type, TypeVar
 
 from ..APIs.doi import DOICheck, URLCheck
 from ..utils.logger import logger
@@ -41,15 +41,42 @@ class BibtexField(Generic[T]):
     def __init__(self) -> None:
         self.value = None
 
-    def normalize(self, value: T) -> Optional[T]:
+    #  Methods to override in subclasses
+
+    @classmethod
+    def normalize(cls, value: T) -> Optional[T]:
         """Return a normal representation of the entry
         Can return None if invalid format"""
         return value
 
-    def slow_check(self, value: T) -> bool:
+    @classmethod
+    def slow_check(cls, value: T) -> bool:
         """Performs a slow check (e.g. query URL to ensure it resolves)
         Only done if we want to use this in our field"""
         return True
+
+    @classmethod
+    def match_values(cls, a: T, b: T) -> int:
+        """returns a match score: 0 <= score <= FIELD_FULL_MATCH"""
+        if a == b:
+            return FIELD_FULL_MATCH
+        return FIELD_NO_MATCH
+
+    @classmethod
+    def combine_values(cls, a: T, b: T) -> T:
+        """When two values match, choose which one to keep"""
+        return a
+
+    @classmethod
+    def to_bibtex(cls, value: T) -> str:
+        """Return the non-None value as a Bibtex string"""
+        return str(value)
+
+    @classmethod
+    def convert(cls, value: str) -> Optional[T]:
+        raise NotImplementedError("override in child classes")
+
+    #  Common methods
 
     def slow_check_none(self) -> bool:
         """Performs a slow check (e.g. query URL to ensure it resolves)
@@ -57,12 +84,6 @@ class BibtexField(Generic[T]):
         if self.value is None:
             return False
         return self.slow_check(self.value)
-
-    def match_values(self, a: T, b: T) -> int:
-        """returns a match score: 0 <= score <= FIELD_FULL_MATCH"""
-        if a == b:
-            return FIELD_FULL_MATCH
-        return FIELD_NO_MATCH
 
     def matches(self, other: "BibtexField[T]") -> Optional[int]:
         """returns a match score: 0 <= score <= FIELD_FULL_MATCH
@@ -74,6 +95,12 @@ class BibtexField(Generic[T]):
     def combine(self, other: "BibtexField[T]") -> "BibtexField[T]":
         """Merges both fields to return the one with maximum information
         (eg. fewer abbreviations). This will only be called on fields that match"""
+        if self.value is not None:
+            if other.value is not None:
+                obj = self.__class__()
+                obj.value = self.combine_values(self.value, other.value)
+                return obj
+        logger.warn("Combining fields which store None")
         return self
 
     def set(self, value: Optional[T]) -> None:
@@ -83,18 +110,11 @@ class BibtexField(Generic[T]):
         else:
             self.value = None
 
-    def to_bibtex(self, value: T) -> str:
-        """Return the non-None value as a Bibtex string"""
-        return str(value)
-
     def to_str(self) -> Optional[str]:
         """The value as a string, as it will be added to the Bibtex file"""
         if self.value is None:
             return None
         return self.to_bibtex(self.value)
-
-    def convert(self, value: str) -> T:
-        raise NotImplementedError("override in child classes")
 
     def set_str(self, value: Optional[str]) -> None:
         """Same as set, but converts the value from string to T first"""
@@ -107,10 +127,12 @@ class BibtexField(Generic[T]):
 class StringField(BibtexField[str]):
     """Base class for all fields whose type is str"""
 
-    def convert(self, value: str) -> str:
+    @classmethod
+    def convert(cls, value: str) -> str:
         return value
 
-    def normalize(self, value: str) -> Optional[str]:
+    @classmethod
+    def normalize(cls, value: str) -> Optional[str]:
         value = value.strip()
         if value == "":
             return None
@@ -125,7 +147,8 @@ class BasicStringField(StringField):
        - FIELD_NO_MATCH if match using normalize_str
     """
 
-    def match_values(self, a: str, b: str) -> int:
+    @classmethod
+    def match_values(cls, a: str, b: str) -> int:
         if normalize_str_weak(a) == normalize_str_weak(b):
             return FIELD_FULL_MATCH
         if normalize_str(a) == normalize_str(b):
@@ -140,14 +163,16 @@ class DOIField(StringField):
 
     DOI_REGEX = r"(10\.\d{4,5}\/[\S]+[^;,.\s])$"
 
-    def normalize(self, doi: str) -> Optional[str]:
+    @classmethod
+    def normalize(cls, doi: str) -> Optional[str]:
         """Returns doi to canonical form (i.e. removing url)"""
-        match = search(self.DOI_REGEX, doi)
+        match = search(DOIField.DOI_REGEX, doi)
         if match is not None:
             return match.group(1).lower()  # DOI's are case insensitive
         return None
 
-    def slow_check(self, doi: str) -> bool:
+    @classmethod
+    def slow_check(cls, doi: str) -> bool:
         """Query doi.org API to check DOI exists"""
         try:
             doi_checker = DOICheck(doi)
@@ -168,13 +193,15 @@ class URLField(StringField):
     Normalized to https://domain/path decoded + reencoded to ensure same encoding
     Checks the URL exists by simple query"""
 
-    def normalize(self, value: str) -> Optional[str]:
+    @classmethod
+    def normalize(cls, value: str) -> Optional[str]:
         url = normalize_url(value)
         if url is not None:
             return "https://" + url[0] + url[1]
         return None
 
-    def slow_check(self, value: str) -> bool:
+    @classmethod
+    def slow_check(cls, value: str) -> bool:
         try:
             checker = URLCheck(value)
             return checker.query() is not None
@@ -187,6 +214,129 @@ class URLField(StringField):
                 err,
             )
         return False
+
+
+def matrix_max(matrix: List[List[int]]) -> Optional[Tuple[int, int]]:
+    """Returns x,y coordinate of max element of matrix,
+    returns None if empty"""
+    if matrix == [] or (matrix[0] == []):
+        return None
+    max_value = matrix[0][0]
+    max_x = 0
+    max_y = 0
+    for i, row in enumerate(matrix):
+        for j, value in enumerate(row):
+            if value > max_value:
+                max_value = value
+                max_x = i
+                max_y = j
+    return max_x, max_y
+
+
+def listify(
+    separator_regex: str, separator: str
+) -> Callable[[Type[BibtexField[T]]], Type[BibtexField[List[T]]]]:
+    """Decorator that convert a bibtex field for T into a field for List[T]
+
+    Lists are matched without order, taking the pairwise best matches first
+    and returning the average match score times a factor:
+    - 1 for equality (all elements have a match)
+    - 1/2 for inclusion (all elements of one of the two lists match
+    - 1/4 for common elements
+    - 0 otherwise
+
+    Combining values proceeds in much the same way (pairwise combines with best
+    match score). Keeps the order of the longest list.
+
+    Parsing and rendering to string is done via splitting around separator_regex
+    and joining around separator"""
+
+    def decorator(base_class: Type[BibtexField[T]]) -> Type[BibtexField[List[T]]]:
+        class ListifyField(BibtexField[List[T]]):
+            parent = base_class
+
+            @classmethod
+            def normalize(cls, value: List[T]) -> Optional[List[T]]:
+                normalized: List[T] = []
+                for val in value:
+                    norm = base_class.normalize(val)
+                    if norm is not None:
+                        normalized.append(norm)
+                if normalized:
+                    return normalized
+                return None
+
+            @classmethod
+            def slow_check(cls, value: List[T]) -> bool:
+                return all(base_class.slow_check(x) for x in value)
+
+            @classmethod
+            def match_values(cls, a: List[T], b: List[T]) -> int:
+                """Compute all pairwise element matches, the pick the top ones
+                as common matches and removes them. This has terrible complexity,
+                but list should be rather small"""
+                # Compute pairwise scores
+                scores = [[FIELD_NO_MATCH for _ in b] for _ in a]
+                for i, x in enumerate(a):
+                    for j, y in enumerate(b):
+                        scores[i][j] = base_class.match_values(x, y)
+                # Count common and calc average_score
+                common = 0
+                common_scores = 0
+                max_pos = matrix_max(scores)
+                if max_pos is not None:
+                    max_x, max_y = max_pos
+                    while scores[max_x][max_y] > FIELD_NO_MATCH:
+                        common += 1
+                        common_scores += scores[max_x][max_y]
+                        del scores[max_x]
+                        for row in scores:
+                            row[max_y] = FIELD_NO_MATCH
+                        new_max = matrix_max(scores)
+                        if new_max is None:
+                            break
+                        max_x, max_y = new_max
+                average_match = common_scores // common
+                # Mutliply average score by factor
+                a_only = len(a) - common
+                b_only = len(b) - common
+                if average_match == 0:
+                    average_match = 1
+                if common == 0:
+                    return FIELD_NO_MATCH
+                if a_only == 0 and b_only == 0:
+                    return average_match
+                if a_only == 0 or b_only == 0:
+                    return average_match // 2
+                return average_match // 4
+
+            @classmethod
+            def combine_values(cls, a: List[T], b: List[T]) -> List[T]:
+                """When two values match, choose which one to keep"""
+                scores = [[FIELD_NO_MATCH for _ in b] for _ in a]
+                for i, x in enumerate(a):
+                    for j, y in enumerate(b):
+                        scores[i][j] = base_class.match_values(x, y)
+                # TODO
+                return a
+
+            @classmethod
+            def to_bibtex(cls, value: List[T]) -> str:
+                """Return the non-None value as a Bibtex string"""
+                return separator.join(base_class.to_bibtex(x) for x in value)
+
+            @classmethod
+            def convert(cls, value: str) -> List[T]:
+                converted = []
+                for x in split(separator_regex, value):
+                    conv_x = base_class.convert(x)
+                    if conv_x is not None:
+                        converted.append(conv_x)
+                return converted
+
+        return ListifyField
+
+    return decorator
 
 
 def author_set(authors: List[Author]) -> Set[str]:
@@ -214,19 +364,23 @@ def common_authors(a: List[Author], b: List[Author]) -> Tuple[int, int, int]:
 class NameField(BibtexField[List[Author]]):
     """Class for author and editor field, list of names"""
 
-    def normalize(self, value: List[Author]) -> Optional[List[Author]]:
+    @classmethod
+    def normalize(cls, value: List[Author]) -> Optional[List[Author]]:
         if len(value) == 0:
             return None
         return value
 
-    def to_bibtex(self, value: List[Author]) -> str:
+    @classmethod
+    def to_bibtex(cls, value: List[Author]) -> str:
         """The value as a string, as it will be added to the Bibtex file"""
         return Author.list_to_bibtex(value)
 
-    def convert(self, value: str) -> List[Author]:
+    @classmethod
+    def convert(cls, value: str) -> List[Author]:
         return Author.from_namelist(value)
 
-    def match_values(self, a: List[Author], b: List[Author]) -> int:
+    @classmethod
+    def match_values(cls, a: List[Author], b: List[Author]) -> int:
         authors_common, authors_a, authors_b = common_authors(a, b)
         if authors_common == 0 and authors_a > 0 and authors_b > 0:
             # No common authors despite some authors being known on both sides
