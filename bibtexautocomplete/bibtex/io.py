@@ -8,10 +8,12 @@ from typing import List, cast
 from bibtexparser.bibdatabase import BibDatabase, UndefinedString
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
-from bibtexparser.customization import convert_to_unicode
 
 from ..utils.constants import EntryType
 from ..utils.logger import logger
+
+# from bibtexparser.customization import convert_to_unicode
+
 
 writer = BibTexWriter()
 writer.indent = "\t"
@@ -40,8 +42,8 @@ def read(bibtex: str, src: str = "") -> BibDatabase:
             err=err,
         )
         exit(1)
-    for entry in database.entries:
-        convert_to_unicode(entry)
+    # for entry in database.entries:
+    #     convert_to_unicode(entry)
     return database
 
 
