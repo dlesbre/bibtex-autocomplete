@@ -254,5 +254,5 @@ urls2: List[Tuple[str, Optional[str]]] = [
 
 @pytest.mark.parametrize(("url", "result"), urls2)
 def test_normalize_url2(url: str, result: Optional[str]) -> None:
-    field = URLField()
+    field = URLField("test")
     assert field.normalize(url) == result
