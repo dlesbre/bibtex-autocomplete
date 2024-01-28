@@ -4,6 +4,11 @@ from typing import Iterator, List, Optional, Tuple
 import pytest
 
 from bibtexautocomplete.bibtex.author import Author
+from bibtexautocomplete.bibtex.base_field import (
+    FIELD_NO_MATCH,
+    StrictStringField,
+    listify,
+)
 from bibtexautocomplete.bibtex.entry import (
     BibtexEntry,
     FieldNames,
@@ -254,5 +259,53 @@ urls2: List[Tuple[str, Optional[str]]] = [
 
 @pytest.mark.parametrize(("url", "result"), urls2)
 def test_normalize_url2(url: str, result: Optional[str]) -> None:
-    field = URLField("test")
+    field = URLField("url", "test")
     assert field.normalize(url) == result
+
+
+@listify(separator_regex=r",", separator=", ")
+class ListString(StrictStringField):
+    pass
+
+
+listify_to_from: List[Tuple[str, Optional[str]]] = [
+    ("", None),
+    ("      ", None),
+    (", , , , ", None),
+    ("hello, my name  is,  fun", "hello, my name  is, fun"),
+    ("a, b,  , c , d,", "a, b, c, d"),
+]
+
+
+@pytest.mark.parametrize(("source", "converted"), listify_to_from)
+def test_listify_to_from(source: str, converted: Optional[str]) -> None:
+    field = ListString("list_string", "test")
+    field.set_str(source)
+    assert field.to_str() == converted
+
+
+listify_match_merge: List[Tuple[str, str, bool, Optional[str]]] = [
+    ("a,b,c", "a,b,c", True, "a, b, c"),
+    ("a,b,c", "d,e,f", False, None),
+    ("a,b,d", "b,c,d", True, "a, b, c, d"),
+    ("a,b,c", "b,d", True, "a, b, c, d"),
+    ("b,d", "a,b,c", True, "a, b, c, d"),
+    ("b,c,e", "a,b,d,e", True, "a, b, c, d, e"),
+]
+
+
+@pytest.mark.parametrize(("a", "b", "matches", "merged"), listify_match_merge)
+def test_listify_match_merge(
+    a: str, b: str, matches: bool, merged: Optional[str]
+) -> None:
+    field_a = ListString("list_string", "test")
+    field_a.set_str(a)
+    field_b = ListString("list_string", "test")
+    field_b.set_str(b)
+    score = field_a.matches(field_b)
+    assert score is not None
+    if matches:
+        assert score > FIELD_NO_MATCH
+        assert field_a.combine(field_b).to_str() == merged
+    else:
+        assert score <= FIELD_NO_MATCH

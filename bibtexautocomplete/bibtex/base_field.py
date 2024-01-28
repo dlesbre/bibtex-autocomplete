@@ -42,17 +42,14 @@ class BibtexField(Generic[T]):
     - year, month, issn, isbn: T = int
     """
 
-    counter: int = 0
-
-    id: int
+    field: str
     source: str
     value: Optional[T]
 
-    def __init__(self, source: str) -> None:
+    def __init__(self, field: str, source: str) -> None:
         self.value = None
         self.source = source
-        self.id = BibtexField.counter
-        BibtexField.counter += 1
+        self.field = field
 
     #  Methods to override in subclasses
 
@@ -110,7 +107,9 @@ class BibtexField(Generic[T]):
         (eg. fewer abbreviations). This will only be called on fields that match"""
         if self.value is not None:
             if other.value is not None:
-                obj = self.__class__(self.source + SOURCE_SEPARATOR + other.source)
+                obj = self.__class__(
+                    self.field, self.source + SOURCE_SEPARATOR + other.source
+                )
                 obj.value = self.combine_values(self.value, other.value)
                 return obj
         logger.warn("Combining fields which store None")
@@ -194,10 +193,13 @@ def iterate_max(matrix: List[List[int]]) -> Iterator[Tuple[int, int]]:
     max_pos = matrix_max(matrix)
     while max_pos is not None:
         max_x, max_y = max_pos
+        if matrix[max_x][max_y] <= FIELD_NO_MATCH:
+            break
         yield max_pos
         matrix[max_x] = [FIELD_NO_MATCH]
         for row in matrix:
-            row[max_y] = FIELD_NO_MATCH
+            if len(row) > 1:
+                row[max_y] = FIELD_NO_MATCH
         max_pos = matrix_max(matrix)
 
 
@@ -266,8 +268,6 @@ def listify(
                 common = 0
                 common_scores = 0
                 for x, y in iterate_max(scores):
-                    if scores[x][y] > FIELD_NO_MATCH:
-                        break
                     common += 1
                     common_scores += scores[x][y]
                 return cls.compute_score(a, b, common_scores, common)
@@ -278,14 +278,14 @@ def listify(
             ) -> int:
                 """Compute the final score from the number of common elements
                 and the sum of the scores"""
+                if common == 0:
+                    return FIELD_NO_MATCH
                 average_match = common_scores // common
                 # Mutliply average score by factor
                 a_only = len(a) - common
                 b_only = len(b) - common
                 if average_match == 0:
                     average_match = 1
-                if common == 0:
-                    return FIELD_NO_MATCH
                 if a_only == 0 and b_only == 0:
                     return average_match
                 if a_only == 0 or b_only == 0:
@@ -326,8 +326,6 @@ def listify(
                 coords.update({(None, j): elt for j, elt in enumerate(b)})
                 scores = cls.pairwise_scores(a, b)
                 for x, y in iterate_max(scores):
-                    if scores[x][y] > FIELD_NO_MATCH:
-                        break
                     del coords[x, None]
                     del coords[None, y]
                     coords[x, y] = base_class.combine_values(a[x], b[y])
