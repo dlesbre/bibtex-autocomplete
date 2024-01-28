@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from functools import cmp_to_key
 from re import split
 from typing import (
@@ -7,6 +8,7 @@ from typing import (
     Iterator,
     List,
     Optional,
+    Protocol,
     Tuple,
     Type,
     TypeVar,
@@ -14,8 +16,18 @@ from typing import (
 
 from ..utils.logger import logger
 
-T = TypeVar("T")
+
+class Comparable(Protocol):
+    """Protocol for annotating comparable types."""
+
+    @abstractmethod
+    def __lt__(self: "T", other: "T") -> bool:
+        pass
+
+
+T = TypeVar("T", bound=Comparable)
 COORD = Tuple[Optional[int], Optional[int]]
+COORD_T = Tuple[COORD, T]
 
 
 FIELD_FULL_MATCH = 100
@@ -144,13 +156,17 @@ class StrictStringField(BibtexField[str]):
 # Listify: turn a bibtex field of T into one of List[T]
 
 
-def order(a: COORD, b: COORD) -> int:
+def order(a: COORD_T[T], b: COORD_T[T]) -> int:
     """Weak order on optional coordinates
     Used to merge lists while attempting to preserve order"""
-    if a[0] is not None and b[0] is not None:
-        return a[0] - b[0]
-    if a[1] is not None and b[1] is not None:
-        return a[1] - b[1]
+    if a[0][0] is not None and b[0][0] is not None:
+        return a[0][0] - b[0][0]
+    if a[0][1] is not None and b[0][1] is not None:
+        return a[0][1] - b[0][1]
+    if a[1] < b[1]:
+        return -1
+    if b[1] < a[1]:
+        return 1
     return 0
 
 
@@ -185,7 +201,7 @@ def iterate_max(matrix: List[List[int]]) -> Iterator[Tuple[int, int]]:
         max_pos = matrix_max(matrix)
 
 
-LONG_LIST_DELIMITER = 4_000
+LONG_LIST_DELIMITER = 5_000
 
 
 def listify(
@@ -303,6 +319,9 @@ def listify(
                 """When two values match, choose which one to keep
                 Merge elements with highest match scores first
                 Then creates a new list by attempting to keep elements in order"""
+                if len(a) * len(b) >= LONG_LIST_DELIMITER:
+                    # Return the longest list if too long to limit complexity
+                    return a if len(a) >= len(b) else b
                 coords: Dict[COORD, T] = {(i, None): elt for i, elt in enumerate(a)}
                 coords.update({(None, j): elt for j, elt in enumerate(b)})
                 scores = cls.pairwise_scores(a, b)
@@ -312,8 +331,8 @@ def listify(
                     del coords[x, None]
                     del coords[None, y]
                     coords[x, y] = base_class.combine_values(a[x], b[y])
-                keys = sorted(coords, key=cmp_to_key(order))
-                return [coords[pos] for pos in keys]
+                keys = sorted(coords.items(), key=cmp_to_key(order))
+                return [item for _, item in keys]
 
             @classmethod
             def to_bibtex(cls, value: List[T]) -> str:

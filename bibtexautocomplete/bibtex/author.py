@@ -35,6 +35,16 @@ class Author:
             return False
         return self.firstnames == other.firstnames and self.lastname == other.lastname
 
+    def __lt__(self, other: "Author") -> bool:
+        """Used to sort in alphabetical order"""
+        if self.lastname < other.lastname:
+            return True
+        if other.lastname > self.lastname:
+            return False
+        if self.firstnames is not None and other.firstnames is not None:
+            return self.firstnames < other.firstnames
+        return False
+
     @staticmethod
     def from_name(name: Optional[str]) -> "Optional[Author]":
         """Reads a bibtex string into a author name"""
