@@ -5,6 +5,7 @@ import pytest
 
 from bibtexautocomplete.bibtex.author import Author
 from bibtexautocomplete.bibtex.base_field import (
+    FIELD_FULL_MATCH,
     FIELD_NO_MATCH,
     StrictStringField,
     listify,
@@ -265,7 +266,19 @@ def test_normalize_url2(url: str, result: Optional[str]) -> None:
 
 @listify(separator_regex=r",", separator=", ")
 class ListString(StrictStringField):
-    pass
+    @classmethod
+    def match_values(cls, a: str, b: str) -> int:
+        if a in b:
+            return FIELD_FULL_MATCH * len(a) // len(b)
+        if b in a:
+            return FIELD_FULL_MATCH * len(b) // len(a)
+        return FIELD_NO_MATCH
+
+    @classmethod
+    def combine_values(cls, a: str, b: str) -> str:
+        if len(a) >= len(b):
+            return a
+        return b
 
 
 listify_to_from: List[Tuple[str, Optional[str]]] = [
@@ -291,6 +304,8 @@ listify_match_merge: List[Tuple[str, str, bool, Optional[str]]] = [
     ("a,b,c", "b,d", True, "a, b, c, d"),
     ("b,d", "a,b,c", True, "a, b, c, d"),
     ("b,c,e", "a,b,d,e", True, "a, b, c, d, e"),
+    ("alpha, beta", "alp, bet", True, "alpha, beta"),
+    ("alpha, al, bet", "alp, bet", True, "alpha, alp, bet"),
 ]
 
 
