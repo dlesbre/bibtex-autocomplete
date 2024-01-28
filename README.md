@@ -170,7 +170,9 @@ btac [--flags] <input_files>
 
 - `btac my/db.bib` : reads from `./my/db.bib`, writes to `./my/db.btac.bib`.
   A different output file can be specified with `-o`.
-- `btac -i db.bib` : reads from `db.bib` and overwrites it (inplace flag)
+- `btac -i db.bib` : reads from `db.bib` and overwrites it (inplace flag).
+  Avoid on non backed-up/version-controlled files, I'd hate it if my script
+  corrupted your data.
 - `btac folder` : reads from all files ending with `.bib` in folder. Excludes
   `.btac.bib` files unless they are the only `.bib` files present. Writes to
   `folder/file.btac.bib` unless inplace flag is set.
@@ -281,7 +283,9 @@ are a few options you can use to control the output format:
 
 ### Optional flags
 
-- `-i --inplace` Modify input files inplace, ignores any specified output files
+- `-i --inplace` Modify input files inplace, ignores any specified output files.
+  Avoid on non backed-up/version-controlled files, I'd hate it if my script
+  corrupted your data.
 - `-p --prefix` Write new fields with a prefix. The script will add `BTACtitle =
   ...` instead of `title = ...` in the bib file. This can be combined with `-f`
   to safely show info for already present fields.
