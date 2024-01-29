@@ -16,7 +16,7 @@ from bibtexautocomplete.bibtex.entry import (
     FieldNamesSet,
     SpecialFields,
 )
-from bibtexautocomplete.bibtex.fields import URLField
+from bibtexautocomplete.bibtex.fields import DOIField, NameField, URLField
 from bibtexautocomplete.bibtex.io import file_read, write
 from bibtexautocomplete.bibtex.matching import CERTAIN_MATCH, NO_MATCH, match_score
 from bibtexautocomplete.bibtex.normalize import (
@@ -69,6 +69,9 @@ def test_normalize_doi() -> None:
     for d in doi:
         for p in prefixes:
             assert normalize_doi(p + d) == d
+            field = DOIField("doi", "test")
+            field.set(p + d)
+            assert field.value == d
 
 
 def test_normalize_month() -> None:
@@ -117,6 +120,13 @@ authors = [
 @pytest.mark.parametrize(("author", "res"), authors)
 def test_get_authors(author: str, res: List[Author]) -> None:
     assert Author.from_namelist(author) == res
+
+
+@pytest.mark.parametrize(("author", "res"), authors)
+def test_name_field(author: str, res: List[Author]) -> None:
+    field = NameField("author", "test")
+    field.set_str(author)
+    assert field.value == (res if res != [] else None)
 
 
 def test_BibtexEntry_normal() -> None:
@@ -316,6 +326,46 @@ def test_listify_match_merge(
     field_a = ListString("list_string", "test")
     field_a.set_str(a)
     field_b = ListString("list_string", "test")
+    field_b.set_str(b)
+    score = field_a.matches(field_b)
+    assert score is not None
+    if matches:
+        assert score > FIELD_NO_MATCH
+        assert field_a.combine(field_b).to_str() == merged
+    else:
+        assert score <= FIELD_NO_MATCH
+
+
+author_match_merge: List[Tuple[str, str, bool, Optional[str]]] = [
+    ("John Doe", "Doe, J.", True, "Doe, John"),
+    ("Tolkien, J.R.R", "John Ronald Reuel Tolkien", True, "Tolkien, John Ronald Reuel"),
+    (
+        "Doe and Smith, T and van Graaf",
+        "P.T. Doe and Alex, B and C. van Graaf",
+        True,
+        "Doe, P. T. and Alex, B and Smith, T and van Graaf, C.",
+    ),
+    (
+        "P.T. Doe and Alex, B and C. van Graaf",
+        "Doe and Smith, T and van Graaf",
+        True,
+        "Doe, P. T. and Alex, B and Smith, T and van Graaf, C.",
+    ),
+    ("Doe and Doe", "John Doe", True, "Doe, John and Doe"),
+    ("J. Doe", "C. Doe", False, None),
+    ("Doe", "NotDoe", False, None),
+    ("Aïna George", "Aina George", True, "George, Aïna"),
+    ("Aina George", "Aïna George", True, "George, Aïna"),
+]
+
+
+@pytest.mark.parametrize(("a", "b", "matches", "merged"), author_match_merge)
+def test_author_match_merge(
+    a: str, b: str, matches: bool, merged: Optional[str]
+) -> None:
+    field_a = NameField("author", "test")
+    field_a.set_str(a)
+    field_b = NameField("author", "test")
     field_b.set_str(b)
     score = field_a.matches(field_b)
     assert score is not None

@@ -198,7 +198,7 @@ def iterate_max(matrix: List[List[int]]) -> Iterator[Tuple[int, int]]:
         yield max_pos
         matrix[max_x] = [FIELD_NO_MATCH]
         for row in matrix:
-            if len(row) > 1:
+            if len(row) > max_y:
                 row[max_y] = FIELD_NO_MATCH
         max_pos = matrix_max(matrix)
 

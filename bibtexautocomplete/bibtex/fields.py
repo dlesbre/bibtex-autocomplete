@@ -107,6 +107,18 @@ class URLField(StrictStringField):
         return False
 
 
+def pick_longest(a: str, b: str) -> str:
+    """Returns the longest string, or the longest sequence of bytes in case of
+    equality (to account for accents)"""
+    if len(a) > len(b):
+        return a
+    if len(b) > len(a):
+        return b
+    if len(bytes(a, "utf8")) >= len(bytes(b, "utf8")):
+        return a
+    return b
+
+
 @listify(r"\s+and\s+", " and ")
 class NameField(BibtexField[Author]):
     """Class for author and editor field, list of names"""
@@ -120,20 +132,31 @@ class NameField(BibtexField[Author]):
     def convert(cls, value: str) -> Optional[Author]:
         return Author.from_name(value)
 
-    # @classmethod
-    # def match_values(cls, a: Author, b: Author) -> int:
-    #     authors_common, authors_a, authors_b = common_authors(a, b)
-    #     if authors_common == 0 and authors_a > 0 and authors_b > 0:
-    #         # No common authors despite some authors being known on both sides
-    #         return FIELD_NO_MATCH
-    #     if authors_common != 0:
-    #         if authors_common == authors_a and authors_common == authors_b:
-    #             return FIELD_FULL_MATCH
-    #         elif authors_common == authors_a or authors_common == authors_b:
-    #             return FIELD_FULL_MATCH // 2
-    #         else:
-    #             return FIELD_FULL_MATCH // 4
-    #     return super().match_values(a, b)
+    @classmethod
+    def match_values(cls, a: Author, b: Author) -> int:
+        if normalize_str(a.lastname) != normalize_str(b.lastname):
+            return FIELD_NO_MATCH
+        if a.firstnames is None or b.firstnames is None:
+            return FIELD_FULL_MATCH // 2
+        if normalize_str(a.firstnames) == normalize_str(b.firstnames):
+            return FIELD_FULL_MATCH
+        if is_abbrev(a.firstnames, b.firstnames) or is_abbrev(
+            b.firstnames, a.firstnames
+        ):
+            return 3 * FIELD_FULL_MATCH // 4
+        return FIELD_NO_MATCH
+
+    @classmethod
+    def combine_values(cls, a: Author, b: Author) -> Author:
+        lastname = a.lastname
+        if a.firstnames is not None and b.firstnames is not None:
+            firstname = pick_longest(a.firstnames, b.firstnames)
+            return Author(lastname, firstname)
+        if a.firstnames is not None:
+            return Author(lastname, a.firstnames)
+        if b.firstnames is not None:
+            return Author(lastname, b.firstnames)
+        return Author(lastname, None)
 
 
 class BibtexEntry:
