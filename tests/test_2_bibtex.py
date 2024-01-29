@@ -19,6 +19,8 @@ from bibtexautocomplete.bibtex.entry import (
 from bibtexautocomplete.bibtex.fields import (
     AbbreviatedStringField,
     DOIField,
+    ISBNField,
+    ISSNField,
     NameField,
     URLField,
 )
@@ -424,3 +426,37 @@ def test_abbrev_match_merge(
         assert field_a.combine(field_b).to_str() == merged
     else:
         assert score <= FIELD_NO_MATCH
+
+
+issns: List[Tuple[str, Optional[str]]] = [
+    ("1299-0590", "1299-0590"),
+    ("1299-0591", None),
+    ("1476-4687", "1476-4687"),
+    ("1476-468X", None),
+    ("102345", None),
+    ("with extra 1476-4687", None),
+    ("0378-5955,", "0378-5955"),
+    ("ISSN: 2434-561X, 03952037", "2434-561X,0395-2037"),
+]
+
+
+@pytest.mark.parametrize(("input", "value"), issns)
+def test_issn(input: str, value: Optional[str]) -> None:
+    field = ISSNField("issn", "test")
+    field.set_str(input)
+    assert field.to_str() == value
+
+
+isbns: List[Tuple[str, Optional[str]]] = [
+    ("0-306-40615-2", "978-0306406157"),
+    ("0-306-40615-X", None),
+    ("0-306-40615-5", None),
+    ("978-0-306-40615-7", "978-0306406157"),
+]
+
+
+@pytest.mark.parametrize(("input", "value"), isbns)
+def test_isbn(input: str, value: Optional[str]) -> None:
+    field = ISBNField("isbn", "test")
+    field.set_str(input)
+    assert field.to_str() == value

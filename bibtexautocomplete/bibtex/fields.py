@@ -149,7 +149,7 @@ class URLField(StrictStringField):
         return False
 
 
-@listify(r"\s+and\s+", " and ")
+@listify(r"\band\b", " and ")
 class NameField(BibtexField[Author]):
     """Class for author and editor field, list of names"""
 
@@ -189,6 +189,61 @@ class NameField(BibtexField[Author]):
         return Author(lastname, None)
 
 
+@listify("\\,", ",")
+class ISSNField(StrictStringField):
+    @classmethod
+    def normalize(cls, value: str) -> Optional[str]:
+        value = normalize_str(value.lower().replace("issn", "")).replace(" ", "")
+        if len(value) != 8:
+            return None
+        if match(r"[0-9]{7}[0-9x]", value) is None:
+            return None
+        # Last digit is a check code
+        sum = 0
+        for i in range(8):
+            sum += (8 - i) * int(value[i].replace("x", "10"))
+        if sum % 11 != 0:
+            return None
+        return value[:4] + "-" + value[4:].upper()
+
+
+class ISBNField(StrictStringField):
+    @staticmethod
+    def check_digit_13(values: str) -> str:
+        sum = 0
+        weight = 1
+        for i in range(12):
+            sum += int(values[i]) * weight
+            weight = 3 if weight == 1 else 1
+        sum = sum % 10
+        if sum == 0:
+            return "0"
+        return str(10 - sum)
+
+    @classmethod
+    def normalize(cls, value: str) -> Optional[str]:
+        value = normalize_str(value.lower().replace("isbn", "")).replace(" ", "")
+        if len(value) not in {10, 13}:
+            return None
+        if match(r"([0-9]{9}[0-9x])|([0-9]{13})", value) is None:
+            return None
+
+        if len(value) == 10:
+            # Last digit is a check code
+            sum = 0
+            for i in range(10):
+                sum += (10 - i) * int(value[i].replace("x", "10"))
+            if sum % 11 != 0:
+                return None
+            # Convert to 13 digit normal form
+            value = "978" + value
+            value = value[:12] + cls.check_digit_13(value)
+        else:
+            if value[-1] != cls.check_digit_13(value):
+                return None
+        return value[:3] + "-" + value[3:].upper()
+
+
 class BibtexEntry:
     """A class to encapsulate bibtex entries
     Avoids spelling errors in field names
@@ -212,23 +267,23 @@ class BibtexEntry:
     # address: BibtexField[str] = BasicStringField()
     # annote: BibtexField[str] = BasicStringField()
     # author: BibtexField[List[Author]] = NameField()
-    # booktitle: Optional[str]
-    # chapter: Optional[str]
+    # booktitle: Optional[str] = AbbreviatedStringField()
+    # chapter: Optional[str] = BasicStringField()
     # doi: BibtexField[str] = DOIField()
-    # edition: Optional[str]
+    # edition: Optional[str] = BasicStringField()
     # editor: BibtexField[List[Author]] = NameField()
     # howpublished: BibtexField[str] = BasicStringField()
-    # institution: Optional[str]
-    # issn: Optional[str]
-    # isbn: Optional[str]
-    # journal: Optional[str]
+    # institution: Optional[str] = AbbreviatedStringField()
+    # issn: Optional[str] = ISSNField()
+    # isbn: Optional[str] = ISBNField()
+    # journal: Optional[str] = AbbreviatedStringField()
     # month: Optional[str]  # Number in "1" .. "12"
-    # note: Optional[str]
+    # note: Optional[str] = BasicStringField()
     # number: Optional[str]
-    # organization: Optional[str]
+    # organization: Optional[str] = AbbreviatedStringField()
     # pages: Optional[str]
-    # publisher: Optional[str]
-    # school: Optional[str]
+    # publisher: Optional[str] = AbbreviatedStringField()
+    # school: Optional[str] = AbbreviatedStringField()
     # series: Optional[str]
     # title: BibtexField[str] = BasicStringField()
     # ~type: BibtexField[str] = BasicStringField()
