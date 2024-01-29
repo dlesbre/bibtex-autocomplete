@@ -16,7 +16,12 @@ from bibtexautocomplete.bibtex.entry import (
     FieldNamesSet,
     SpecialFields,
 )
-from bibtexautocomplete.bibtex.fields import DOIField, NameField, URLField
+from bibtexautocomplete.bibtex.fields import (
+    AbbreviatedStringField,
+    DOIField,
+    NameField,
+    URLField,
+)
 from bibtexautocomplete.bibtex.io import file_read, write
 from bibtexautocomplete.bibtex.matching import CERTAIN_MATCH, NO_MATCH, match_score
 from bibtexautocomplete.bibtex.normalize import (
@@ -367,6 +372,50 @@ def test_author_match_merge(
     field_a = NameField("author", "test")
     field_a.set_str(a)
     field_b = NameField("author", "test")
+    field_b.set_str(b)
+    score = field_a.matches(field_b)
+    assert score is not None
+    if matches:
+        assert score > FIELD_NO_MATCH
+        assert field_a.combine(field_b).to_str() == merged
+    else:
+        assert score <= FIELD_NO_MATCH
+
+
+abbrevs: List[Tuple[str, str, bool, Optional[str]]] = [
+    (
+        "Accounts of Chemical Research",
+        "Acc. Chem. Res.",
+        True,
+        "Accounts of Chemical Research",
+    ),
+    ("Acc. Chem. Res.", "ACHRE", True, "Acc. Chem. Res."),
+    ("Acc. Chem. Res.", "ACHRE4", False, None),
+    ("ACHRE.", "Accounts of Chemical Research", True, "Accounts of Chemical Research"),
+    (
+        "$K$-Monogr. Math.",
+        "$K$-Monographs in Mathematics",
+        True,
+        "$K$-Monographs in Mathematics",
+    ),
+    (
+        "Association for Computing Machinery",
+        "ACM",
+        True,
+        "Association for Computing Machinery",
+    ),
+    ("Ab bc", "abbabca", False, None),
+    ("Abbc", "abbabca", False, None),
+]
+
+
+@pytest.mark.parametrize(("a", "b", "matches", "merged"), abbrevs)
+def test_abbrev_match_merge(
+    a: str, b: str, matches: bool, merged: Optional[str]
+) -> None:
+    field_a = AbbreviatedStringField("abbrev", "test")
+    field_a.set_str(a)
+    field_b = AbbreviatedStringField("abbrev", "test")
     field_b.set_str(b)
     score = field_a.matches(field_b)
     assert score is not None

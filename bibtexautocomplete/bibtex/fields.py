@@ -26,16 +26,30 @@ def is_abbrev(abbrev: str, text: str) -> bool:
       False
     """
     # Algorithm from https://stackoverflow.com/a/7332054
-    pattern = r"(|.*\s)".join(abbrev)
+    pattern = r".*\s".join(r"(|.*\s)".join(word) for word in abbrev.split())
     return match("^" + pattern, text) is not None
+
+
+def pick_longest(a: str, b: str) -> str:
+    """Returns the longest string, or the longest sequence of bytes in case of
+    equality (to account for accents)"""
+    if len(a) > len(b):
+        return a
+    if len(b) > len(a):
+        return b
+    if len(bytes(a, "utf8")) >= len(bytes(b, "utf8")):
+        return a
+    return b
 
 
 class BasicStringField(StrictStringField):
     """Class for most fields, including title.
-    - Normalization trims leading/ending spaces
-    - Two match levels:
+    - Normalization trims leading/ending spaces and converts to unicode
+    - Three match levels:
        - FIELD_FULL_MATCH if match in lowercase, excluding accent normalize_str_weak
+       - FIELD_FULL_MATCH / 2 if match in lowercase, all non alpha-numeric normalize_str
        - FIELD_NO_MATCH if match using normalize_str
+    - combining just picks the left argument
     """
 
     @classmethod
@@ -45,6 +59,34 @@ class BasicStringField(StrictStringField):
         if normalize_str(a) == normalize_str(b):
             return FIELD_FULL_MATCH // 2
         return FIELD_NO_MATCH
+
+
+class AbbreviatedStringField(StrictStringField):
+    """Class for fields that are commonly abbreviated:
+    - Normalization trims leading/ending spaces and converts to unicode
+    - Four match levels:
+       - FIELD_FULL_MATCH if match in lowercase, excluding accent normalize_str_weak
+       - FIELD_FULL_MATCH * 2 / 3 if match in lowercase, all non alpha-numeric normalize_str
+       - FIELD_FULL_MATCH / 3 if one of the normalize_str values abbreviates the other through is_abbrev
+       - FIELD_NO_MATCH if match using normalize_str
+    - combining just picks the left argument
+    """
+
+    @classmethod
+    def match_values(cls, a: str, b: str) -> int:
+        if normalize_str_weak(a) == normalize_str_weak(b):
+            return FIELD_FULL_MATCH
+        norm_a = normalize_str(a)
+        norm_b = normalize_str(b)
+        if norm_a == norm_b:
+            return FIELD_FULL_MATCH * 2 // 3
+        if is_abbrev(norm_a, norm_b) or is_abbrev(norm_b, norm_a):
+            return FIELD_FULL_MATCH // 3
+        return FIELD_NO_MATCH
+
+    @classmethod
+    def combine_values(cls, a: str, b: str) -> str:
+        return pick_longest(a, b)
 
 
 class DOIField(StrictStringField):
@@ -105,18 +147,6 @@ class URLField(StrictStringField):
                 err,
             )
         return False
-
-
-def pick_longest(a: str, b: str) -> str:
-    """Returns the longest string, or the longest sequence of bytes in case of
-    equality (to account for accents)"""
-    if len(a) > len(b):
-        return a
-    if len(b) > len(a):
-        return b
-    if len(bytes(a, "utf8")) >= len(bytes(b, "utf8")):
-        return a
-    return b
 
 
 @listify(r"\s+and\s+", " and ")

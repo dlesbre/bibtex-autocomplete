@@ -148,7 +148,7 @@ class StrictStringField(BibtexField[str]):
 
     @classmethod
     def normalize(cls, value: str) -> Optional[str]:
-        value = value.strip()
+        value = latex_to_unicode(value.strip())
         if value == "":
             return None
         return value
