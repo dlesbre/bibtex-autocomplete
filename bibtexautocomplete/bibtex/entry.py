@@ -216,7 +216,7 @@ class BibtexEntry:
     def set_month(self, month: Optional[str]) -> None:
         if month is not None:
             month = normalize_month(month)
-            if month != "":
+            if month != "" and month is not None:
                 self._entry[FieldNames.MONTH] = month
                 return None
         if FieldNames.MONTH in self._entry:

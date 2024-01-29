@@ -1,3 +1,4 @@
+from datetime import date
 from re import match, search
 from typing import Optional
 
@@ -11,7 +12,7 @@ from .base_field import (
     StrictStringField,
     listify,
 )
-from .normalize import normalize_str, normalize_str_weak, normalize_url
+from .normalize import normalize_month, normalize_str, normalize_str_weak, normalize_url
 
 
 def is_abbrev(abbrev: str, text: str) -> bool:
@@ -244,6 +245,25 @@ class ISBNField(StrictStringField):
         return value[:3] + "-" + value[3:].upper()
 
 
+class MonthField(StrictStringField):
+    @classmethod
+    def normalize(cls, value: str) -> Optional[str]:
+        return normalize_month(value)
+
+
+class YearField(StrictStringField):
+    @classmethod
+    def normalize(cls, value: str) -> Optional[str]:
+        value = value.strip()
+        if value.isnumeric():
+            y = int(value)
+            max = date.today().year + 10
+            if y <= 100 or max <= y:
+                return None
+            return str(y)
+        return None
+
+
 class BibtexEntry:
     """A class to encapsulate bibtex entries
     Avoids spelling errors in field names
@@ -277,16 +297,16 @@ class BibtexEntry:
     # issn: Optional[str] = ISSNField()
     # isbn: Optional[str] = ISBNField()
     # journal: Optional[str] = AbbreviatedStringField()
-    # month: Optional[str]  # Number in "1" .. "12"
+    # month: Optional[str] = MonthField()
     # note: Optional[str] = BasicStringField()
-    # number: Optional[str]
+    # number: Optional[str] = BasicStringField()
     # organization: Optional[str] = AbbreviatedStringField()
     # pages: Optional[str]
     # publisher: Optional[str] = AbbreviatedStringField()
     # school: Optional[str] = AbbreviatedStringField()
-    # series: Optional[str]
+    # series: Optional[str] = AbbreviatedStringField()
     # title: BibtexField[str] = BasicStringField()
     # ~type: BibtexField[str] = BasicStringField()
     # url: BibtexField[str] = URLField()
-    # volume: Optional[str]
+    # volume: Optional[str] = BasicStringField()
     # year: Optional[str]

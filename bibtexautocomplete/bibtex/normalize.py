@@ -148,7 +148,7 @@ EN_MONTHS = {
 }
 
 
-def normalize_month(month: str) -> str:
+def normalize_month(month: str) -> Optional[str]:
     """Tries to normalize a month to it's number "1" to "12"
     returns month unchanged if unsuccessful"""
     months = EN_MONTHS.copy()
@@ -156,7 +156,7 @@ def normalize_month(month: str) -> str:
     norm = normalize_str(month)
     if norm in months:
         return str(months[norm])
-    return month
+    return None
 
 
 def normalize_url(

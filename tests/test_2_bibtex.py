@@ -85,7 +85,7 @@ def test_normalize_month() -> None:
     for month, norm in EN_MONTHS.items():
         assert normalize_month(month) == str(norm)
     for month in ("bla", "not.a.month", "6496489", "#!!0"):
-        assert normalize_month(month) == month
+        assert normalize_month(month) is None
 
 
 def io_test(file: str) -> None:
