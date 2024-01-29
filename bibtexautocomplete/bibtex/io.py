@@ -42,8 +42,6 @@ def read(bibtex: str, src: str = "") -> BibDatabase:
             err=err,
         )
         exit(1)
-    # for entry in database.entries:
-    #     convert_to_unicode(entry)
     return database
 
 

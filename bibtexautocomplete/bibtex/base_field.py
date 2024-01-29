@@ -14,6 +14,8 @@ from typing import (
     TypeVar,
 )
 
+from bibtexparser.latexenc import latex_to_unicode
+
 from ..utils.logger import logger
 
 
@@ -131,7 +133,7 @@ class BibtexField(Generic[T]):
     def set_str(self, value: Optional[str]) -> None:
         """Same as set, but converts the value from string to T first"""
         if value is not None:
-            self.set(self.convert(value))
+            self.set(self.convert(latex_to_unicode(value)))
         else:
             self.value = None
 

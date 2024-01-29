@@ -356,6 +356,7 @@ author_match_merge: List[Tuple[str, str, bool, Optional[str]]] = [
     ("Doe", "NotDoe", False, None),
     ("Aïna George", "Aina George", True, "George, Aïna"),
     ("Aina George", "Aïna George", True, "George, Aïna"),
+    ('A{\\"i}na George', 'A\\"{i}na George', True, "George, Aïna"),
 ]
 
 
