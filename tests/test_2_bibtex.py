@@ -21,8 +21,11 @@ from bibtexautocomplete.bibtex.fields import (
     DOIField,
     ISBNField,
     ISSNField,
+    MonthField,
     NameField,
+    PagesField,
     URLField,
+    YearField,
 )
 from bibtexautocomplete.bibtex.io import file_read, write
 from bibtexautocomplete.bibtex.matching import CERTAIN_MATCH, NO_MATCH, match_score
@@ -83,8 +86,14 @@ def test_normalize_doi() -> None:
 
 def test_normalize_month() -> None:
     for month, norm in EN_MONTHS.items():
+        field = MonthField("month", "test")
+        field.set_str(month)
+        assert field.value == str(norm)
         assert normalize_month(month) == str(norm)
     for month in ("bla", "not.a.month", "6496489", "#!!0"):
+        field = MonthField("month", "test")
+        field.set_str(month)
+        assert field.value is None
         assert normalize_month(month) is None
 
 
@@ -436,7 +445,7 @@ issns: List[Tuple[str, Optional[str]]] = [
     ("102345", None),
     ("with extra 1476-4687", None),
     ("0378-5955,", "0378-5955"),
-    ("ISSN: 2434-561X, 03952037", "2434-561X,0395-2037"),
+    ("ISSN: 2434-561X, 03952037", "2434-561X, 0395-2037"),
 ]
 
 
@@ -458,5 +467,36 @@ isbns: List[Tuple[str, Optional[str]]] = [
 @pytest.mark.parametrize(("input", "value"), isbns)
 def test_isbn(input: str, value: Optional[str]) -> None:
     field = ISBNField("isbn", "test")
+    field.set_str(input)
+    assert field.to_str() == value
+
+
+years: List[Tuple[str, Optional[str]]] = [
+    ("2023", "2023"),
+    ("9872", None),
+    ("  1789  ", "1789"),
+    ("-126", None),
+]
+
+
+@pytest.mark.parametrize(("input", "value"), years)
+def test_year(input: str, value: Optional[str]) -> None:
+    field = YearField("year", "test")
+    field.set_str(input)
+    assert field.to_str() == value
+
+
+pages: List[Tuple[str, Optional[str]]] = [
+    ("(1)", "(1)"),
+    ("12-23", "12--23"),
+    ("  1789 – 1795 ", "1789--1795"),
+    ("", None),
+    ("i-iv,12-18,124", "i--iv, 12--18, 124"),
+]
+
+
+@pytest.mark.parametrize(("input", "value"), pages)
+def test_pages(input: str, value: Optional[str]) -> None:
+    field = PagesField("pages", "test")
     field.set_str(input)
     assert field.to_str() == value

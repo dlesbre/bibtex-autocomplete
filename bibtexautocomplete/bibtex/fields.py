@@ -1,6 +1,6 @@
 from datetime import date
 from re import match, search
-from typing import Optional
+from typing import Dict, Optional
 
 from ..APIs.doi import DOICheck, URLCheck
 from ..utils.logger import logger
@@ -12,7 +12,7 @@ from .base_field import (
     StrictStringField,
     listify,
 )
-from .normalize import normalize_month, normalize_str, normalize_str_weak, normalize_url
+from .normalize import normalize_str, normalize_str_weak, normalize_url
 
 
 def is_abbrev(abbrev: str, text: str) -> bool:
@@ -152,7 +152,10 @@ class URLField(StrictStringField):
 
 @listify(r"\band\b", " and ")
 class NameField(BibtexField[Author]):
-    """Class for author and editor field, list of names"""
+    """
+    Class for author and editor field, list of Author (separate first and last name)
+    Merging keeps longest names, So "J. Doe" and "John Doe" merge to the later
+    """
 
     @classmethod
     def to_bibtex(cls, value: Author) -> str:
@@ -190,8 +193,13 @@ class NameField(BibtexField[Author]):
         return Author(lastname, None)
 
 
-@listify("\\,", ",")
+@listify("\\,", ", ")
 class ISSNField(StrictStringField):
+    """ISSN field, normalized to 'nnnn-nnnX' where n is 0-9 and X is 0-9 or X
+    Normalization checks the check digit (sum must be 0 modulo 11) and enforces
+    a single dash between two four-digit groups.
+    """
+
     @classmethod
     def normalize(cls, value: str) -> Optional[str]:
         value = normalize_str(value.lower().replace("issn", "")).replace(" ", "")
@@ -209,6 +217,11 @@ class ISSNField(StrictStringField):
 
 
 class ISBNField(StrictStringField):
+    """ISBN field, nnn-nnnnnnnnnn
+    Converts 10 digit ISBN to 13 digit version
+    Normalization removes extra dashes and verifies check digits
+    """
+
     @staticmethod
     def check_digit_13(values: str) -> str:
         sum = 0
@@ -246,12 +259,85 @@ class ISBNField(StrictStringField):
 
 
 class MonthField(StrictStringField):
+    """Normalize a month to "1" - "12",
+    Recognizes english and locale abbreviations
+    """
+
+    @staticmethod
+    def months_format(month: int, format: str) -> str:
+        """Localized month format"""
+        return date(2001, month, 1).strftime(format)
+
+    @staticmethod
+    def get_locale_months() -> Dict[str, int]:
+        mapping = {}
+        for month in range(1, 13):
+            for format in ("%B", "%b"):  # "%m", "%-m"
+                mapping[MonthField.months_format(month, format).lower()] = month
+        return mapping
+
+    EN_MONTHS = {
+        "january": 1,
+        "jan": 1,
+        "01": 1,
+        "1": 1,
+        "february": 2,
+        "feb": 2,
+        "02": 2,
+        "2": 2,
+        "march": 3,
+        "mar": 3,
+        "03": 3,
+        "3": 3,
+        "april": 4,
+        "apr": 4,
+        "04": 4,
+        "4": 4,
+        "may": 5,
+        "05": 5,
+        "5": 5,
+        "june": 6,
+        "jun": 6,
+        "06": 6,
+        "6": 6,
+        "july": 7,
+        "jul": 7,
+        "07": 7,
+        "7": 7,
+        "august": 8,
+        "aug": 8,
+        "08": 8,
+        "8": 8,
+        "september": 9,
+        "sep": 9,
+        "09": 9,
+        "9": 9,
+        "october": 10,
+        "oct": 10,
+        "10": 10,
+        "november": 11,
+        "nov": 11,
+        "11": 11,
+        "december": 12,
+        "dec": 12,
+        "12": 12,
+    }
+
     @classmethod
     def normalize(cls, value: str) -> Optional[str]:
-        return normalize_month(value)
+        """Tries to normalize a month to it's number "1" to "12"
+        returns month unchanged if unsuccessful"""
+        months = cls.EN_MONTHS.copy()
+        months.update(cls.get_locale_months())
+        norm = normalize_str(value)
+        if norm in months:
+            return str(months[norm])
+        return None
 
 
 class YearField(StrictStringField):
+    """Normalize a year to a number between 100 and current_year + 10"""
+
     @classmethod
     def normalize(cls, value: str) -> Optional[str]:
         value = value.strip()
@@ -262,6 +348,20 @@ class YearField(StrictStringField):
                 return None
             return str(y)
         return None
+
+
+@listify("\\,", ", ")
+class PagesField(StrictStringField):
+    "Normalize pages to list of n--n or n"
+
+    @classmethod
+    def normalize(cls, value: str) -> Optional[str]:
+        separators = r"(?:(?:\-+)|–)"
+        regex = r"^\s*(\S+)\s*" + separators + r"\s*(\S+)\s*$"
+        result = match(regex, value)
+        if result is None:
+            return value.strip()
+        return result.group(1) + "--" + result.group(2)
 
 
 class BibtexEntry:
