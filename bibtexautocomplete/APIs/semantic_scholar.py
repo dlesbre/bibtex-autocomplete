@@ -4,7 +4,8 @@ Lookup info from https://www.semanticscholar.org/
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from ..bibtex.author import Author
-from ..bibtex.entry import BibtexEntry, FieldNames
+from ..bibtex.constants import FieldNames
+from ..bibtex.entry import BibtexEntry
 from ..lookups.lookups import JSON_DT_Lookup
 from ..utils.constants import QUERY_MAX_RESULTS
 from ..utils.functions import split_iso_date

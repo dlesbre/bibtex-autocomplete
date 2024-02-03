@@ -2,10 +2,13 @@
 Mixin to check if a condition holds before performing queries
 """
 
-from typing import Optional, Set
+from typing import TYPE_CHECKING, Optional, Set
 
-from ..bibtex.entry import BibtexEntry, SearchedFields
+from ..bibtex.constants import FieldType, SearchedFields
 from .abstract_base import AbstractEntryLookup, AbstractLookup, Input, Output
+
+if TYPE_CHECKING:
+    from ..bibtex.entry import BibtexEntry  # noqa:F401
 
 
 class ConditionMixin(AbstractLookup[Input, Output]):
@@ -29,7 +32,7 @@ class ConditionMixin(AbstractLookup[Input, Output]):
 
 
 class FieldConditionMixin(
-    ConditionMixin[BibtexEntry, BibtexEntry], AbstractEntryLookup
+    ConditionMixin["BibtexEntry", "BibtexEntry"], AbstractEntryLookup
 ):
     """Mixin used to query only if there exists a field in self.fields
     that does not exists in self.entry, or is in self.overwrites
@@ -42,10 +45,10 @@ class FieldConditionMixin(
     """
 
     # list of fields that can be added to an entry by this lookup
-    fields: Set[str]
+    fields: Set[FieldType]
 
-    overwrites: Set[str] = set()
-    fields_to_complete: Set[str] = SearchedFields
+    overwrites: Set[FieldType] = set()
+    fields_to_complete: Set[FieldType] = SearchedFields
 
     def condition(self) -> bool:
         """Only return True if there exists a field in self.fields

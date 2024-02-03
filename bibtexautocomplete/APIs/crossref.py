@@ -5,7 +5,8 @@ Lookup info from https://www.crossref.org
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from ..bibtex.author import Author
-from ..bibtex.entry import BibtexEntry, FieldNames
+from ..bibtex.constants import FieldNames
+from ..bibtex.entry import BibtexEntry
 from ..lookups.lookups import JSON_DAT_Lookup
 from ..utils.constants import QUERY_MAX_RESULTS
 from ..utils.safe_json import SafeJSON

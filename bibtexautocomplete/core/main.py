@@ -2,8 +2,7 @@ from pathlib import Path
 from sys import stdout
 from typing import List, Optional
 
-from ..APIs import LOOKUP_NAMES, LOOKUPS
-from ..bibtex.entry import SearchedFields
+from ..bibtex.constants import SearchedFields
 from ..bibtex.io import writer
 from ..lookups.condition_mixin import FieldConditionMixin
 from ..lookups.https import HTTPSLookup
@@ -21,6 +20,7 @@ from ..utils.constants import (
 from ..utils.functions import list_sort_using, list_unduplicate
 from ..utils.logger import logger
 from ..utils.only_exclude import OnlyExclude
+from .apis import LOOKUP_NAMES, LOOKUPS
 from .autocomplete import BibtexAutocomplete
 from .parser import (
     HELP_TEXT,

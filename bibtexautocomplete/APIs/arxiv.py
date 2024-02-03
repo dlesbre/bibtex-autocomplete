@@ -7,7 +7,8 @@ from typing import Dict, Iterable, List, Optional, Tuple
 from xml.etree.ElementTree import Element, ParseError, fromstring
 
 from ..bibtex.author import Author
-from ..bibtex.entry import BibtexEntry, FieldNames
+from ..bibtex.constants import FieldNames
+from ..bibtex.entry import BibtexEntry
 from ..lookups.lookups import XML_T_Lookup
 from ..utils.constants import QUERY_MAX_RESULTS
 from ..utils.functions import split_iso_date

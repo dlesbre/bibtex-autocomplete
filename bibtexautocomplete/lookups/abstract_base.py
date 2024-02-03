@@ -19,6 +19,7 @@ AbstractDataLookup(AbstractLookup): split query into two new methods:
 """
 
 from typing import (
+    TYPE_CHECKING,
     ClassVar,
     Dict,
     Generic,
@@ -29,8 +30,11 @@ from typing import (
     TypeVar,
 )
 
-from ..bibtex.entry import BibtexEntry
 from ..utils.safe_json import JSONType
+
+if TYPE_CHECKING:
+    from ..bibtex.entry import BibtexEntry
+
 
 Input = TypeVar("Input", covariant=True)
 Output = TypeVar("Output", covariant=True)
@@ -56,7 +60,7 @@ class LookupProtocol(Protocol, Generic[Input, Output]):
         pass
 
 
-LookupType = Type[LookupProtocol[BibtexEntry, BibtexEntry]]
+LookupType = Type[LookupProtocol["BibtexEntry", "BibtexEntry"]]
 
 
 class AbstractLookup(Generic[Input, Output]):
@@ -80,7 +84,7 @@ class AbstractLookup(Generic[Input, Output]):
         pass
 
 
-class AbstractEntryLookup(AbstractLookup[BibtexEntry, BibtexEntry]):
+class AbstractEntryLookup(AbstractLookup["BibtexEntry", "BibtexEntry"]):
     """Abstract minimal lookup,
     Implements simple __init__ putting the argument in self.entry
 
@@ -89,9 +93,9 @@ class AbstractEntryLookup(AbstractLookup[BibtexEntry, BibtexEntry]):
     - query: Self -> Optional[BibtexEntry]
     """
 
-    entry: BibtexEntry
+    entry: "BibtexEntry"
 
-    def __init__(self, input: BibtexEntry) -> None:
+    def __init__(self, input: "BibtexEntry") -> None:
         super().__init__(input)
         self.entry = input
 

@@ -6,7 +6,8 @@ from typing import Iterable, List
 from urllib.parse import quote_plus
 
 from ..bibtex.author import Author
-from ..bibtex.entry import BibtexEntry, FieldNames
+from ..bibtex.constants import FieldNames
+from ..bibtex.entry import BibtexEntry
 from ..lookups.lookups import JSON_AT_Lookup
 from ..utils.functions import make_pages
 from ..utils.safe_json import SafeJSON

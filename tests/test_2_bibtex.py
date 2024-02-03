@@ -10,12 +10,8 @@ from bibtexautocomplete.bibtex.base_field import (
     ListField,
     StrictStringField,
 )
-from bibtexautocomplete.bibtex.entry import (
-    BibtexEntry,
-    FieldNames,
-    FieldNamesSet,
-    SpecialFields,
-)
+from bibtexautocomplete.bibtex.constants import FieldNames, FieldNamesSet, SpecialFields
+from bibtexautocomplete.bibtex.entry import BibtexEntry
 from bibtexautocomplete.bibtex.fields import (
     AbbreviatedStringField,
     DOIField,

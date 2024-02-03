@@ -25,7 +25,8 @@ from alive_progress import alive_bar  # type: ignore
 from bibtexparser.bibdatabase import BibDatabase
 
 from ..APIs.doi import DOICheck, URLCheck
-from ..bibtex.entry import BibtexEntry, FieldNames
+from ..bibtex.constants import FieldNames
+from ..bibtex.entry import BibtexEntry
 from ..bibtex.io import file_read, file_write, get_entries
 from ..bibtex.normalize import has_field
 from ..lookups.abstract_base import LookupType

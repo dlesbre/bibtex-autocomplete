@@ -3,10 +3,30 @@ Wraps around bibtexparser's entry representations for safer access
 and field normalization
 """
 
-from typing import Any, Iterator, List, Optional, Set, Tuple
+from typing import Any, Iterator, List, Optional, Tuple, cast
 
 from ..utils.constants import EntryType
 from .author import Author
+from .base_field import BibtexField
+from .constants import (
+    FieldNames,
+    FieldNamesSet,
+    FieldType,
+    SpecialFields,
+    cast_field_name,
+)
+from .fields import (
+    AbbreviatedStringField,
+    BasicStringField,
+    DOIField,
+    ISBNField,
+    ISSNField,
+    MonthField,
+    NameField,
+    PagesField,
+    URLField,
+    YearField,
+)
 from .normalize import (
     get_field,
     has_data,
@@ -17,54 +37,92 @@ from .normalize import (
 )
 
 
-class FieldNames:
-    """constants for bibtex field names"""
+class BibtexEntry2:
+    """A class to encapsulate bibtex entries
+    Avoids spelling errors in field names
+    and performs sanity checks
 
-    ADDRESS = "address"
-    ANNOTE = "annote"
-    AUTHOR = "author"
-    BOOKTITLE = "booktitle"
-    CHAPTER = "chapter"
-    DOI = "doi"
-    EDITION = "edition"
-    EDITOR = "editor"
-    HOWPUBLISHED = "howpublished"
-    INSTITUTION = "institution"
-    ISSN = "issn"
-    ISBN = "isbn"
-    JOURNAL = "journal"
-    MONTH = "month"
-    NOTE = "note"
-    NUMBER = "number"
-    ORGANIZATION = "organization"
-    PAGES = "pages"
-    PUBLISHER = "publisher"
-    SCHOOL = "school"
-    SERIES = "series"
-    TITLE = "title"
-    TYPE = "type"
-    URL = "url"
-    VOLUME = "volume"
-    YEAR = "year"
+    Note: sanity check are performed when setting/getting attributes
+    >>> entry.doi.set("10.1234/123456")
+    >>> entry.doi.set("not_a_doi") # Invalid format, set DOI to None
+    >>> entry.doi.to_str() # None
+    They are not performed on initialization !
+    >>> entry = BibtexEntry({'doi': 'not_a_doi'})
+    >>> entry.doi.to_str() # None
+    >>> entry.to_entry() # {'doi': 'not_a_doi'}
 
+    Some fields have special treatment:
+    - author and editor return/are set by a list of authors instead of a string
+    - doi is formatted on get/set to remove leading url
+    - month is formatted to "1" -- "12" if possible (recognizes "jan", "FeB.", "March"...)
+    """
 
-# Set of all fields
-FieldNamesSet: Set[str] = {
-    value
-    for attr, value in vars(FieldNames).items()
-    if isinstance(value, str) and "_" not in attr and attr.upper() == attr
-}
+    address: BibtexField[str]
+    annote: BibtexField[str]
+    author: NameField  # BibtexField[List[Author]]
+    booktitle: BibtexField[str]
+    chapter: BibtexField[str]
+    doi: DOIField  # BibtexField[str]
+    edition: BibtexField[str]
+    editor: NameField  # BibtexField[List[Author]]
+    howpublished: BibtexField[str]
+    institution: BibtexField[str]
+    issn: ISSNField  # BibtexField[List[str]]
+    isbn: ISBNField  # BibtexField[str]
+    journal: BibtexField[str]
+    month: MonthField  # BibtexField[str]
+    note: BibtexField[str]
+    number: BibtexField[str]
+    organization: BibtexField[str]
+    pages: PagesField  # BibtexField[List[str]]
+    publisher: BibtexField[str]
+    school: BibtexField[str]
+    series: BibtexField[str]
+    title: BibtexField[str]
+    type: BibtexField[str]
+    url: BibtexField[str]
+    volume: BibtexField[str]
+    year: YearField  # BibtexField[str]
 
-# Fields actually searched for
-SearchedFields = FieldNamesSet.copy()
+    def __init__(self, source: str):
+        """Create a new empty entry,
+        source identifies the data's provenance (i.e. lookup name, bibtex file...)"""
+        self.address = BasicStringField("address", source)
+        self.annote = BasicStringField("annote", source)
+        self.author = NameField("author", source)
+        self.booktitle = AbbreviatedStringField("booktitle", source)
+        self.chapter = BasicStringField("chapter", source)
+        self.doi = DOIField("doi", source)
+        self.edition = BasicStringField("edition", source)
+        self.editor = NameField("editor", source)
+        self.howpublished = BasicStringField("howpublished", source)
+        self.institution = AbbreviatedStringField("institution", source)
+        self.issn = ISSNField("issn", source)
+        self.isbn = ISBNField("isbn", source)
+        self.journal = AbbreviatedStringField("journal", source)
+        self.month = MonthField("month", source)
+        self.note = BasicStringField("note", source)
+        self.number = BasicStringField("number", source)
+        self.organization = AbbreviatedStringField("organization", source)
+        self.pages = PagesField("pages", source)
+        self.publisher = AbbreviatedStringField("publisher", source)
+        self.school = AbbreviatedStringField("school", source)
+        self.series = AbbreviatedStringField("series", source)
+        self.title = BasicStringField("title", source)
+        self.type = BasicStringField("type", source)
+        self.url = URLField("url", source)
+        self.volume = BasicStringField("volume", source)
+        self.year = YearField("year", source)
 
-# Set of fields with sanitized inputs
-SpecialFields: Set[str] = {
-    "author",
-    "doi",
-    "editor",
-    "month",
-}
+    def get_field(self, field: FieldType) -> BibtexField[Any]:
+        return cast(BibtexField[Any], self.__getattribute__(field))
+
+    def from_entry(self, entry: EntryType) -> None:
+        """Initialize self from a bibtexparser entry"""
+        for field in entry:
+            cfield = cast_field_name(field)
+            if cfield is not None:
+                self.get_field(cfield).set_str(entry[field])
 
 
 class BibtexEntry:

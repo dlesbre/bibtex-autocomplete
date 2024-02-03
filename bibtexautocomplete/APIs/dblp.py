@@ -5,7 +5,8 @@ Lookup info from https://dblp.org
 from typing import Dict, Iterable, List
 
 from ..bibtex.author import Author
-from ..bibtex.entry import BibtexEntry, FieldNames
+from ..bibtex.constants import FieldNames
+from ..bibtex.entry import BibtexEntry
 from ..lookups.lookups import JSON_AT_Lookup
 from ..utils.constants import QUERY_MAX_RESULTS
 from ..utils.safe_json import SafeJSON

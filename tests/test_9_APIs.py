@@ -2,17 +2,15 @@ from typing import Any, Type
 
 import pytest
 
-from bibtexautocomplete.APIs import (
-    ArxivLookup,
-    CrossrefLookup,
-    DBLPLookup,
-    InpireHEPLookup,
-    OpenAlexLookup,
-    ResearchrLookup,
-    SemanticScholarLookup,
-    UnpaywallLookup,
-)
+from bibtexautocomplete.APIs.arxiv import ArxivLookup
+from bibtexautocomplete.APIs.crossref import CrossrefLookup
+from bibtexautocomplete.APIs.dblp import DBLPLookup
 from bibtexautocomplete.APIs.doi import DOICheck, URLCheck
+from bibtexautocomplete.APIs.inspire_hep import InpireHEPLookup
+from bibtexautocomplete.APIs.openalex import OpenAlexLookup
+from bibtexautocomplete.APIs.researchr import ResearchrLookup
+from bibtexautocomplete.APIs.semantic_scholar import SemanticScholarLookup
+from bibtexautocomplete.APIs.unpaywall import UnpaywallLookup
 from bibtexautocomplete.bibtex.author import Author
 from bibtexautocomplete.bibtex.entry import BibtexEntry
 from bibtexautocomplete.lookups.https import HTTPSRateCapedLookup

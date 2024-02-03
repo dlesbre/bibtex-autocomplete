@@ -7,10 +7,10 @@ from os import listdir
 from pathlib import Path
 from typing import Iterable, List, TypeVar
 
-from ..APIs import LOOKUP_NAMES
-from ..bibtex.entry import FieldNamesSet
+from ..bibtex.constants import FieldNamesSet
 from ..utils.constants import BTAC_FILENAME, CONNECTION_TIMEOUT, SCRIPT_NAME
 from ..utils.logger import logger
+from .apis import LOOKUP_NAMES
 
 T = TypeVar("T")
 

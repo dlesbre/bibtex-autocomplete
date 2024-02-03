@@ -5,7 +5,8 @@ Lookup info from https://unpaywall.org/
 from typing import Dict, Iterable, List, Optional
 
 from ..bibtex.author import Author
-from ..bibtex.entry import BibtexEntry, FieldNames
+from ..bibtex.constants import FieldNames
+from ..bibtex.entry import BibtexEntry
 from ..lookups.lookups import JSON_DT_Lookup
 from ..utils.constants import EMAIL
 from ..utils.functions import split_iso_date

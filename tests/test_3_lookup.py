@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional
 
-from bibtexautocomplete.bibtex.entry import BibtexEntry, FieldNames
+from bibtexautocomplete.bibtex.constants import FieldNames
+from bibtexautocomplete.bibtex.entry import BibtexEntry
 from bibtexautocomplete.bibtex.normalize import normalize_str
 from bibtexautocomplete.lookups.abstract_base import AbstractLookup
 from bibtexautocomplete.lookups.condition_mixin import FieldConditionMixin
