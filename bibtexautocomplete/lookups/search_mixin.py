@@ -13,7 +13,8 @@ from typing import Generic, Iterable, List, Optional, TypeVar
 from ..bibtex.entry import BibtexEntry
 from ..bibtex.matching import CERTAIN_MATCH, NO_MATCH, match_score
 from ..utils.logger import logger
-from .abstract_base import AbstractEntryLookup, Data
+from .abstract_base import Data
+from .abstract_entry_lookup import AbstractEntryLookup
 
 result = TypeVar("result")
 

@@ -29,7 +29,7 @@ from ..bibtex.constants import FieldNames
 from ..bibtex.entry import BibtexEntry
 from ..bibtex.io import file_read, file_write, get_entries
 from ..bibtex.normalize import has_field
-from ..lookups.abstract_base import LookupType
+from ..lookups.abstract_entry_lookup import LookupType
 from ..utils.constants import (
     BULLET,
     FIELD_PREFIX,

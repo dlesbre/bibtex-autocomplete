@@ -1,34 +1,31 @@
 """
-Mixin to check if a condition holds before performing queries
+This modules specializes the classes in AbstractBase to use BibtexEntry as data
+type. It is separate to avoid circular imports
 """
 
-from typing import TYPE_CHECKING, Optional, Set
+from typing import Set, Type
 
 from ..bibtex.constants import FieldType, SearchedFields
-from .abstract_base import AbstractEntryLookup, AbstractLookup, Input, Output
+from ..bibtex.entry import BibtexEntry
+from .abstract_base import AbstractLookup, ConditionMixin, LookupProtocol
 
-if TYPE_CHECKING:
-    from ..bibtex.entry import BibtexEntry  # noqa:F401
+LookupType = Type[LookupProtocol["BibtexEntry", "BibtexEntry"]]
 
 
-class ConditionMixin(AbstractLookup[Input, Output]):
-    """Mixin to query only if a condition holds,
+class AbstractEntryLookup(AbstractLookup[BibtexEntry, BibtexEntry]):
+    """Abstract minimal lookup,
+    Implements simple __init__ putting the argument in self.entry
 
-    inherit from this before the base Lookup class
-    e.g. class MyLookup(..., ConditionMixin, ..., MyLookup):
+    Virtual methods and attributes : (must be overridden in children):
+    - name : str
+    - query: Self -> Optional[BibtexEntry]
+    """
 
-    Adds the condition : Self -> bool method (default always True)"""
+    entry: BibtexEntry
 
-    def condition(self) -> bool:
-        """override this to check a condition before
-        performing any queries"""
-        return True
-
-    def query(self) -> Optional[Output]:
-        """calls parent query only if condition is met"""
-        if self.condition():
-            return super().query()
-        return None
+    def __init__(self, input: BibtexEntry) -> None:
+        super().__init__(input)
+        self.entry = input
 
 
 class FieldConditionMixin(

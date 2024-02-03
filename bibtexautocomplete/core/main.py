@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from ..bibtex.constants import SearchedFields
 from ..bibtex.io import writer
-from ..lookups.condition_mixin import FieldConditionMixin
+from ..lookups.abstract_entry_lookup import FieldConditionMixin
 from ..lookups.https import HTTPSLookup
 from ..utils.ansi import ANSICodes, ansi_format
 from ..utils.constants import (

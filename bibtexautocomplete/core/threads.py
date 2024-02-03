@@ -2,7 +2,7 @@ from threading import Condition, Thread
 from typing import Callable, Dict, List, Optional, Tuple
 
 from ..bibtex.entry import BibtexEntry
-from ..lookups.abstract_base import LookupType
+from ..lookups.abstract_entry_lookup import LookupType
 from ..utils.constants import EntryType
 from ..utils.logger import logger
 from ..utils.safe_json import JSONType

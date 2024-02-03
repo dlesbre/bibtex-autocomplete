@@ -18,23 +18,9 @@ AbstractDataLookup(AbstractLookup): split query into two new methods:
   - process_data : Self, Data -> BibtexEntry - process data into a bibtex entry
 """
 
-from typing import (
-    TYPE_CHECKING,
-    ClassVar,
-    Dict,
-    Generic,
-    NamedTuple,
-    Optional,
-    Protocol,
-    Type,
-    TypeVar,
-)
+from typing import ClassVar, Dict, Generic, NamedTuple, Optional, Protocol, TypeVar
 
 from ..utils.safe_json import JSONType
-
-if TYPE_CHECKING:
-    from ..bibtex.entry import BibtexEntry
-
 
 Input = TypeVar("Input", covariant=True)
 Output = TypeVar("Output", covariant=True)
@@ -60,9 +46,6 @@ class LookupProtocol(Protocol, Generic[Input, Output]):
         pass
 
 
-LookupType = Type[LookupProtocol["BibtexEntry", "BibtexEntry"]]
-
-
 class AbstractLookup(Generic[Input, Output]):
     """Abstract base class for lookup
     Is a valid LookupProtocol, but all methods should be overridden
@@ -82,22 +65,6 @@ class AbstractLookup(Generic[Input, Output]):
 
     def __init__(self, input: Input) -> None:
         pass
-
-
-class AbstractEntryLookup(AbstractLookup["BibtexEntry", "BibtexEntry"]):
-    """Abstract minimal lookup,
-    Implements simple __init__ putting the argument in self.entry
-
-    Virtual methods and attributes : (must be overridden in children):
-    - name : str
-    - query: Self -> Optional[BibtexEntry]
-    """
-
-    entry: "BibtexEntry"
-
-    def __init__(self, input: "BibtexEntry") -> None:
-        super().__init__(input)
-        self.entry = input
 
 
 class Data(NamedTuple):
@@ -125,4 +92,24 @@ class AbstractDataLookup(AbstractLookup[Input, Output]):
         data = self.get_data()
         if data is not None:
             return self.process_data(data)
+        return None
+
+
+class ConditionMixin(AbstractLookup[Input, Output]):
+    """Mixin to query only if a condition holds,
+
+    inherit from this before the base Lookup class
+    e.g. class MyLookup(..., ConditionMixin, ..., MyLookup):
+
+    Adds the condition : Self -> bool method (default always True)"""
+
+    def condition(self) -> bool:
+        """override this to check a condition before
+        performing any queries"""
+        return True
+
+    def query(self) -> Optional[Output]:
+        """calls parent query only if condition is met"""
+        if self.condition():
+            return super().query()
         return None

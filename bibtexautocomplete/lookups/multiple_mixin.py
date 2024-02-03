@@ -7,7 +7,8 @@ from typing import Iterator, Optional
 
 from ..bibtex.entry import BibtexEntry
 from ..bibtex.normalize import normalize_str
-from .abstract_base import AbstractEntryLookup, AbstractLookup, Input, Output
+from .abstract_base import AbstractLookup, Input, Output
+from .abstract_entry_lookup import AbstractEntryLookup
 
 
 class MultipleQueryMixin(AbstractLookup[Input, Output]):

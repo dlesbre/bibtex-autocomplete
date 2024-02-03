@@ -6,7 +6,7 @@ from xml.etree.ElementTree import Element
 
 from ..bibtex.entry import BibtexEntry
 from ..utils.safe_json import SafeJSON
-from .condition_mixin import FieldConditionMixin
+from .abstract_entry_lookup import FieldConditionMixin
 from .https import HTTPSRateCapedLookup
 from .multiple_mixin import (
     DATQueryMixin,

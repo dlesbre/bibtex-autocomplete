@@ -7,8 +7,7 @@ from typing import Optional
 from urllib.parse import quote
 
 from ..bibtex.normalize import normalize_doi, normalize_str_weak, normalize_url
-from ..lookups.abstract_base import Data
-from ..lookups.condition_mixin import ConditionMixin
+from ..lookups.abstract_base import ConditionMixin, Data
 from ..lookups.https import HTTPSRateCapedLookup, RedirectFollower
 from ..utils.logger import logger
 from ..utils.safe_json import SafeJSON
