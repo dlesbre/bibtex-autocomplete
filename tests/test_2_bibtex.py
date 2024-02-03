@@ -7,8 +7,8 @@ from bibtexautocomplete.bibtex.author import Author
 from bibtexautocomplete.bibtex.base_field import (
     FIELD_FULL_MATCH,
     FIELD_NO_MATCH,
+    ListField,
     StrictStringField,
-    listify,
 )
 from bibtexautocomplete.bibtex.entry import (
     BibtexEntry,
@@ -290,8 +290,7 @@ def test_normalize_url2(url: str, result: Optional[str]) -> None:
     assert field.normalize(url) == result
 
 
-@listify(separator_regex=r",", separator=", ")
-class ListString(StrictStringField):
+class StringField(StrictStringField):
     @classmethod
     def match_values(cls, a: str, b: str) -> int:
         if a in b:
@@ -305,6 +304,12 @@ class ListString(StrictStringField):
         if len(a) >= len(b):
             return a
         return b
+
+
+class ListString(ListField[str]):
+    separator_regex = r"\,"
+    separator = ", "
+    base_class = StringField
 
 
 listify_to_from: List[Tuple[str, Optional[str]]] = [

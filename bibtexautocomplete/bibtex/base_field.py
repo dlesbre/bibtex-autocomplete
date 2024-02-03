@@ -2,7 +2,6 @@ from abc import abstractmethod
 from functools import cmp_to_key
 from re import split
 from typing import (
-    Callable,
     Dict,
     Generic,
     Iterator,
@@ -208,10 +207,8 @@ def iterate_max(matrix: List[List[int]]) -> Iterator[Tuple[int, int]]:
 LONG_LIST_DELIMITER = 5_000
 
 
-def listify(
-    separator_regex: str, separator: str
-) -> Callable[[Type[BibtexField[T]]], Type[BibtexField[List[T]]]]:
-    """Decorator that convert a bibtex field for T into a field for List[T]
+class ListField(BibtexField[List[T]]):
+    """field for List[T], defined using the field for T.
 
     Lists are matched without order, taking the pairwise best matches first
     and returning the average match score times a factor:
@@ -226,131 +223,127 @@ def listify(
     Parsing and rendering to string is done via splitting around separator_regex
     and joining around separator"""
 
-    def decorator(base_class: Type[BibtexField[T]]) -> Type[BibtexField[List[T]]]:
-        class ListifyField(BibtexField[List[T]]):
-            parent = base_class
+    separator_regex: str
+    separator: str
+    base_class: Type[BibtexField[T]]
 
-            @classmethod
-            def normalize(cls, value: List[T]) -> Optional[List[T]]:
-                normalized: List[T] = []
-                for val in value:
-                    norm = base_class.normalize(val)
-                    if norm is not None:
-                        normalized.append(norm)
-                if normalized:
-                    return normalized
-                return None
+    @classmethod
+    def normalize(cls, value: List[T]) -> Optional[List[T]]:
+        normalized: List[T] = []
+        for val in value:
+            norm = cls.base_class.normalize(val)
+            if norm is not None:
+                normalized.append(norm)
+        if normalized:
+            return normalized
+        return None
 
-            @classmethod
-            def slow_check(cls, value: List[T]) -> bool:
-                return all(base_class.slow_check(x) for x in value)
+    @classmethod
+    def slow_check(cls, value: List[T]) -> bool:
+        return all(cls.base_class.slow_check(x) for x in value)
 
-            @classmethod
-            def match_values(cls, a: List[T], b: List[T]) -> int:
-                if len(a) * len(b) <= LONG_LIST_DELIMITER:
-                    return cls.match_values_slow(a, b)
-                return cls.match_values_fast(a, b)
+    @classmethod
+    def match_values(cls, a: List[T], b: List[T]) -> int:
+        if len(a) * len(b) <= LONG_LIST_DELIMITER:
+            return cls.match_values_slow(a, b)
+        return cls.match_values_fast(a, b)
 
-            @classmethod
-            def pairwise_scores(cls, a: List[T], b: List[T]) -> List[List[int]]:
-                """returns M such that M[i][j] = match_score(a[i], b[j])"""
-                scores = [[FIELD_NO_MATCH for _ in b] for _ in a]
-                for i, x in enumerate(a):
-                    for j, y in enumerate(b):
-                        scores[i][j] = base_class.match_values(x, y)
-                return scores
+    @classmethod
+    def pairwise_scores(cls, a: List[T], b: List[T]) -> List[List[int]]:
+        """returns M such that M[i][j] = match_score(a[i], b[j])"""
+        scores = [[FIELD_NO_MATCH for _ in b] for _ in a]
+        for i, x in enumerate(a):
+            for j, y in enumerate(b):
+                scores[i][j] = cls.base_class.match_values(x, y)
+        return scores
 
-            @classmethod
-            def match_values_slow(cls, a: List[T], b: List[T]) -> int:
-                """Compute all pairwise element matches, the pick the top ones
-                as common matches and removes them. This has terrible complexity,
-                but list should be rather small"""
-                scores = cls.pairwise_scores(a, b)
-                # Count common and calc average_score
-                common = 0
-                common_scores = 0
-                for x, y in iterate_max(scores):
-                    common += 1
-                    common_scores += scores[x][y]
-                return cls.compute_score(a, b, common_scores, common)
+    @classmethod
+    def match_values_slow(cls, a: List[T], b: List[T]) -> int:
+        """Compute all pairwise element matches, the pick the top ones
+        as common matches and removes them. This has terrible complexity,
+        but list should be rather small"""
+        scores = cls.pairwise_scores(a, b)
+        # Count common and calc average_score
+        common = 0
+        common_scores = 0
+        for x, y in iterate_max(scores):
+            common += 1
+            common_scores += scores[x][y]
+        return cls.compute_score(a, b, common_scores, common)
 
-            @classmethod
-            def compute_score(
-                cls, a: List[T], b: List[T], common_scores: int, common: int
-            ) -> int:
-                """Compute the final score from the number of common elements
-                and the sum of the scores"""
-                if common == 0:
-                    return FIELD_NO_MATCH
-                average_match = common_scores // common
-                # Mutliply average score by factor
-                a_only = len(a) - common
-                b_only = len(b) - common
-                if average_match == 0:
-                    average_match = 1
-                if a_only == 0 and b_only == 0:
-                    return average_match
-                if a_only == 0 or b_only == 0:
-                    return average_match // 2
-                return average_match // 4
+    @classmethod
+    def compute_score(
+        cls, a: List[T], b: List[T], common_scores: int, common: int
+    ) -> int:
+        """Compute the final score from the number of common elements
+        and the sum of the scores"""
+        if common == 0:
+            return FIELD_NO_MATCH
+        average_match = common_scores // common
+        # Mutliply average score by factor
+        a_only = len(a) - common
+        b_only = len(b) - common
+        if average_match == 0:
+            average_match = 1
+        if a_only == 0 and b_only == 0:
+            return average_match
+        if a_only == 0 or b_only == 0:
+            return average_match // 2
+        return average_match // 4
 
-            @classmethod
-            def match_values_fast(cls, a: List[T], b: List[T]) -> int:
-                """faster than match_values_slow (O(n^2) instead of O(n^3)),
-                used on long lists.
-                May not find the best matches overall though"""
-                set_b = set(b)
-                common = 0
-                common_scores = 0
-                for elt_a in a:
-                    max_score = FIELD_NO_MATCH
-                    max_elt = None
-                    for elt_b in b:
-                        score = base_class.match_values(elt_a, elt_b)
-                        if score > max_score:
-                            max_score = score
-                            max_elt = elt_b
-                    if max_elt is not None:
-                        common += 1
-                        common_scores += max_score
-                        set_b.remove(max_elt)
-                return cls.compute_score(a, b, common_scores, common)
+    @classmethod
+    def match_values_fast(cls, a: List[T], b: List[T]) -> int:
+        """faster than match_values_slow (O(n^2) instead of O(n^3)),
+        used on long lists.
+        May not find the best matches overall though"""
+        set_b = set(b)
+        common = 0
+        common_scores = 0
+        for elt_a in a:
+            max_score = FIELD_NO_MATCH
+            max_elt = None
+            for elt_b in b:
+                score = cls.base_class.match_values(elt_a, elt_b)
+                if score > max_score:
+                    max_score = score
+                    max_elt = elt_b
+            if max_elt is not None:
+                common += 1
+                common_scores += max_score
+                set_b.remove(max_elt)
+        return cls.compute_score(a, b, common_scores, common)
 
-            @classmethod
-            def combine_values(cls, a: List[T], b: List[T]) -> List[T]:
-                """When two values match, choose which one to keep
-                Merge elements with highest match scores first
-                Then creates a new list by attempting to keep elements in order"""
-                if len(a) * len(b) >= LONG_LIST_DELIMITER:
-                    # Return the longest list if too long to limit complexity
-                    return a if len(a) >= len(b) else b
-                coords: Dict[COORD, T] = {(i, None): elt for i, elt in enumerate(a)}
-                coords.update({(None, j): elt for j, elt in enumerate(b)})
-                scores = cls.pairwise_scores(a, b)
-                for x, y in iterate_max(scores):
-                    del coords[x, None]
-                    del coords[None, y]
-                    coords[x, y] = base_class.combine_values(a[x], b[y])
-                keys = sorted(coords.items(), key=cmp_to_key(order))
-                return [item for _, item in keys]
+    @classmethod
+    def combine_values(cls, a: List[T], b: List[T]) -> List[T]:
+        """When two values match, choose which one to keep
+        Merge elements with highest match scores first
+        Then creates a new list by attempting to keep elements in order"""
+        if len(a) * len(b) >= LONG_LIST_DELIMITER:
+            # Return the longest list if too long to limit complexity
+            return a if len(a) >= len(b) else b
+        coords: Dict[COORD, T] = {(i, None): elt for i, elt in enumerate(a)}
+        coords.update({(None, j): elt for j, elt in enumerate(b)})
+        scores = cls.pairwise_scores(a, b)
+        for x, y in iterate_max(scores):
+            del coords[x, None]
+            del coords[None, y]
+            coords[x, y] = cls.base_class.combine_values(a[x], b[y])
+        keys = sorted(coords.items(), key=cmp_to_key(order))
+        return [item for _, item in keys]
 
-            @classmethod
-            def to_bibtex(cls, value: List[T]) -> str:
-                """Return the non-None value as a Bibtex string"""
-                return separator.join(base_class.to_bibtex(x) for x in value)
+    @classmethod
+    def to_bibtex(cls, value: List[T]) -> str:
+        """Return the non-None value as a Bibtex string"""
+        return cls.separator.join(cls.base_class.to_bibtex(x) for x in value)
 
-            @classmethod
-            def convert(cls, value: str) -> List[T]:
-                converted = []
-                for x in split(separator_regex, value):
-                    x = x.strip()
-                    if x == "":
-                        continue
-                    conv_x = base_class.convert(x)
-                    if conv_x is not None:
-                        converted.append(conv_x)
-                return converted
-
-        return ListifyField
-
-    return decorator
+    @classmethod
+    def convert(cls, value: str) -> List[T]:
+        converted = []
+        for x in split(cls.separator_regex, value):
+            x = x.strip()
+            if x == "":
+                continue
+            conv_x = cls.base_class.convert(x)
+            if conv_x is not None:
+                converted.append(conv_x)
+        return converted

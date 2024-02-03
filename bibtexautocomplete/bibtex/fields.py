@@ -1,6 +1,6 @@
 from datetime import date
 from re import match, search
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 from ..APIs.doi import DOICheck, URLCheck
 from ..utils.logger import logger
@@ -9,8 +9,8 @@ from .base_field import (
     FIELD_FULL_MATCH,
     FIELD_NO_MATCH,
     BibtexField,
+    ListField,
     StrictStringField,
-    listify,
 )
 from .normalize import normalize_str, normalize_str_weak, normalize_url
 
@@ -150,8 +150,7 @@ class URLField(StrictStringField):
         return False
 
 
-@listify(r"\band\b", " and ")
-class NameField(BibtexField[Author]):
+class NameBaseField(BibtexField[Author]):
     """
     Class for author and editor field, list of Author (separate first and last name)
     Merging keeps longest names, So "J. Doe" and "John Doe" merge to the later
@@ -193,8 +192,13 @@ class NameField(BibtexField[Author]):
         return Author(lastname, None)
 
 
-@listify("\\,", ", ")
-class ISSNField(StrictStringField):
+class NameField(ListField[Author]):
+    separator: str = " and "
+    separator_regex: str = r"\band\b"
+    base_class = NameBaseField
+
+
+class ISSNBaseField(StrictStringField):
     """ISSN field, normalized to 'nnnn-nnnX' where n is 0-9 and X is 0-9 or X
     Normalization checks the check digit (sum must be 0 modulo 11) and enforces
     a single dash between two four-digit groups.
@@ -214,6 +218,12 @@ class ISSNField(StrictStringField):
         if sum % 11 != 0:
             return None
         return value[:4] + "-" + value[4:].upper()
+
+
+class ISSNField(ListField[str]):
+    separator: str = ", "
+    separator_regex: str = r"\,"
+    base_class = ISSNBaseField
 
 
 class ISBNField(StrictStringField):
@@ -350,8 +360,7 @@ class YearField(StrictStringField):
         return None
 
 
-@listify("\\,", ", ")
-class PagesField(StrictStringField):
+class PagesBaseField(StrictStringField):
     "Normalize pages to list of n--n or n"
 
     @classmethod
@@ -364,49 +373,18 @@ class PagesField(StrictStringField):
         return result.group(1) + "--" + result.group(2)
 
 
-class BibtexEntry:
-    """A class to encapsulate bibtex entries
-    Avoids spelling errors in field names
-    and performs sanity checks
+class PagesField(ListField[str]):
+    separator: str = ", "
+    separator_regex: str = r"\,"
+    base_class = PagesBaseField
 
-    Note: sanity check are performed when setting/getting attributes
-    >>> entry.doi.set("10.1234/123456")
-    >>> entry.doi.set("not_a_doi") # Invalid format, set DOI to None
-    >>> entry.doi.to_str() # None
-    They are not performed on initialization !
-    >>> entry = BibtexEntry({'doi': 'not_a_doi'})
-    >>> entry.doi.to_str() # None
-    >>> entry.to_entry() # {'doi': 'not_a_doi'}
-
-    Some fields have special treatment:
-    - author and editor return/are set by a list of authors instead of a string
-    - doi is formatted on get/set to remove leading url
-    - month is formatted to "1" -- "12" if possible (recognizes "jan", "FeB.", "March"...)
-    """
-
-    # address: BibtexField[str] = BasicStringField()
-    # annote: BibtexField[str] = BasicStringField()
-    # author: BibtexField[List[Author]] = NameField()
-    # booktitle: Optional[str] = AbbreviatedStringField()
-    # chapter: Optional[str] = BasicStringField()
-    # doi: BibtexField[str] = DOIField()
-    # edition: Optional[str] = BasicStringField()
-    # editor: BibtexField[List[Author]] = NameField()
-    # howpublished: BibtexField[str] = BasicStringField()
-    # institution: Optional[str] = AbbreviatedStringField()
-    # issn: Optional[str] = ISSNField()
-    # isbn: Optional[str] = ISBNField()
-    # journal: Optional[str] = AbbreviatedStringField()
-    # month: Optional[str] = MonthField()
-    # note: Optional[str] = BasicStringField()
-    # number: Optional[str] = BasicStringField()
-    # organization: Optional[str] = AbbreviatedStringField()
-    # pages: Optional[str]
-    # publisher: Optional[str] = AbbreviatedStringField()
-    # school: Optional[str] = AbbreviatedStringField()
-    # series: Optional[str] = AbbreviatedStringField()
-    # title: BibtexField[str] = BasicStringField()
-    # ~type: BibtexField[str] = BasicStringField()
-    # url: BibtexField[str] = URLField()
-    # volume: Optional[str] = BasicStringField()
-    # year: Optional[str]
+    def from_pair(self, a: Union[str, int, None], b: Union[str, int, None]) -> None:
+        """Set the value from a pair of first, last page"""
+        if a is None and b is None:
+            self.value = None
+        elif b is None:
+            self.value = [str(a).strip()]
+        elif a is None:
+            self.value = [str(b).strip()]
+        else:
+            self.value = [str(a).strip() + "--" + str(b).strip()]
