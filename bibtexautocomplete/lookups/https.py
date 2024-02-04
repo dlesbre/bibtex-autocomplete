@@ -18,7 +18,8 @@ from .abstract_base import AbstractDataLookup, Data, Input, Output
 DNS_Fail_Hint = Hint("check your internet connection or DNS server")
 SSL_Fail_Hint = Hint(
     "run 'pip install --upgrade certifi' to update certificates\n"
-    "or run btac with the -S / --ignore-ssl flag."
+    "or run btac with the -S / --ignore-ssl flag.\n"
+    "Alternatively, you can disable queries to this domain with -Q / --dont-query"
 )
 TIMEOUT_Hint = Hint("you can increase timeout with -t / --timeout option.")
 
@@ -178,7 +179,7 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
             )
             TIMEOUT_Hint.emit()
             return None
-        except gaierror as err:
+        except (gaierror, OSError) as err:
             if self.silent_fail:
                 return None
             error_name = "CONNECTION ERROR"
@@ -193,11 +194,6 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
             logger.warn(error_msg, err=err, error=error_name)
             if hint is not None:
                 hint.emit()
-            return None
-        except OSError as err:
-            if self.silent_fail:
-                return None
-            logger.warn("{err}", err=err, error="CONNECTION ERROR")
             return None
         return Data(
             data=data,
