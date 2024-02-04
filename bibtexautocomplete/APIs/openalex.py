@@ -87,6 +87,9 @@ class OpenAlexLookup(JSON_Lookup):
         # date format should be YYYY-MM-DD
         if pub_date is not None:
             year, month = split_iso_date(pub_date)
+            if month == "01" and pub_date[5:10] == "01-01":
+                # Date of 1rst january is a placeholder
+                month = None
         if year is None:
             year = str(result["publication_year"].to_int())
         return year, month
