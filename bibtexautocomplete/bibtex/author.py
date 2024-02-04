@@ -25,10 +25,6 @@ class Author:
             return f"{self.lastname}, {self.firstnames}"
         return self.lastname
 
-    @staticmethod
-    def list_to_bibtex(authors: "List[Author]") -> str:
-        return AUTHOR_JOIN.join(author.to_bibtex() for author in authors)
-
     def __eq__(self, other: Any) -> bool:
         "Used in test only"
         if not isinstance(other, Author):

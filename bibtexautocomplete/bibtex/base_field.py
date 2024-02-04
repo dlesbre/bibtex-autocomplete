@@ -88,13 +88,6 @@ class BibtexField(Generic[T]):
 
     #  Common methods
 
-    def slow_check_none(self) -> bool:
-        """Performs a slow check (e.g. query URL to ensure it resolves)
-        Only done if we want to use this in our field"""
-        if self.value is None:
-            return False
-        return self.slow_check(self.value)
-
     def matches(self, other: "BibtexField[T]") -> Optional[int]:
         """returns a match score: 0 <= score <= FIELD_FULL_MATCH
         Returns None if one of the values is None"""

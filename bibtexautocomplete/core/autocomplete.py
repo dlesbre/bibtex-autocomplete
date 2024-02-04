@@ -69,14 +69,6 @@ class Changes(NamedTuple):
     source: str  # Name of one of the lookups
 
 
-def not_in_change_list(field: str, change_list: List[Changes]) -> bool:
-    """Checks if the given field is already listed in the given list of changes"""
-    for change in change_list:
-        if change.field == field:
-            return False
-    return True
-
-
 class BibtexAutocomplete(Iterable[EntryType]):
     """Main class used to dispatch calls to the relevant lookups"""
 
