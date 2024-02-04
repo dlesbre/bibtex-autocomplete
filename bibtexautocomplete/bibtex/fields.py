@@ -355,6 +355,9 @@ class YearField(StrictStringField):
         return None
 
 
+PAGES_SEPARATOR = "--"
+
+
 class PagesBaseField(StrictStringField):
     "Normalize pages to list of n--n or n"
 
@@ -365,7 +368,11 @@ class PagesBaseField(StrictStringField):
         result = match(regex, value)
         if result is None:
             return value.strip()
-        return result.group(1) + "--" + result.group(2)
+        str_a = result.group(1).strip()
+        str_b = result.group(2).strip()
+        if str_a == str_b:
+            return str_a
+        return str_a + PAGES_SEPARATOR + str_b
 
 
 class PagesField(ListField[str]):
@@ -382,4 +389,9 @@ class PagesField(ListField[str]):
         elif a is None:
             self.value = [str(b).strip()]
         else:
-            self.value = [str(a).strip() + "--" + str(b).strip()]
+            str_a = str(a).strip()
+            str_b = str(b).strip()
+            if str_a == str_b:
+                self.value = [str_a]
+            else:
+                self.value = [str_a + PAGES_SEPARATOR + str_b]
