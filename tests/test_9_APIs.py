@@ -82,7 +82,7 @@ class Base:
     def test_invalid(self) -> None:
         bib = BibtexEntry("test")
         bib.from_entry(entry_invalid)
-        a = CrossrefLookup(bib)
+        a = self.Lookup(bib)
         assert a.query() is None
 
     def test_no_author(self) -> None:
@@ -100,7 +100,7 @@ class Base:
         del entry["title"]
         bib = BibtexEntry("test")
         bib.from_entry(entry)
-        a = self.Lookup(entry)
+        a = self.Lookup(bib)
         assert a.query() is None
 
 
