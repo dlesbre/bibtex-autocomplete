@@ -8,12 +8,11 @@ from urllib.parse import quote_plus
 from ..bibtex.author import Author
 from ..bibtex.constants import FieldNames
 from ..bibtex.entry import BibtexEntry
-from ..lookups.lookups import JSON_AT_Lookup
-from ..utils.functions import make_pages
+from ..lookups.lookups import JSON_Lookup
 from ..utils.safe_json import SafeJSON
 
 
-class ResearchrLookup(JSON_AT_Lookup):
+class ResearchrLookup(JSON_Lookup):
     """Lookup for info on https://researchr.org/
     Uses the API documented here:
     https://researchr.org/about/api
@@ -28,13 +27,15 @@ class ResearchrLookup(JSON_AT_Lookup):
 
     # ============= Performing Queries =====================
 
+    query_doi: bool = False
+
     domain = "researchr.org"
     path = "/api/search/publication/"
 
     def get_base_path(self) -> str:
         search = ""
-        if self.author is not None:
-            search += self.author + " "
+        if self.authors is not None:
+            search += " ".join(self.authors) + " "
         if self.title is not None:
             search += self.title + " "
         return self.path + quote_plus(search.strip())
@@ -66,20 +67,20 @@ class ResearchrLookup(JSON_AT_Lookup):
     def get_value(self, result: SafeJSON) -> BibtexEntry:
         page_1 = result["firstpage"].to_str()
         page_n = result["lastpage"].to_str()
-        values = BibtexEntry()
-        values.address = result["address"].to_str()
-        values.author = self.get_authors(result["authors"])
-        values.booktitle = result["booktitle"].to_str()
-        values.doi = result["doi"].to_str()
-        values.editor = self.get_authors(result["editors"])
-        values.month = result["month"].to_str()
-        values.number = result["number"].to_str()
-        values.organization = result["organization"].to_str()
-        values.pages = make_pages(page_1, page_n)
-        values.publisher = result["publisher"].to_str()
-        values.title = result["title"].to_str()
-        values.volume = result["volume"].to_str()
-        values.year = result["year"].to_str()
+        values = BibtexEntry(self.name)
+        values.address.set(result["address"].to_str())
+        values.author.set(self.get_authors(result["authors"]))
+        values.booktitle.set(result["booktitle"].to_str())
+        values.doi.set(result["doi"].to_str())
+        values.editor.set(self.get_authors(result["editors"]))
+        values.month.set(result["month"].to_str())
+        values.number.set(result["number"].to_str())
+        values.organization.set(result["organization"].to_str())
+        values.pages.from_pair(page_1, page_n)
+        values.publisher.set(result["publisher"].to_str())
+        values.title.set(result["title"].to_str())
+        values.volume.set(result["volume"].to_str())
+        values.year.set(result["year"].to_str())
         return values
 
     # Set of fields we can get from a query.

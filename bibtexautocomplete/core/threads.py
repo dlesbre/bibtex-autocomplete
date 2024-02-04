@@ -3,7 +3,6 @@ from typing import Callable, Dict, List, Optional, Tuple
 
 from ..bibtex.entry import BibtexEntry
 from ..lookups.abstract_entry_lookup import LookupType
-from ..utils.constants import EntryType
 from ..utils.logger import logger
 from ..utils.safe_json import JSONType
 
@@ -14,7 +13,7 @@ class LookupThread(Thread):
     We create one thread per lookup, to keep query rate polite for each domain"""
 
     lookup: LookupType
-    entries: List[EntryType] = []  # Read only
+    entries: List[BibtexEntry] = []  # Read only
     condition: Condition
     entry_name: Optional[str]
     result: List[
@@ -30,7 +29,7 @@ class LookupThread(Thread):
     def __init__(
         self,
         lookup: LookupType,
-        entries: List[EntryType],
+        entries: List[BibtexEntry],
         condition: Condition,
         bar: Callable[[], None],
     ):
@@ -50,8 +49,8 @@ class LookupThread(Thread):
         self.condition.acquire()
         while self.position < self.nb_entries:
             entry = self.entries[self.position]
-            self.entry_name = entry.get("ID")
-            lookup = self.lookup(BibtexEntry(entry))
+            self.entry_name = entry.id
+            lookup = self.lookup(entry)
             self.condition.release()
 
             try:

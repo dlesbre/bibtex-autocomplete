@@ -6,13 +6,13 @@ from typing import Dict, Iterable, List, Optional, Tuple
 from ..bibtex.author import Author
 from ..bibtex.constants import FieldNames
 from ..bibtex.entry import BibtexEntry
-from ..lookups.lookups import JSON_DT_Lookup
+from ..lookups.lookups import JSON_Lookup
 from ..utils.constants import QUERY_MAX_RESULTS
-from ..utils.functions import make_pages, split_iso_date
+from ..utils.functions import split_iso_date
 from ..utils.safe_json import SafeJSON
 
 
-class InpireHEPLookup(JSON_DT_Lookup):
+class InpireHEPLookup(JSON_Lookup):
     """Lookup info on https://inspirehep.net/
     Uses the API, documented here:
     https://github.com/inspirehep/rest-api-doc
@@ -27,6 +27,8 @@ class InpireHEPLookup(JSON_DT_Lookup):
     name = "hep"
 
     # ============= Performing Queries =====================
+
+    query_author_title: bool = False
 
     domain = "inspirehep.net"
     path = "/api"
@@ -100,19 +102,18 @@ class InpireHEPLookup(JSON_DT_Lookup):
 
         first_page = journal["page_start"].force_str()
         last_page = journal["page_end"].force_str()
-        pages = make_pages(first_page, last_page)
 
-        values = BibtexEntry()
-        values.author = self.get_authors(metadata["authors"])
-        values.doi = metadata["dois"][0]["value"].to_str()
-        values.isbn = metadata["isbns"][0]["value"].force_str()
-        values.journal = journal["journal_title"].to_str()
-        values.month = month
-        values.number = journal["journal_issue"].force_str()
-        values.pages = pages
-        values.title = metadata["titles"][0]["title"].to_str()
-        values.volume = journal["journal_volume"].to_str()
-        values.year = year
+        values = BibtexEntry(self.name)
+        values.author.set(self.get_authors(metadata["authors"]))
+        values.doi.set(metadata["dois"][0]["value"].to_str())
+        values.isbn.set(metadata["isbns"][0]["value"].force_str())
+        values.journal.set(journal["journal_title"].to_str())
+        values.month.set(month)
+        values.number.set(journal["journal_issue"].force_str())
+        values.pages.from_pair(first_page, last_page)
+        values.title.set(metadata["titles"][0]["title"].to_str())
+        values.volume.set(journal["journal_volume"].to_str())
+        values.year.set(year)
         return values
 
     # Set of fields we can get from a query.

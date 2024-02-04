@@ -7,12 +7,12 @@ from typing import Dict, Iterable, List, Optional, Tuple
 from ..bibtex.author import Author
 from ..bibtex.constants import FieldNames
 from ..bibtex.entry import BibtexEntry
-from ..lookups.lookups import JSON_DAT_Lookup
+from ..lookups.lookups import JSON_Lookup
 from ..utils.constants import QUERY_MAX_RESULTS
 from ..utils.safe_json import SafeJSON
 
 
-class CrossrefLookup(JSON_DAT_Lookup):
+class CrossrefLookup(JSON_Lookup):
     """Lookup info on https://www.crossref.org
     Uses the crossref REST API, documented here:
     https://api.crossref.org/swagger-ui/index.html
@@ -31,8 +31,6 @@ class CrossrefLookup(JSON_DAT_Lookup):
     domain = "api.crossref.org"
     path = "/works"
 
-    single_author_queries = False  # Crossref is a bit slow, don't do too many queries
-
     def get_path(self) -> str:
         if self.doi is not None:
             return self.path + "/" + self.doi
@@ -42,8 +40,8 @@ class CrossrefLookup(JSON_DAT_Lookup):
         base = {"rows": str(QUERY_MAX_RESULTS)}
         if self.title is not None:
             base["query.title"] = self.title
-        if self.author is not None:
-            base["query.author"] = self.author
+        if self.authors is not None:
+            base["query.author"] = " ".join(self.authors)
         return base
 
     def update_rate_cap(self) -> Optional[float]:
@@ -102,19 +100,19 @@ class CrossrefLookup(JSON_DAT_Lookup):
         year, month = self.get_date(result)
         title = result["container-title"][0].to_str()
         is_journal = result["type"].to_str() == "journal-article"
-        values = BibtexEntry()
-        values.author = self.get_authors(result["author"])
-        values.booktitle = None if is_journal else title
-        values.doi = result["DOI"].to_str()
-        values.issn = result["ISSN"][0].to_str()
-        values.isbn = result["ISBN"][0].to_str()
-        values.journal = title if is_journal else None
-        values.month = month
-        values.pages = result["page"].to_str()
-        values.publisher = result["publisher"].to_str()
-        values.title = result["title"][0].to_str()
-        values.volume = result["volume"].to_str()
-        values.year = year
+        values = BibtexEntry(self.name)
+        values.author.set(self.get_authors(result["author"]))
+        values.booktitle.set(None if is_journal else title)
+        values.doi.set(result["DOI"].to_str())
+        values.issn.set_str(result["ISSN"][0].to_str())
+        values.isbn.set(result["ISBN"][0].to_str())
+        values.journal.set(title if is_journal else None)
+        values.month.set(month)
+        values.pages.set_str(result["page"].to_str())
+        values.publisher.set(result["publisher"].to_str())
+        values.title.set(result["title"][0].to_str())
+        values.volume.set(result["volume"].to_str())
+        values.year.set(year)
         return values
 
     # Set of fields we can get from a query.

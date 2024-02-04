@@ -34,14 +34,3 @@ def split_iso_date(date: str) -> Tuple[Optional[str], Optional[str]]:
         if len(date) >= 7 and date[5:7].isnumeric() and 1 <= int(date[5:7]) <= 12:
             month = date[5:7]
     return year, month
-
-
-def make_pages(first_page: Optional[str], last_page: Optional[str]) -> Optional[str]:
-    """Create a bibtex pages string 'first--last' from
-    a candidate first page and last page."""
-    pages = None
-    if first_page is not None and last_page is not None:
-        pages = first_page + "--" + last_page
-    elif first_page is not None:
-        pages = first_page
-    return pages

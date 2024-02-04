@@ -1,5 +1,6 @@
 from typing import Any, Dict, Optional
 
+from ..bibtex.constants import FieldNamesSet
 from ..bibtex.entry import BibtexEntry
 from ..utils.safe_json import JSONType
 
@@ -23,7 +24,10 @@ class DataDump:
             self.results[lookup_name] = None
             return
         infos = {"query-" + key: val for key, val in info.items()}
-        infos.update({key: val for key, val in entry._entry.items() if val is not None})
+        for key in FieldNamesSet:
+            field = entry.get_field(key).to_str()
+            if field is not None:
+                infos[key] = field
         self.results[lookup_name] = infos
 
     def to_dict(self) -> Dict[str, Any]:

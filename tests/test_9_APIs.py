@@ -66,31 +66,41 @@ class Base:
         self.Lookup.query_delay = 20.0
 
     def test_valid(self) -> None:
-        a = self.Lookup(BibtexEntry(self.entry[0]))
+        bib = BibtexEntry("test")
+        bib.from_entry(self.entry[0])
+        a = self.Lookup(bib)
         res = a.query()
         assert res is not None
-        assert res.doi == self.entry[1]
+        assert res.doi.to_str() == self.entry[1]
 
     def test_junk(self) -> None:
-        a = self.Lookup(BibtexEntry(entry_junk))
+        bib = BibtexEntry("test")
+        bib.from_entry(entry_junk)
+        a = self.Lookup(bib)
         assert a.query() is None
 
     def test_invalid(self) -> None:
-        a = CrossrefLookup(BibtexEntry(entry_invalid))
+        bib = BibtexEntry("test")
+        bib.from_entry(entry_invalid)
+        a = CrossrefLookup(bib)
         assert a.query() is None
 
     def test_no_author(self) -> None:
         entry = self.entry[0].copy()
         del entry["author"]
-        a = self.Lookup(BibtexEntry(entry))
+        bib = BibtexEntry("test")
+        bib.from_entry(entry)
+        a = self.Lookup(bib)
         res = a.query()
         assert res is not None
-        assert res.doi == self.entry[1]
+        assert res.doi.to_str() == self.entry[1]
 
     def test_no_title(self) -> None:
         entry = self.entry[0].copy()
         del entry["title"]
-        a = self.Lookup(BibtexEntry(entry))
+        bib = BibtexEntry("test")
+        bib.from_entry(entry)
+        a = self.Lookup(entry)
         assert a.query() is None
 
 

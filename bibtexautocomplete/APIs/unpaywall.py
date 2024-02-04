@@ -7,13 +7,13 @@ from typing import Dict, Iterable, List, Optional
 from ..bibtex.author import Author
 from ..bibtex.constants import FieldNames
 from ..bibtex.entry import BibtexEntry
-from ..lookups.lookups import JSON_DT_Lookup
+from ..lookups.lookups import JSON_Lookup
 from ..utils.constants import EMAIL
 from ..utils.functions import split_iso_date
 from ..utils.safe_json import SafeJSON
 
 
-class UnpaywallLookup(JSON_DT_Lookup):
+class UnpaywallLookup(JSON_Lookup):
     """Lookup on https://unpaywall.org/
     only if the entry has a known DOI
     API documented at:
@@ -30,6 +30,8 @@ class UnpaywallLookup(JSON_DT_Lookup):
     name = "unpaywall"
 
     # ============= Performing Queries =====================
+
+    query_author_title: bool = False
 
     domain = "api.unpaywall.org"
     path = "/v2/"
@@ -89,18 +91,18 @@ class UnpaywallLookup(JSON_DT_Lookup):
         title = result["journal_name"].to_str()
         is_journal = result["genre"].to_str() == "journal-article"
 
-        values = BibtexEntry()
+        values = BibtexEntry(self.name)
 
-        values.author = self.get_authors(result["z_authors"])
-        values.booktitle = None if is_journal else title
-        values.doi = result["doi"].to_str()
-        values.issn = result["journal_issn_l"].to_str()
-        values.journal = title if is_journal else None
-        values.month = month
-        values.publisher = result["publisher"].to_str()
-        values.title = result["title"].to_str()
-        values.url = result["best_oa_location"]["url_for_pdf"].to_str()
-        values.year = year
+        values.author.set(self.get_authors(result["z_authors"]))
+        values.booktitle.set(None if is_journal else title)
+        values.doi.set(result["doi"].to_str())
+        values.issn.set_str(result["journal_issn_l"].to_str())
+        values.journal.set(title if is_journal else None)
+        values.month.set(month)
+        values.publisher.set(result["publisher"].to_str())
+        values.title.set(result["title"].to_str())
+        values.url.set(result["best_oa_location"]["url_for_pdf"].to_str())
+        values.year.set(year)
 
         return values
 

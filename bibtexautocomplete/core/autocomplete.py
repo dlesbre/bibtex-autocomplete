@@ -9,13 +9,15 @@ from json import dump as json_dump
 from pathlib import Path
 from threading import Condition
 from typing import (
+    Any,
     Callable,
     Container,
-    Dict,
     Iterable,
     Iterator,
     List,
     NamedTuple,
+    Optional,
+    Set,
     Tuple,
     TypeVar,
     cast,
@@ -24,8 +26,8 @@ from typing import (
 from alive_progress import alive_bar  # type: ignore
 from bibtexparser.bibdatabase import BibDatabase
 
-from ..APIs.doi import DOICheck, URLCheck
-from ..bibtex.constants import FieldNames
+from ..bibtex.base_field import BibtexField
+from ..bibtex.constants import FIELD_NO_MATCH, FieldType
 from ..bibtex.entry import BibtexEntry
 from ..bibtex.io import file_read, file_write, get_entries
 from ..bibtex.normalize import has_field
@@ -166,6 +168,11 @@ class BibtexAutocomplete(Iterable[EntryType]):
         logger.header("Completing entries")
         total = self.count_entries() * len(self.lookups)
         entries = list(self)
+        bib_entries: List[BibtexEntry] = []
+        for x in entries:
+            bib = BibtexEntry("input")
+            bib.from_entry(x)
+            bib_entries.append(bib)
         condition = Condition()
         assert len(self.lookups) < MAX_THREAD_NB
         threads: List[LookupThread] = []
@@ -182,7 +189,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         ) as bar:
             # Create all threads
             for lookup in self.lookups:
-                threads.append(LookupThread(lookup, entries, condition, bar))
+                threads.append(LookupThread(lookup, bib_entries, condition, bar))
             condition.acquire()
             # Start all threads
             for thread in threads:
@@ -220,32 +227,40 @@ class BibtexAutocomplete(Iterable[EntryType]):
         """Reads all data the threads have found on a new entry,
         and uses it to update the entry with new fields"""
         changes: List[Changes] = []
+        results: List[BibtexEntry] = []
+        entry_id = entry.get("ID", "<unnamed>")
+        new_fields: Set[FieldType] = set()
 
-        dump = DataDump(entry["ID"])
+        dump = DataDump(entry_id)
         for thread in threads:
             result, info = thread.result[position]
             dump.add_entry(thread.lookup.name, result, info)
             if result is not None:
-                to_add = self.combine(entry, result)
-                to_add = self.sanitize(entry["ID"], to_add)
-                # Filter to_add to remove values already set
-                # This is to avoid changing the resolution order when forcing overwrite
-                # (Non overwrite fields are never added by combine if they are set in entry)
-                to_add = {
-                    field: value
-                    for field, value in to_add.items()
-                    if not_in_change_list(field, changes)
-                }
-                entry.update({self.prefix + field: to_add[field] for field in to_add})
-                changes.extend(
-                    Changes(field, value, thread.name)
-                    for field, value in to_add.items()
-                )
+                results.append(result)
+                new_fields = new_fields.union(result.fields())
+
+        for field in new_fields:
+            # Filter which fields to add
+            if not (
+                self.force_overwrite_all
+                or (field in self.force_overwrite)
+                or (not has_field(entry, field))
+            ):
+                continue
+            bib_field = self.combine_field(results, field)
+            if bib_field is None:
+                continue
+            value = bib_field.to_str()
+            if value is None:
+                continue
+            entry[self.prefix + field] = value
+            changes.append(Changes(field, value, bib_field.source))
+
         dump.new_fields = len(changes)
         if changes != []:
             self.changed_entries += 1
             self.changed_fields += len(changes)
-            self.changes.append((entry["ID"], changes))
+            self.changes.append((entry_id, changes))
         logger.verbose_info(
             BULLET + "{StBold}{entry}{StBoldOff} {nb} new fields",
             entry=entry["ID"].ljust(self.get_id_padding()),
@@ -255,64 +270,28 @@ class BibtexAutocomplete(Iterable[EntryType]):
         if self.mark:
             entry[MARKED_FIELD] = datetime.today().strftime("%Y-%m-%d")
 
-    def combine(self, entry: EntryType, new_info: BibtexEntry) -> Dict[str, str]:
-        """Adds the information in info to entry.
-        Does not overwrite unless self.force_overwrite is True
-        only acts on fields contained in self.fields"""
-        changes: Dict[str, str] = {}
-        for field, value in new_info:
-            if field not in self.fields:
-                continue
-            # Does the field actually contain any value
-            if value is None:
-                continue
-            s_value = str(value)
-            if s_value.strip() == "":
-                continue
-            # Is it present on entry
-            if (
-                self.force_overwrite_all
-                or (field in self.force_overwrite)
-                or (not has_field(entry, field))
-            ):
-                changes[field] = s_value
-        return changes
-
-    def sanitize(self, id: str, changes: Dict[str, str]) -> Dict[str, str]:
-        """Runs sanity checks on new_info if needed"""
-        doi = changes.get(FieldNames.DOI)
-        url = changes.get(FieldNames.URL)
-        if doi is not None:
-            try:
-                doi_checker = DOICheck(doi)
-                if doi_checker.query() is not True:
-                    del changes[FieldNames.DOI]
-            except Exception as err:
-                if FieldNames.DOI in changes:
-                    del changes[FieldNames.DOI]
-                logger.traceback(
-                    f"Uncaught exception when checking DOI resolution\n"
-                    f"Entry = {id}\n"
-                    f"DOI = {doi}\n\n"
-                    "As a result, this DOI will NOT be added to the entry",
-                    err,
-                )
-        if url is not None:
-            try:
-                checker = URLCheck(url)
-                if checker.query() is None:
-                    del changes[FieldNames.URL]
-            except Exception as err:
-                if FieldNames.URL in changes:
-                    del changes[FieldNames.URL]
-                logger.traceback(
-                    f"Uncaught exception when checking URL resolution\n"
-                    f"Entry = {id}\n"
-                    f"URL = {url}\n\n"
-                    "As a result, this URL will NOT be added to the entry",
-                    err,
-                )
-        return changes
+    def combine_field(
+        self, results: List[BibtexEntry], fieldname: FieldType
+    ) -> Optional[BibtexField[Any]]:
+        """Combine the values of a single field"""
+        fields = [entry.get_field(fieldname) for entry in results if fieldname in entry]
+        groups: List[Tuple[int, BibtexField[Any]]] = []
+        for field in fields:
+            for i, (count, combined_field) in enumerate(groups):
+                score = combined_field.matches(field)
+                if score is not None and score > FIELD_NO_MATCH:
+                    groups[i] = (count + 1, combined_field.combine(field))
+                    break
+            else:
+                groups.append((1, field))
+        # Return the first maximal element that passes the test
+        # We use reverse sort to have elements with biggest counts at the front
+        # While retaining order on elements with equal counts
+        groups.sort(key=lambda x: x[0], reverse=True)
+        for _, elt in groups:
+            if elt.value is not None and elt.slow_check(elt.value):
+                return elt
+        return None
 
     def print_changes(self) -> None:
         """prints a pretty list of changes"""

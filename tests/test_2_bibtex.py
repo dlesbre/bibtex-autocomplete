@@ -4,13 +4,14 @@ from typing import Iterator, List, Optional, Tuple
 import pytest
 
 from bibtexautocomplete.bibtex.author import Author
-from bibtexautocomplete.bibtex.base_field import (
+from bibtexautocomplete.bibtex.base_field import ListField, StrictStringField
+from bibtexautocomplete.bibtex.constants import (
+    ENTRY_CERTAIN_MATCH,
+    ENTRY_NO_MATCH,
     FIELD_FULL_MATCH,
     FIELD_NO_MATCH,
-    ListField,
-    StrictStringField,
+    FieldNames,
 )
-from bibtexautocomplete.bibtex.constants import FieldNames, FieldNamesSet, SpecialFields
 from bibtexautocomplete.bibtex.entry import BibtexEntry
 from bibtexautocomplete.bibtex.fields import (
     AbbreviatedStringField,
@@ -24,11 +25,8 @@ from bibtexautocomplete.bibtex.fields import (
     YearField,
 )
 from bibtexautocomplete.bibtex.io import file_read, write
-from bibtexautocomplete.bibtex.matching import CERTAIN_MATCH, NO_MATCH, match_score
 from bibtexautocomplete.bibtex.normalize import (
-    EN_MONTHS,
     normalize_doi,
-    normalize_month,
     normalize_str,
     normalize_str_weak,
     normalize_url,
@@ -80,17 +78,15 @@ def test_normalize_doi() -> None:
             assert field.value == d
 
 
-def test_normalize_month() -> None:
-    for month, norm in EN_MONTHS.items():
+def test_month() -> None:
+    for month, norm in MonthField.EN_MONTHS.items():
         field = MonthField("month", "test")
         field.set_str(month)
         assert field.value == str(norm)
-        assert normalize_month(month) == str(norm)
     for month in ("bla", "not.a.month", "6496489", "#!!0"):
         field = MonthField("month", "test")
         field.set_str(month)
         assert field.value is None
-        assert normalize_month(month) is None
 
 
 def io_test(file: str) -> None:
@@ -141,51 +137,32 @@ def test_name_field(author: str, res: List[Author]) -> None:
     assert field.value == (res if res != [] else None)
 
 
-def test_BibtexEntry_normal() -> None:
-    a = BibtexEntry()
-    for field in FieldNamesSet - SpecialFields:
-        assert getattr(a, field) is None
-        setattr(a, field, field)
-    for field in FieldNamesSet - SpecialFields:
-        assert getattr(a, field) == field
-
-
-def test_BibtexEntry_special() -> None:
-    a = BibtexEntry({})
-    for field in SpecialFields:
-        val = getattr(a, field)
-        if field in ("author", "editor"):
-            assert val == []
-            setattr(a, field, [])
-        else:
-            assert val is None
-            setattr(a, field, None)
-
-
 @pytest.mark.parametrize(("author", "res"), authors)
 def test_BibtexEntry_author_get(author: str, res: List[Author]) -> None:
-    b = BibtexEntry({FieldNames.AUTHOR: author})
-    assert b.author == res
+    b = BibtexEntry("test")
+    b.from_entry({FieldNames.AUTHOR: author})
+    assert b.author.value == (res if res != [] else None)
 
 
 @pytest.mark.parametrize(("author", "res"), authors)
 def test_BibtexEntry_editor_get(author: str, res: List[Author]) -> None:
-    b = BibtexEntry({FieldNames.EDITOR: author})
-    assert b.editor == res
+    b = BibtexEntry("test")
+    b.from_entry({FieldNames.EDITOR: author})
+    assert b.editor.value == (res if res != [] else None)
 
 
 @pytest.mark.parametrize(("author", "res"), authors)
 def test_BibtexEntry_author_set(author: str, res: List[Author]) -> None:
-    b = BibtexEntry()
-    b.author = res
-    assert b.author == res
+    b = BibtexEntry("test")
+    b.author.set(res)
+    assert b.author.value == (res if res != [] else None)
 
 
 @pytest.mark.parametrize(("author", "res"), authors)
 def test_BibtexEntry_editor_set(author: str, res: List[Author]) -> None:
-    b = BibtexEntry()
-    b.editor = res
-    assert b.editor == res
+    b = BibtexEntry("test")
+    b.editor.set(res)
+    assert b.editor.value == (res if res != [] else None)
 
 
 def iterate_nested(list: List[List[str]]) -> Iterator[Tuple[int, str]]:
@@ -196,11 +173,13 @@ def iterate_nested(list: List[List[str]]) -> Iterator[Tuple[int, str]]:
 
 
 def test_matching() -> None:
-    assert match_score(BibtexEntry(), BibtexEntry()) <= NO_MATCH
-    doi1 = BibtexEntry({"doi": "10.1234/12345"})
-    doi2 = BibtexEntry({"doi": "10.1234/different.12345"})
-    assert match_score(doi1, doi1) >= CERTAIN_MATCH
-    assert match_score(doi1, doi2) <= NO_MATCH
+    assert BibtexEntry("test").matches(BibtexEntry("test")) <= ENTRY_NO_MATCH
+    doi1 = BibtexEntry("test")
+    doi1.from_entry({"doi": "10.1234/12345"})
+    doi2 = BibtexEntry("test")
+    doi2.from_entry({"doi": "10.1234/different.12345"})
+    assert doi1.matches(doi1) >= ENTRY_CERTAIN_MATCH
+    assert doi1.matches(doi2) <= ENTRY_NO_MATCH
     # in same sublist should match (weakly)
     # in different sublists => no match
     titles = [
@@ -213,41 +192,48 @@ def test_matching() -> None:
         ["Henry, F."],
     ]
     for id, title in iterate_nested(titles):
-        entry = BibtexEntry({"title": title})
-        score_same = match_score(entry, entry)
-        assert score_same >= NO_MATCH
+        entry = BibtexEntry("test")
+        entry.from_entry({"title": title})
+        score_same = entry.matches(entry)
+        assert score_same >= ENTRY_NO_MATCH
         for id2, title2 in iterate_nested(titles):
-            entry2 = BibtexEntry({"title": title2})
-            score_diff = match_score(entry, entry2)
+            entry2 = BibtexEntry("test")
+            entry2.from_entry({"title": title2})
+            score_diff = entry.matches(entry2)
             assert score_same >= score_diff
-            assert score_diff == match_score(entry2, entry)
+            assert score_diff == entry2.matches(entry)
             if id == id2:
-                assert score_diff > NO_MATCH
+                assert score_diff > ENTRY_NO_MATCH
             else:
-                assert score_diff <= NO_MATCH
+                assert score_diff <= ENTRY_NO_MATCH
 
     title = "My Awesome paper"
     for id, author in iterate_nested(authors):
-        entry = BibtexEntry({"title": title, "author": author})
-        score_same = match_score(entry, entry)
-        assert score_same >= NO_MATCH
+        entry = BibtexEntry("test")
+        entry.from_entry({"title": title, "author": author})
+        score_same = entry.matches(entry)
+        assert score_same >= ENTRY_NO_MATCH
         for id2, author2 in iterate_nested(authors):
-            entry2 = BibtexEntry({"title": title, "author": author2})
-            score_diff = match_score(entry, entry2)
+            entry2 = BibtexEntry("test")
+            entry2.from_entry({"title": title, "author": author2})
+            score_diff = entry.matches(entry2)
             assert score_same >= score_diff
-            assert score_diff == match_score(entry2, entry)
+            assert score_diff == entry2.matches(entry)
             if id == id2:
                 print(author, author2)
-                assert score_diff > NO_MATCH
+                assert score_diff > ENTRY_NO_MATCH
             else:
-                assert score_diff <= NO_MATCH
+                assert score_diff <= ENTRY_NO_MATCH
 
-    entry = BibtexEntry({"title": title, "year": "2023"})
-    entry2 = BibtexEntry({"title": title, "year": "2024"})
-    entry3 = BibtexEntry({"title": title, "year": "Invalid"})
-    assert match_score(entry, entry) > NO_MATCH
-    assert match_score(entry, entry2) <= NO_MATCH
-    assert match_score(entry, entry3) > NO_MATCH
+    entry = BibtexEntry("test")
+    entry.from_entry({"title": title, "year": "2023"})
+    entry2 = BibtexEntry("test")
+    entry2.from_entry({"title": title, "year": "2024"})
+    entry3 = BibtexEntry("test")
+    entry3.from_entry({"title": title, "year": "Invalid"})
+    assert entry.matches(entry) > ENTRY_NO_MATCH
+    assert entry.matches(entry2) <= ENTRY_NO_MATCH
+    assert entry.matches(entry3) > ENTRY_NO_MATCH
 
 
 urls: List[Tuple[str, Optional[Tuple[str, str]]]] = [

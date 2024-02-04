@@ -10,8 +10,8 @@ New virtual methods:
 
 from typing import Generic, Iterable, List, Optional, TypeVar
 
+from ..bibtex.constants import ENTRY_NO_MATCH
 from ..bibtex.entry import BibtexEntry
-from ..bibtex.matching import CERTAIN_MATCH, NO_MATCH, match_score
 from ..utils.logger import logger
 from .abstract_base import Data
 from .abstract_entry_lookup import AbstractEntryLookup
@@ -84,14 +84,12 @@ class SearchResultMixin(Generic[result]):
         if results is None:
             logger.verbose_debug("no results")
             return None
-        max_score = NO_MATCH
+        max_score = ENTRY_NO_MATCH
         max_entry: Optional[BibtexEntry] = None
         for res in results:
             entry = self.get_value(res)
             score = self.match_score(entry, res)
-            logger.verbose_debug("match {} for {}", score, entry._entry)
-            if score >= CERTAIN_MATCH:
-                return entry
+            logger.verbose_debug("match {} for {}", score, entry)
             if score > max_score:
                 max_score = score
                 max_entry = entry
@@ -102,4 +100,4 @@ class EntryMatchSearchMixin(SearchResultMixin[result], AbstractEntryLookup):
     """Uses the bibtex entry matcher to get match score"""
 
     def match_score(self, entry: BibtexEntry, _res: result) -> int:
-        return match_score(self.entry, entry)
+        return self.entry.matches(entry)

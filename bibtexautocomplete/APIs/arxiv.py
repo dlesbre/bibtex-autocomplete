@@ -9,12 +9,12 @@ from xml.etree.ElementTree import Element, ParseError, fromstring
 from ..bibtex.author import Author
 from ..bibtex.constants import FieldNames
 from ..bibtex.entry import BibtexEntry
-from ..lookups.lookups import XML_T_Lookup
+from ..lookups.lookups import XML_Lookup
 from ..utils.constants import QUERY_MAX_RESULTS
 from ..utils.functions import split_iso_date
 
 
-class ArxivLookup(XML_T_Lookup):
+class ArxivLookup(XML_Lookup):
     """Lookup info on https://arxiv.org
     Uses the arXiv REST API, documented here:
     https://arxiv.org/help/api/user-manual
@@ -26,6 +26,9 @@ class ArxivLookup(XML_T_Lookup):
     name = "arxiv"
 
     # ============= Performing Queries =====================
+
+    query_author_title: bool = False
+    query_doi: bool = False
 
     domain = "export.arxiv.org"
     path = "/api/query"
@@ -104,13 +107,13 @@ class ArxivLookup(XML_T_Lookup):
     def get_value(self, result: Element) -> BibtexEntry:
         """Extract bibtex data from JSON output"""
         year, month = self.get_date(result)
-        values = BibtexEntry()
-        values.author = self.get_authors(result)
-        values.doi = self.get_doi(result)
-        values.month = month
-        values.title = self.get_title(result)
-        values.url = self.get_link(result)
-        values.year = year
+        values = BibtexEntry(self.name)
+        values.author.set(self.get_authors(result))
+        values.doi.set(self.get_doi(result))
+        values.month.set(month)
+        values.title.set(self.get_title(result))
+        values.url.set(self.get_link(result))
+        values.year.set(year)
         return values
 
     # Set of fields we can get from a query.

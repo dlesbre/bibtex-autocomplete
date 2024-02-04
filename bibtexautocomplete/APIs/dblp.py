@@ -7,12 +7,12 @@ from typing import Dict, Iterable, List
 from ..bibtex.author import Author
 from ..bibtex.constants import FieldNames
 from ..bibtex.entry import BibtexEntry
-from ..lookups.lookups import JSON_AT_Lookup
+from ..lookups.lookups import JSON_Lookup
 from ..utils.constants import QUERY_MAX_RESULTS
 from ..utils.safe_json import SafeJSON
 
 
-class DBLPLookup(JSON_AT_Lookup):
+class DBLPLookup(JSON_Lookup):
     """Lookup for info on https://dblp.org
     Uses the API documented here:
     https://dblp.org/faq/13501473.html
@@ -27,13 +27,15 @@ class DBLPLookup(JSON_AT_Lookup):
 
     # ============= Performing Queries =====================
 
+    query_doi: bool = False
+
     domain = "dblp.org"
     path = "/search/publ/api"
 
     def get_params(self) -> Dict[str, str]:
         search = ""
-        if self.author is not None:
-            search += self.author + " "
+        if self.authors is not None:
+            search += " ".join(self.authors) + " "
         if self.title is not None:
             search += self.title + " "
         return {"format": "json", "h": str(QUERY_MAX_RESULTS), "q": search.strip()}
@@ -65,14 +67,16 @@ class DBLPLookup(JSON_AT_Lookup):
 
     def get_value(self, result: SafeJSON) -> BibtexEntry:
         info = result["info"]
-        values = BibtexEntry()
-        values.author = self.get_authors(info)
-        values.doi = info["doi"].to_str()
-        values.pages = info["pages"].to_str()
-        values.title = info["title"].to_str()
-        values.volume = info["volume"].to_str()
-        values.url = info["ee"].to_str() if info["access"].to_str() == "open" else None
-        values.year = info["year"].to_str()
+        values = BibtexEntry(self.name)
+        values.author.set(self.get_authors(info))
+        values.doi.set(info["doi"].to_str())
+        values.pages.set_str(info["pages"].to_str())
+        values.title.set(info["title"].to_str())
+        values.volume.set(info["volume"].to_str())
+        values.url.set(
+            info["ee"].to_str() if info["access"].to_str() == "open" else None
+        )
+        values.year.set(info["year"].to_str())
         return values
 
     # Set of fields we can get from a query.

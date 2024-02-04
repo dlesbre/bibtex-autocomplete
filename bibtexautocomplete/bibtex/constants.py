@@ -1,4 +1,4 @@
-from typing import Literal, Optional, Set, cast
+from typing import Dict, Literal, Optional, Set, Tuple, cast
 
 
 class FieldNames:
@@ -72,13 +72,25 @@ FieldNamesSet: Set[FieldType] = {
 # Fields actually searched for
 SearchedFields = FieldNamesSet.copy()
 
-# Set of fields with sanitized inputs
-SpecialFields: Set[FieldType] = {
-    "author",
-    "doi",
-    "editor",
-    "month",
+
+# Matching score range for fields
+FIELD_FULL_MATCH = 100
+FIELD_NO_MATCH = 0
+
+# Weighted scores for field matches (default is 1)
+# Additionaly, the boolean indicated fields which are critical,
+# i.e. fields whose mismatch implies entry mismatch
+FIELD_MULTIPLIERS: Dict[FieldType, Tuple[int, bool]] = {
+    FieldNames.DOI: (100, True),
+    FieldNames.TITLE: (20, True),
+    FieldNames.AUTHOR: (10, True),
+    FieldNames.YEAR: (5, True),
 }
+
+
+# Matching score range for entries
+ENTRY_CERTAIN_MATCH = FIELD_FULL_MATCH * len(FieldNamesSet)
+ENTRY_NO_MATCH = 0  # Any score below is no match
 
 
 def cast_field_name(field: str) -> Optional[FieldType]:

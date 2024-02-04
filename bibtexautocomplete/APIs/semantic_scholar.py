@@ -6,13 +6,13 @@ from typing import Dict, Iterable, List, Optional, Tuple
 from ..bibtex.author import Author
 from ..bibtex.constants import FieldNames
 from ..bibtex.entry import BibtexEntry
-from ..lookups.lookups import JSON_DT_Lookup
+from ..lookups.lookups import JSON_Lookup
 from ..utils.constants import QUERY_MAX_RESULTS
 from ..utils.functions import split_iso_date
 from ..utils.safe_json import SafeJSON
 
 
-class SemanticScholarLookup(JSON_DT_Lookup):
+class SemanticScholarLookup(JSON_Lookup):
     """Lookup info on https://www.semanticscholar.org/
     Uses the API, documented here:
     https://api.semanticscholar.org/api-docs/
@@ -55,6 +55,8 @@ class SemanticScholarLookup(JSON_DT_Lookup):
     name = "s2"
 
     # ============= Performing Queries =====================
+
+    query_author_title: bool = False
 
     domain = "api.semanticscholar.org"
     path = "/graph/v1/paper"
@@ -139,18 +141,18 @@ class SemanticScholarLookup(JSON_DT_Lookup):
         if venue is None:
             venue = result["journal"]["name"].to_str()
 
-        values = BibtexEntry()
-        values.author = self.get_authors(result["authors"])
-        values.booktitle = None if is_journal else venue
-        values.doi = result["externalIds"]["DOI"].to_str()
-        values.issn = result["publicationVenue"]["issn"].to_str()
-        values.journal = venue if is_journal else None
-        values.month = month
-        values.pages = result["journal"]["pages"].to_str()
-        values.title = result["title"].to_str()
-        values.url = url
-        values.volume = result["journal"]["volume"].to_str()
-        values.year = year
+        values = BibtexEntry(self.name)
+        values.author.set(self.get_authors(result["authors"]))
+        values.booktitle.set(None if is_journal else venue)
+        values.doi.set(result["externalIds"]["DOI"].to_str())
+        values.issn.set_str(result["publicationVenue"]["issn"].to_str())
+        values.journal.set(venue if is_journal else None)
+        values.month.set(month)
+        values.pages.set_str(result["journal"]["pages"].to_str())
+        values.title.set(result["title"].to_str())
+        values.url.set(url)
+        values.volume.set(result["journal"]["volume"].to_str())
+        values.year.set(year)
         return values
 
     # Set of fields we can get from a query.

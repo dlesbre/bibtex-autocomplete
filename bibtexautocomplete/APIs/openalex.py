@@ -6,13 +6,13 @@ from typing import Dict, Iterable, List, Optional, Tuple
 from ..bibtex.author import Author
 from ..bibtex.constants import FieldNames
 from ..bibtex.entry import BibtexEntry
-from ..lookups.lookups import JSON_DT_Lookup
+from ..lookups.lookups import JSON_Lookup
 from ..utils.constants import QUERY_MAX_RESULTS
-from ..utils.functions import make_pages, split_iso_date
+from ..utils.functions import split_iso_date
 from ..utils.safe_json import SafeJSON
 
 
-class OpenAlexLookup(JSON_DT_Lookup):
+class OpenAlexLookup(JSON_Lookup):
     """Lookup info on https://openalex.org/
     Uses the API, documented here:
     https://docs.openalex.org/
@@ -27,6 +27,8 @@ class OpenAlexLookup(JSON_DT_Lookup):
     name = "openalex"
 
     # ============= Performing Queries =====================
+
+    query_author_title: bool = False
 
     domain = "api.openalex.org"
     path = "/works"
@@ -107,21 +109,20 @@ class OpenAlexLookup(JSON_DT_Lookup):
 
         first_page = result["biblio"]["first_page"].to_str()
         last_page = result["biblio"]["last_page"].to_str()
-        pages = make_pages(first_page, last_page)
 
-        values = BibtexEntry()
-        values.author = self.get_authors(result["authorships"])
-        values.doi = result["doi"].to_str()
-        values.issn = location["source"]["issn_l"].to_str()
-        values.journal = journal if not is_book else None
-        values.month = month
-        values.number = result["biblio"]["issue"].to_str()
-        values.pages = pages
-        values.publisher = location["source"]["host_organization_name"].to_str()
-        values.title = result["display_name"].to_str()
-        values.url = url
-        values.volume = result["biblio"]["volume"].to_str()
-        values.year = year
+        values = BibtexEntry(self.name)
+        values.author.set(self.get_authors(result["authorships"]))
+        values.doi.set(result["doi"].to_str())
+        values.issn.set_str(location["source"]["issn_l"].to_str())
+        values.journal.set(journal if not is_book else None)
+        values.month.set(month)
+        values.number.set(result["biblio"]["issue"].to_str())
+        values.pages.from_pair(first_page, last_page)
+        values.publisher.set(location["source"]["host_organization_name"].to_str())
+        values.title.set(result["display_name"].to_str())
+        values.url.set(url)
+        values.volume.set(result["biblio"]["volume"].to_str())
+        values.year.set(year)
         return values
 
     # Set of fields we can get from a query.

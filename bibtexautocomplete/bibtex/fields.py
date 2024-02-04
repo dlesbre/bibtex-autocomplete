@@ -5,13 +5,8 @@ from typing import Dict, Optional, Union
 from ..APIs.doi import DOICheck, URLCheck
 from ..utils.logger import logger
 from .author import Author
-from .base_field import (
-    FIELD_FULL_MATCH,
-    FIELD_NO_MATCH,
-    BibtexField,
-    ListField,
-    StrictStringField,
-)
+from .base_field import BibtexField, ListField, StrictStringField
+from .constants import FIELD_FULL_MATCH, FIELD_NO_MATCH
 from .normalize import normalize_str, normalize_str_weak, normalize_url
 
 

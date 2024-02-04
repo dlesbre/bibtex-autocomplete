@@ -16,6 +16,7 @@ from typing import (
 from bibtexparser.latexenc import latex_to_unicode
 
 from ..utils.logger import logger
+from .constants import FIELD_FULL_MATCH, FIELD_NO_MATCH
 
 
 class Comparable(Protocol):
@@ -31,8 +32,6 @@ COORD = Tuple[Optional[int], Optional[int]]
 COORD_T = Tuple[COORD, T]
 
 
-FIELD_FULL_MATCH = 100
-FIELD_NO_MATCH = 0
 SOURCE_SEPARATOR = ", "
 
 
@@ -127,7 +126,10 @@ class BibtexField(Generic[T]):
         """The value as a string, as it will be added to the Bibtex file"""
         if self.value is None:
             return None
-        return self.to_bibtex(self.value)
+        value = self.to_bibtex(self.value).strip()
+        if value == "":
+            return None
+        return value
 
     def set_str(self, value: Optional[str]) -> None:
         """Same as set, but converts the value from string to T first"""
@@ -347,3 +349,10 @@ class ListField(BibtexField[List[T]]):
             if conv_x is not None:
                 converted.append(conv_x)
         return converted
+
+    def set_one(self, value: Optional[T]) -> None:
+        """Set self.value to a list of a single element"""
+        if value is None:
+            self.value = None
+        else:
+            self.set([value])

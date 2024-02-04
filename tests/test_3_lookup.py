@@ -1,40 +1,42 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, NamedTuple, Optional
 
 from bibtexautocomplete.bibtex.constants import FieldNames
 from bibtexautocomplete.bibtex.entry import BibtexEntry
 from bibtexautocomplete.bibtex.normalize import normalize_str
 from bibtexautocomplete.lookups.abstract_base import AbstractLookup
 from bibtexautocomplete.lookups.abstract_entry_lookup import FieldConditionMixin
-from bibtexautocomplete.lookups.multiple_mixin import DATQueryMixin, DTQueryMixin
+from bibtexautocomplete.lookups.multiple_mixin import DAT_Query_Mixin
+
+
+class ToCheck(NamedTuple):
+    title: Optional[str]
+    doi: Optional[str]
+    author: Optional[List[str]]
 
 
 class SearchEval(AbstractLookup[BibtexEntry, BibtexEntry]):
     index: int = 0
-    expected: List[Dict[str, Optional[str]]] = []
+    expected: List[ToCheck] = []
 
     def query(self) -> Optional[BibtexEntry]:
         test = self.expected[self.index]
-        if "doi" in test:
-            assert getattr(self, "doi") == test["doi"]
-        if "author" in test:
-            assert getattr(self, "author") == test["author"]
-        if "title" in test:
-            title = None if test["title"] is None else normalize_str(test["title"])
-            assert getattr(self, "title") == title
+        assert getattr(self, "doi") == test.doi
+        assert getattr(self, "authors") == test.author
+        title = None if test.title is None else normalize_str(test.title)
+        assert getattr(self, "title") == title
         self.index += 1
         return None
 
 
-Expected = List[Dict[str, Optional[str]]]
-
-
 class TestDATQuery:
-    class parent(DATQueryMixin, SearchEval):
+    class parent(DAT_Query_Mixin, SearchEval):
         def __repr__(self) -> str:
-            return f"<doi:{self.doi}; author:{self.author}; title:{self.title}>"
+            return f"<doi:{self.doi}; author:{self.authors}; title:{self.title}>"
 
-    def make_query(self, expected: Expected, entry: Dict[str, str]) -> None:
-        p = self.parent(BibtexEntry(entry))
+    def make_query(self, expected: List[ToCheck], entry: Dict[str, str]) -> None:
+        bib = BibtexEntry("test")
+        bib.from_entry(entry)
+        p = self.parent(bib)
         p.index = 0
         p.expected = expected
         assert p.query() is None
@@ -44,104 +46,75 @@ class TestDATQuery:
         self.make_query([], {})
 
     def test_all(self) -> None:
-        title = "This is a title"
+        title = "This is a title++"
         authors = ["Alp", "Rom", "Bob"]
         doi = "10.1234/123456"
         entry = {"doi": doi, "author": " and ".join(authors), "title": title}
-        expected: Expected = [
-            {"doi": doi, "author": " ".join(authors), "title": title},
-            {"doi": None, "author": " ".join(authors), "title": title},
-            {"doi": None, "author": authors[0], "title": title},
-            {"doi": None, "author": authors[1], "title": title},
-            {"doi": None, "author": authors[2], "title": title},
-            {"doi": None, "author": None, "title": title},
+        expected: List[ToCheck] = [
+            ToCheck(doi=doi, author=authors, title=title),
+            ToCheck(doi=None, author=authors, title=title),
+            ToCheck(doi=None, author=None, title=title),
         ]
         self.make_query(expected, entry)
 
     def test_no_doi(self) -> None:
-        title = "This is a title"
+        title = "this is a title"
         authors = ["Alp", "Rom", "Bob"]
-        # doi = "10.1234/123456"
         entry = {
-            # "doi":doi,
             "author": " and ".join(authors),
             "title": title,
         }
-        expected: Expected = [
-            # {"doi":doi, "author": " ".join(authors), "title": title},
-            {"doi": None, "author": " ".join(authors), "title": title},
-            {"doi": None, "author": authors[0], "title": title},
-            {"doi": None, "author": authors[1], "title": title},
-            {"doi": None, "author": authors[2], "title": title},
-            {"doi": None, "author": None, "title": title},
+        expected: List[ToCheck] = [
+            ToCheck(doi=None, author=authors, title=title),
+            ToCheck(doi=None, author=None, title=title),
         ]
         self.make_query(expected, entry)
 
     def test_no_author(self) -> None:
-        title = "This is a title"
-        # authors = ["Alp", "Rom", "Bob"]
+        title = "this Is A title"
         doi = "10.1234/123456"
         entry = {
             "doi": doi,
-            # "author": " and ".join(authors),
             "title": title,
         }
-        expected: Expected = [
-            {"doi": doi, "author": None, "title": title},
-            # {"doi":None, "author": " ".join(authors), "title": title},
-            # {"doi":None, "author": authors[0], "title": title},
-            # {"doi":None, "author": authors[1], "title": title},
-            # {"doi":None, "author": authors[2], "title": title},
-            {"doi": None, "author": None, "title": title},
+        expected: List[ToCheck] = [
+            ToCheck(doi=doi, author=None, title=title),
+            ToCheck(doi=None, author=None, title=title),
         ]
         self.make_query(expected, entry)
 
     def test_no_title(self) -> None:
-        # title = "This is a title"
         authors = ["Alp", "Rom", "Bob"]
         doi = "10.1234/123456"
         entry = {
             "doi": doi,
             "author": " and ".join(authors),
-            # "title": title
         }
-        expected: Expected = [
-            {"doi": doi, "author": " ".join(authors), "title": None},
-            # {"doi":None, "author": " ".join(authors), "title": title},
-            # {"doi":None, "author": authors[0], "title": title},
-            # {"doi":None, "author": authors[1], "title": title},
-            # {"doi":None, "author": authors[2], "title": title},
-            # {"doi":None, "author": None, "title": title},
+        expected: List[ToCheck] = [
+            ToCheck(doi=doi, author=authors, title=None),
         ]
         self.make_query(expected, entry)
 
     def test_no_doi_author(self) -> None:
         title = "This is a title"
-        # authors = ["Alp", "Rom", "Bob"]
-        # doi = "10.1234/123456"
-        entry = {
-            # "doi":doi,
-            # "author": " and ".join(authors),
-            "title": title
-        }
-        expected: Expected = [
-            # {"doi":doi, "author": " ".join(authors), "title": None},
-            # {"doi":None, "author": " ".join(authors), "title": title},
-            # {"doi":None, "author": authors[0], "title": title},
-            # {"doi":None, "author": authors[1], "title": title},
-            # {"doi":None, "author": authors[2], "title": title},
-            {"doi": None, "author": None, "title": title},
+        entry = {"title": title}
+        expected: List[ToCheck] = [
+            ToCheck(doi=None, author=None, title=title),
         ]
         self.make_query(expected, entry)
 
 
 class TestDTQuery:
-    class parent(DTQueryMixin, SearchEval):
+    class parent(DAT_Query_Mixin, SearchEval):
+        query_author_title: bool = False
+
         def __repr__(self) -> str:
             return f"<doi:{self.doi}; title:{self.title}>"
 
-    def make_query(self, expected: Expected, entry: Dict[str, str]) -> None:
-        p = self.parent(BibtexEntry(entry))
+    def make_query(self, expected: List[ToCheck], entry: Dict[str, str]) -> None:
+        bib = BibtexEntry("test")
+        bib.from_entry(entry)
+        p = self.parent(bib)
         p.index = 0
         p.expected = expected
         assert p.query() is None
@@ -154,35 +127,27 @@ class TestDTQuery:
         title = "This is a title"
         doi = "10.1234/123456"
         entry = {"doi": doi, "title": title}
-        expected: Expected = [
-            {"doi": doi, "title": title},
-            {"doi": None, "title": title},
+        expected: List[ToCheck] = [
+            ToCheck(doi=doi, author=None, title=title),
+            ToCheck(doi=None, author=None, title=title),
         ]
         self.make_query(expected, entry)
 
     def test_no_doi(self) -> None:
         title = "This is a title"
-        # doi = "10.1234/123456"
         entry = {
-            # "doi":doi,
             "title": title,
         }
-        expected: Expected = [
-            # {"doi":doi, "title": title},
-            {"doi": None, "title": title},
-        ]
+        expected: List[ToCheck] = [ToCheck(doi=None, author=None, title=title)]
         self.make_query(expected, entry)
 
     def test_no_title(self) -> None:
-        # title = "This is a title"
         doi = "10.1234/123456"
         entry = {
             "doi": doi,
-            # "title": title
         }
-        expected: Expected = [
-            {"doi": doi, "title": None},
-            # {"doi":None, "title": title},
+        expected: List[ToCheck] = [
+            ToCheck(doi=doi, author=None, title=None),
         ]
         self.make_query(expected, entry)
 
@@ -208,7 +173,9 @@ class TestCondition:
         }
 
     def run(self, entry: Dict[str, str], expected: bool) -> None:
-        p = self.parent(BibtexEntry(entry))
+        bib = BibtexEntry("test")
+        bib.from_entry(entry)
+        p = self.parent(bib)
         p.query()
         assert p.queried == expected
 
