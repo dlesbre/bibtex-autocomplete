@@ -3,7 +3,6 @@ A class for parsing JSON data without checking structure every time
 No operations will raise any error, invalid operations will simply return None
 """
 
-
 from json import JSONDecodeError, JSONDecoder
 from typing import Dict, Iterator, List, Optional, Tuple, Union
 

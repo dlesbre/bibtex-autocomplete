@@ -3,7 +3,6 @@ A class designed to represent a container defined by either
 a list of contained elements or a list of excluded elements
 """
 
-
 from typing import Callable, Container, Iterable, List, Optional, Set, Tuple, TypeVar
 
 U = TypeVar("U", covariant=True)

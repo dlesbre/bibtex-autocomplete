@@ -1,6 +1,7 @@
 """
 Lookup info from https://www.semanticscholar.org/
 """
+
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from ..bibtex.author import Author
