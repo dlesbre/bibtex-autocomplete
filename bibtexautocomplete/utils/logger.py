@@ -137,6 +137,10 @@ class Logger:
         """Show very verbose debug info, extra arguments are formatter options"""
         self.to_logger(VERY_VERBOSE_DEBUG, message, *args, **kwargs)
 
+    def forget(self, message: str, *args: Any, **kwargs: Any) -> None:
+        """Forgets info passed to it"""
+        pass
+
     def set_level(self, level: Level) -> None:
         """Set the logger's level, using logging's level values"""
         self.logger.setLevel(level)

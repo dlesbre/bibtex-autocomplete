@@ -12,8 +12,8 @@ from .logger import logger
 JSONType = Union[Dict[str, "JSONType"], List["JSONType"], int, float, str, bool, None]
 
 
-log = logger.verbose_debug
-log_verbose = logger.very_verbose_debug
+log = logger.forget
+log_verbose = logger.forget
 
 
 class SafeJSON:
