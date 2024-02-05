@@ -8,6 +8,7 @@ from functools import reduce
 from json import dump as json_dump
 from logging import INFO
 from pathlib import Path
+from re import sub
 from threading import Condition
 from typing import (
     Any,
@@ -26,7 +27,7 @@ from typing import (
 
 from alive_progress import alive_bar  # type: ignore
 from bibtexparser.bibdatabase import BibDatabase
-from bibtexparser.latexenc import protect_uppercase, string_to_latex
+from bibtexparser.latexenc import string_to_latex
 
 from ..bibtex.base_field import BibtexField
 from ..bibtex.constants import FIELD_NO_MATCH, FieldType
@@ -255,12 +256,13 @@ class BibtexAutocomplete(Iterable[EntryType]):
             if bib_field is None:
                 continue
             value = bib_field.to_str()
-            if self.escape_unicode:
-                value = string_to_latex(value)
-            if field in self.fields_to_protect_uppercase:
-                value = protect_uppercase(value)
             if value is None:
                 continue
+            if self.escape_unicode:
+                value = string_to_latex(value)
+                assert isinstance(value, str)
+            if field in self.fields_to_protect_uppercase:
+                value = sub(r"([a-z]*[A-Z]+[a-zA-Z]*)", "{\\g<1>}", value)
             entry[self.prefix + field] = value
             changes.append(Changes(field, value, bib_field.source))
 
