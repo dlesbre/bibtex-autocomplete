@@ -358,8 +358,44 @@ class YearField(StrictStringField):
 PAGES_SEPARATOR = "--"
 
 
+# PagesType = Union[
+#     Tuple[Literal["int"], Literal["range"], int, int],
+#     Tuple[Literal["int"], Literal["single"], int],
+#     Tuple[Literal["roman-lower"], Literal["range"], str, str],
+#     Tuple[Literal["roman-lower"], Literal["single"], str],
+#     Tuple[Literal["roman-upper"], Literal["range"], str, str],
+#     Tuple[Literal["roman-upper"], Literal["single"], str],
+#     Tuple[Literal["unknown"], Literal["range"], str, str],
+#     Tuple[Literal["unknown"], Literal["single"], str],
+# ]
+
+
 class PagesBaseField(StrictStringField):
     "Normalize pages to list of n--n or n"
+
+    # ROMAN_DIGITS = {"M": 1000, "D": 500, "C": 100, "L": 50, "X": 10, "V": 5, "I": 1}
+
+    # @classmethod
+    # def is_roman(cls, string: str) -> bool:
+    #     return not set(string.upper()).difference(cls.ROMAN_DIGITS)
+
+    # @classmethod
+    # def roman_to_int(cls, string: str) -> int:
+    #     """
+    #     Convert a roman number to an integer
+    #     Solution from https://stackoverflow.com/a/61719273
+    #     """
+    #     res = 0
+    #     p = "I"
+    #     string = string.upper()
+    #     for c in string[::-1]:
+    #         res = (
+    #             res - cls.ROMAN_DIGITS[c]
+    #             if cls.ROMAN_DIGITS[c] < cls.ROMAN_DIGITS[p]
+    #             else res + cls.ROMAN_DIGITS[c]
+    #         )
+    #         p = c
+    #     return res
 
     @classmethod
     def normalize(cls, value: str) -> Optional[str]:
