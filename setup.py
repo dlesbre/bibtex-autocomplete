@@ -22,7 +22,7 @@ setup(
         "console_scripts": "btac = bibtexautocomplete.core:main",
     },
     install_requires=[
-        "bibtexparser",
+        "bibtexparser<2.0.0",
         "alive-progress>=3.0.0",
     ],
     extras_require={
