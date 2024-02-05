@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## Version 1.3.0 - 2024-02-05
 
 - Add https://openalex.org/ as a source
 - Add https://inspirehep.net/ as a source
