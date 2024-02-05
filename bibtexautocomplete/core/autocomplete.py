@@ -177,7 +177,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         condition = Condition()
         assert len(self.lookups) < MAX_THREAD_NB
         threads: List[LookupThread] = []
-        is_verbose = logger.get_level() > INFO
+        is_verbose = logger.get_level() < INFO
         with alive_bar(
             total,
             title="Querying databases:",
