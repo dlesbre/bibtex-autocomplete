@@ -193,7 +193,6 @@ More information and demo:
         Extra inputs use default output name <filename>.btac.bib
 
   {FgYellow}-q --only-query{Reset} {FgGreen}<website>{Reset}   Only query the given sites,
-        also change completion priority.
   {FgYellow}-Q --dont-query{Reset} {FgGreen}<website>{Reset}   Don't query the given sites
         Website must be one of:
         {LOOKUPS}

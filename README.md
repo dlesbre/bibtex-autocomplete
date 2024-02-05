@@ -58,8 +58,8 @@ It attempts to complete a BibTeX file by querying the following domains:
 Big thanks to all of them for allowing open, easy and well-documented access to
 their databases.
 
-**Contents:**
 
+- [New in version 1.3](#new-in-version-13)
 - [Demo](#demo)
 - [Quick overview](#quick-overview)
 - [Installation](#installation)
@@ -67,9 +67,18 @@ their databases.
 - [Usage](#usage)
 - [Command line arguments](#command-line-arguments)
   - [Query filtering](#query-filtering)
-  - [Output formatting](#output-formatting)
+  - [New field formatting](#new-field-formatting)
+  - [Global output formatting](#global-output-formatting)
   - [Optional flags](#optional-flags)
 - [Credit and license](#credit-and-license)
+
+## New in version 1.3
+
+Added OpenAlex and Inspire HEP as sources. Switched to a majority vote between source
+to find new field, along with smart field normalization and comparison. And of course,
+bug fixes!
+
+See the [changelog](https://github.com/dlesbre/bibtex-autocomplete/blob/master/CHANGELOG.md) for full details.
 
 ## Demo
 
@@ -110,22 +119,26 @@ entries that don't have one of those two fields *will not* be completed.
 **How are entries completed?**
 
 Once responses from all websites have been found, the script will add fields
-from website with the following priority :
-
-OpenAlex > Crossref > arXiv > Semantic scholar > Unpaywall > DBLP > Researchr > Inspire HEP.
-
-So if both Crossref's and DBLP's response contain a publisher, the one from
-Crossref will be used. This order can be changed using the `-q --only-query`
-option (see [query filtering](#query-filtering)).
+from website with the following priority by performing a majority vote among the
+source. To do so it uses smart normalization and merging tactics for each field:
+- Authors (and editors) match if they have same last names and, if both first
+  names present, the first name of one is equal/an abbreviation of the other.
+  Author list match if their intersection is non-empty.
+- ISSN and ISBN are normalized their check digits verified. ISBN are converted
+  to their 13 digit representation
+- URL and DOI are checked for valid format, and further validated by querying
+  them online to ensure they exist
+- Many fields match with abbreviation detection (journal, institution, booktitle,
+  organization, publisher, school and series). So `ACM` will match
+  `Association for Computer Machinery`
+- Pages are normalized to use `--` as separator
+- All other fields are compared excluding case and punctuation.
 
 The script will not overwrite any user given non-empty fields, unless the
 `-f/--force-overwrite` flag is given. If you want to check what fields are
 added, you can use `-v/--verbose` to have them printed to stdout (with
 source information), or `-p/--prefix` to have the new fields be prefixed with
 `BTAC` in the output file.
-
-The script checks that the DOIs or URLs found correspond (or redirect to) a
-valid webpage before adding them to an entry.
 
 ## Installation
 
@@ -156,7 +169,7 @@ pipx install bibtexautocomplete
 
 This package has two dependencies (automatically installed by pip) :
 
-- [bibtexparser](https://bibtexparser.readthedocs.io/)
+- [bibtexparser](https://bibtexparser.readthedocs.io/) (<2.0.0)
 - [alive_progress](https://github.com/rsalmei/alive-progress) (>= 3.0.0) for the fancy progress bar
 
 ## Usage
@@ -213,10 +226,6 @@ to respond and slow `btac`.
   `-q crossref -q dblp` or
   `-Q openalex -Q researchr -Q unpaywall -Q arxiv -Q s2 -Q inspire`
 
-  Additionally, you can use `-q` to change the completion priority.
-  So `-q inspire -q researchr -q dblp -q unpaywall -q s2 -q arxiv -q crossref`
-  reverses the default order.
-
 - `-e --only-entry <id>` or `-E --exclude-entry <id>`
 
   Restrict which entries should be autocompleted. `<id>` is the entry ID used in
@@ -251,7 +260,19 @@ to respond and slow `btac`.
   When `--mark` is set, `btac` adds a `BTACqueried = {yyyy-mm-dd}` field to each entry
   it queries.
 
-### Output formatting
+### New field formatting
+
+You can use the following arguments to control how `btac` formats the new fields
+- `--fu --escape-unicode` replace unicode symbols by latex escapes sequence (for
+  example: replace `é` with `{\'e}`). The default is to keep unicode symbols as is.
+- `--fp --protect-uppercase <field>` or `--FP --dont-protect-uppercase <field>` or
+  `--fpa --protect-all-uppercase`, insert braces around words containing uppercase
+  letters in the given fields to ensure bibtex will preserve them. The three
+  arguments are mutually exclusive, and the first two can be used multiple times
+  to select/deselect multiple fields.
+
+
+### Global output formatting
 
 Unfortunately [bibtexparser](https://pypi.org/project/bibtexparser/) doesn't
 preserve format information, so this script will reformat your BibTeX file. Here
