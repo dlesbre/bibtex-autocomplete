@@ -21,7 +21,7 @@ logger.set_verbosity(4)
 
 entry1 = {
     "title": "Reactive Path Deformation for Nonholonomic Mobile Robots",
-    "author": "Lamiraux Bonnafous",
+    "author": "Lamiraux and Bonnafous",
     "ID": "Lam",
 }
 doi1 = "10.1109/tro.2004.829459"
