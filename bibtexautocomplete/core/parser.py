@@ -130,6 +130,15 @@ parser.add_argument(
 parser.add_argument("--exclude-entry", "-E", action="append", default=[])
 parser.add_argument("--only-entry", "-e", action="append", default=[])
 
+parser.add_argument("--escape-unicode", "--fu", action="store_true")
+parser.add_argument("--protect-all-uppercase", "--fpa", action="store_true")
+parser.add_argument(
+    "--protect-uppercase", "--fp", action="append", default=[], choices=FIELD_NAMES
+)
+parser.add_argument(
+    "--dont-protect-uppercase", "--FP", action="append", default=[], choices=FIELD_NAMES
+)
+
 parser.add_argument("--align-values", "--fa", action="store_true")
 parser.add_argument("--comma-first", "--fc", action="store_true")
 parser.add_argument("--no-trailing-comma", "--fl", action="store_false")
@@ -203,7 +212,15 @@ More information and demo:
         Implicitly forces overwrite of all others.
         Field is a bibtex field (e.g. 'author', 'doi',...)
 
-{StBold}Output formatting:{Reset}
+{StBold}New field formatting:{Reset}
+  {FgYellow}--fu --escape-unicode{Reset}      Replace unicode symbol by latex escapes (é -> {{\\'e}})
+  {FgYellow}--fpa --protect-all-uppercase{Reset} Protect uppercases with '{{' '}}' in all fields
+  {FgYellow}--fp --protect-uppercase{Reset} {FgGreen}<field>{Reset} Protect uppercase in the given fields
+  {FgYellow}--FP --dont-protect-uppercase{Reset} {FgGreen}<field>{Reset} Protect uppercase in all fields,
+        except those given as argument.
+        --fp and --FP can be used multiple times to specify multiple fields.
+
+{StBold}Global output formatting:{Reset}
   {FgYellow}--fa --align-values{Reset}        pad fieldnames to align all values
   {FgYellow}--fc --comma-first{Reset}         comma first syntax (, title = ...)
   {FgYellow}--fl --no-trailing-comma{Reset}   don't add a last trailing comma

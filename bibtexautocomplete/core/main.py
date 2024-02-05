@@ -1,8 +1,8 @@
 from pathlib import Path
 from sys import stdout
-from typing import List, Optional
+from typing import Container, List, Optional
 
-from ..bibtex.constants import SearchedFields
+from ..bibtex.constants import FieldNamesSet, SearchedFields
 from ..bibtex.io import writer
 from ..lookups.abstract_entry_lookup import FieldConditionMixin
 from ..lookups.https import HTTPSLookup
@@ -107,6 +107,15 @@ def main(argv: Optional[List[str]] = None) -> None:
     fields = OnlyExclude[str].from_nonempty(args.only_complete, args.dont_complete)
     entries = OnlyExclude[str].from_nonempty(args.only_entry, args.exclude_entry)
 
+    if args.protect_all_uppercase:
+        fields_to_protect_uppercase: Container[str] = FieldNamesSet
+    else:
+        fields_to_protect_proto = OnlyExclude[str].from_nonempty(
+            args.protect_uppercase, args.dont_protect_uppercase
+        )
+        fields_to_protect_proto.default = False
+        fields_to_protect_uppercase = fields_to_protect_proto
+
     overwrite = OnlyExclude[str].from_nonempty(args.overwrite, args.dont_overwrite)
     overwrite.default = False
 
@@ -129,6 +138,8 @@ def main(argv: Optional[List[str]] = None) -> None:
         mark=args.mark,
         ignore_mark=args.ignore_mark,
         prefix=args.prefix,
+        fields_to_protect_uppercase=fields_to_protect_uppercase,
+        escape_unicode=args.escape_unicode,
     )
     completer.print_filters()
     try:

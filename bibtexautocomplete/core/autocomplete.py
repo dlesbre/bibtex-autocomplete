@@ -26,6 +26,7 @@ from typing import (
 
 from alive_progress import alive_bar  # type: ignore
 from bibtexparser.bibdatabase import BibDatabase
+from bibtexparser.latexenc import protect_uppercase, string_to_latex
 
 from ..bibtex.base_field import BibtexField
 from ..bibtex.constants import FIELD_NO_MATCH, FieldType
@@ -79,6 +80,8 @@ class BibtexAutocomplete(Iterable[EntryType]):
     entries: OnlyExclude[str]
     force_overwrite: Container[str]
     force_overwrite_all: bool
+    escape_unicode: bool
+    fields_to_protect_uppercase: Container[str]
     prefix: str
     mark: bool
     filter: Callable[[EntryType], bool]
@@ -102,6 +105,8 @@ class BibtexAutocomplete(Iterable[EntryType]):
         mark: bool = False,
         ignore_mark: bool = False,
         prefix: bool = False,
+        escape_unicode: bool = False,
+        fields_to_protect_uppercase: Container[str] = set(),
     ):
         self.bibdatabases = bibdatabases
         self.lookups = list(lookups)
@@ -121,6 +126,8 @@ class BibtexAutocomplete(Iterable[EntryType]):
             self.filter = (
                 lambda x: x["ID"] in self.entries and MARKED_FIELD.lower() not in x
             )
+        self.escape_unicode = escape_unicode
+        self.fields_to_protect_uppercase = fields_to_protect_uppercase
 
     def __iter__(self) -> Iterator[EntryType]:
         """Iterate through entries"""
@@ -203,7 +210,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 else:
                     bar.text = (
                         f"Processed {position}/{nb_entries} entries, "
-                        "found {self.changed_fields} new fields"
+                        f"found {self.changed_fields} new fields"
                     )
                 if not step:  # Some threads have not found data for current entry
                     condition.wait()
@@ -248,6 +255,10 @@ class BibtexAutocomplete(Iterable[EntryType]):
             if bib_field is None:
                 continue
             value = bib_field.to_str()
+            if self.escape_unicode:
+                value = string_to_latex(value)
+            if field in self.fields_to_protect_uppercase:
+                value = protect_uppercase(value)
             if value is None:
                 continue
             entry[self.prefix + field] = value
