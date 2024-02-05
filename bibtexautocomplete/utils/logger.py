@@ -171,6 +171,10 @@ class Logger:
             verbosity = mini
         self.set_level(self.verbosity[verbosity])
 
+    def get_level(self) -> int:
+        """Returns the logger level"""
+        return self.logger.getEffectiveLevel()
+
     def header(self, title: str, level: Level = logging.INFO) -> None:
         """Shows a pretty header, 100% inspired by opam's output"""
         self.to_logger(level, "")  # newline

@@ -32,7 +32,7 @@ jobs:
       - name: Typecheck with mypy
         run: make mypy
       - name: Check script
-        run: btac --version
+        run: btac --version && btac --help
       - name: Test with pytest
         run: make test
 
@@ -54,6 +54,6 @@ jobs:
       - name: Typecheck with mypy
         run: make mypy
       - name: Check script
-        run: btac --version
+        run: btac --version && btac --help
       - name: Test with pytest
         run: make quick-test

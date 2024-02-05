@@ -6,6 +6,7 @@ main class used to manage calls to different lookups
 from datetime import datetime
 from functools import reduce
 from json import dump as json_dump
+from logging import INFO
 from pathlib import Path
 from threading import Condition
 from typing import (
@@ -168,6 +169,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         condition = Condition()
         assert len(self.lookups) < MAX_THREAD_NB
         threads: List[LookupThread] = []
+        is_verbose = logger.get_level() > INFO
         with alive_bar(
             total,
             title="Querying databases:",
@@ -195,11 +197,14 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 for thread in threads:
                     if position >= thread.position:
                         step = False
-                    thread_positions.append(f"[{thread.lookup.name}:{thread.position}]")
-                bar.text = (
-                    " ".join(thread_positions)
-                    + f" Found {self.changed_fields} new fields"
-                )
+                    thread_positions.append(f"{thread.lookup.name}:{thread.position}")
+                if is_verbose:
+                    bar.text = " ".join(thread_positions)
+                else:
+                    bar.text = (
+                        f"Processed {position}/{nb_entries} entries, "
+                        "found {self.changed_fields} new fields"
+                    )
                 if not step:  # Some threads have not found data for current entry
                     condition.wait()
                 else:  # update data for current entry
