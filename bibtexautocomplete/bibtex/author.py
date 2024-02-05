@@ -60,9 +60,11 @@ class Author:
             firsts = [i.replace(".", ". ").strip() for i in namesplit]
         if last in ["jnr", "jr", "junior"]:
             last = firsts.pop()
-        for item in firsts:
-            if item in ["ben", "van", "von", "der", "de", "la", "le"]:
+        for item in firsts[::-1]:
+            if item.lower() in ["ben", "van", "von", "der", "de", "la", "le"]:
                 last = firsts.pop() + " " + last
+            else:
+                break
         first = " ".join(firsts) if firsts else None
         return Author(last, first)
 
