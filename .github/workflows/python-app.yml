@@ -47,12 +47,6 @@ jobs:
           python-version: "3.8"
       - name: Install dependencies
         run: make setup-dev
-      - name: Lint with flake8
-        run: make flake8
-      - name: Run formatters
-        run: make format-check
-      - name: Typecheck with mypy
-        run: make mypy
       - name: Check script
         run: btac --version && btac --help
       - name: Test with pytest
