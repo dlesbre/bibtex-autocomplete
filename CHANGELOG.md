@@ -4,10 +4,26 @@
 
 - Add https://openalex.org/ as a source
 - Add https://inspirehep.net/ as a source
-- Fix 404 warning on DOIs not found in semantic-scholar
+- Switch entry merging strategy from "pick from the first source" to a majority
+  vote between the sources. Added advanced normalization and smart merge for each field:
+  - Authors (and editors) match if they have same last names and, if both first
+    names present, the first name of one is equal/an abbreviation of the other.
+    Author list match if their intersection is non-empty.
+  - Check ISSN and ISBN format and checksums. Convert ISBN to 13 digit version
+  - Check URL and DOI format, validate them by querying them online to ensure they
+    exist
+  - Many fields match with abbreviation detection (journal, institution, booktitle,
+    organization, publisher, school and series)
+  - Pages format normalized to use `--` as separator
+  - All other fields match excluding case and punctuation.
+
+- Fix 404 warning on DOIs not found in semantic-scholar and others
 - Remove researchr author disambiguation numbers (it would sometimes return
   `John Doe 0002`, which you don't want in your file)
 - Fix author names with `von` prefix not formatted correctly
+- Fix author names with capitalized prefix (`De`, `Von`, ...) not formatted correctly
+- Fix `btac` removing capital-preserving brackets and converting to unicode in
+  user supplied fields (issue #11).
 
 ## Version 1.2.2 - 2023-11-26
 
