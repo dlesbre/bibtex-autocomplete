@@ -248,18 +248,19 @@ class HTTPSRateCapedLookup(HTTPSLookup[Input, Output]):
     query_delay: float = MIN_QUERY_DELAY  # time between queries, in seconds
 
     def update_rate_cap(self) -> Optional[float]:
-        """Returns the new delay between queries"""
+        """Returns the new delay between queries
+        Override in subclasses to get delay request from query headers"""
         return None
 
     def get_data(self) -> Optional[Data]:
         since_last_query = time() - self.last_query_time
         wait = self.query_delay - since_last_query
-        if wait > 0.0:
+        if wait >= 0.0:
             logger.debug("Rate limiter: sleeping for {wait}s", wait=round(wait, 3))
             sleep(wait)
         self.__class__.last_query_time = time()
         data = super().get_data()
         new_cap = self.update_rate_cap()  # update rate cap with response headers
         if new_cap is not None:
-            self.__class__.query_delay = new_cap
+            self.__class__.query_delay = new_cap * 1.1  # round up for good measure
         return data
