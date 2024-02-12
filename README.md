@@ -56,8 +56,10 @@ It attempts to complete a BibTeX file by querying the following domains:
 - [inspirehep.net](https://inspirehep.net/): high-energy physics, ~1.5 million entries
 
 Big thanks to all of them for allowing open, easy and well-documented access to
-their databases.
+their databases. This project wouldn't be possible without them. You can easily
+narrow down the list of sources if some aren't relevant using command line options.
 
+### Contents
 
 - [New in version 1.3](#new-in-version-13)
 - [Demo](#demo)
