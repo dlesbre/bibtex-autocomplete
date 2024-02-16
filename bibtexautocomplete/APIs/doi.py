@@ -103,7 +103,10 @@ class DOICheck(
                 # Some websites, namely springer, don't send 404 for invalid DOIs...
                 # See: https://link.springer.com/deleted
                 try:
-                    text = normalize_str_weak(final.data.decode())
+                    data = final.data.decode()
+                    with open("dump.text", "w") as file:
+                        file.write(data)
+                    text = normalize_str_weak(data, from_latex=True)
                     for elem in self.not_available_checks:
                         if elem in text:
                             logger.debug("INVALID TEXT IN RESPONSE PAGE " + elem)

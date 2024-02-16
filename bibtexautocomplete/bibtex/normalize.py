@@ -47,11 +47,12 @@ def strip_accents(string: str) -> str:
     return "".join(c for c in unicodedata.normalize("NFD", string) if unicodedata.category(c) != "Mn")
 
 
-def normalize_str_weak(string: str) -> str:
+def normalize_str_weak(string: str, from_latex: bool = True) -> str:
     """Converts to lower case, strips accents,
     replace tabs and newline with spaces,
     removes duplicate spaces"""
-    string = latex_to_unicode(string)
+    if from_latex:
+        string = latex_to_unicode(string)
     string = strip_accents(string).lower()
     return sub(r"\s+", " ", string)
 
