@@ -1,0 +1,71 @@
+[project]
+name = "bibtexautocomplete"
+authors = [{ name = "Dorian Lesbre", email = "dorian.lesbre@gmail.com" }]
+maintainers = [{ name = "Dorian Lesbre", email = "dorian.lesbre@gmail.com" }]
+dynamic = ["version"]
+description = "Script to autocomplete bibtex files by polling online databases"
+requires-python = ">= 3.8"
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["bibtex", "biblatex", "latex", "autocomplete", "btac"]
+dependencies = [
+  "bibtexparser<2.0.0",
+  "alive-progress>=3.0.0",
+]
+classifiers = [
+  # How mature is this project? Common values are
+  #   3 - Alpha
+  #   4 - Beta
+  #   5 - Production/Stable
+  "Development Status :: 5 - Production/Stable",
+  # Indicate who your project is intended for
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "Environment :: Console",
+  "Natural Language :: English",
+  # Pick your license as you wish (should match "license" above)
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Operating System :: OS Independent",
+  "Topic :: Text Processing :: Markup :: LaTeX",
+  "Topic :: Utilities",
+  "Topic :: Scientific/Engineering",
+  "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://github.com/dlesbre/bibtex-autocomplete"
+Repository = "https://github.com/dlesbre/bibtex-autocomplete/spam.git"
+Issues = "https://github.com/dlesbre/bibtex-autocomplete/issues"
+Changelog = "https://github.com/dlesbre/bibtex-autocomplete/blob/master/CHANGELOG.md"
+
+[project.scripts]
+btac = "bibtexautocomplete.core:main"
+
+[project.optional-dependencies]
+dev = [
+  "pre-commit",
+  "pytest",
+  "mypy",
+  "ruff",
+  "coverage",
+  "pytest-cov",
+]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "W", "I"]
+
+[tool.mypy]
+strict = true
+
+[[tool.mypy.overrides]]
+module = "bibtexparser.*"
+ignore_missing_imports = true

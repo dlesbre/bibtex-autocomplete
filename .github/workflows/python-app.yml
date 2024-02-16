@@ -26,10 +26,8 @@ jobs:
           python-version: "3.11"
       - name: Install dependencies
         run: make setup-dev
-      - name: Lint with flake8
-        run: make flake8
-      - name: Run formatters
-        run: make format-check
+      - name: Lint and check formatting
+        run: make check
       - name: Typecheck with mypy
         run: make mypy
       - name: Check script

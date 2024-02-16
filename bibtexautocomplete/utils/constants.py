@@ -10,7 +10,7 @@ AUTHOR = "Dorian Lesbre"
 URL = "https://github.com/dlesbre/bibtex-autocomplete"
 ISSUES_URL = URL + "/issues"
 LICENSE = "MIT"
-DESCRIPTION = "Module to complete bibtex files by polling online databases"
+DESCRIPTION = "Script to autocomplete bibtex files by polling online databases"
 
 VERSION_MAJOR = 1
 VERSION_MINOR = 3

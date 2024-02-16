@@ -95,25 +95,19 @@ mypy: ## Typecheck all files
 	$(call print,Running mypy)
 	$(MYPY) --strict ./bibtexautocomplete/ ./tests ./setup.py
 
-.PHONY: flake8
-flake8: ## Run flake8 on all files
-	$(call print,Running flake8)
-	find bibtexautocomplete -type f -name "*.py" -exec flake8 {} ';'
-	find tests -type f -name "*.py" -exec flake8 {} ';'
-
 .PHONY: format
 format: ## Format files with black and isort
-	$(call print,Running black)
-	black ./bibtexautocomplete/ ./tests/
-	$(call print,Running isort)
-	isort ./bibtexautocomplete/ ./tests/
+	$(call print,Running ruff format)
+	ruff format
+	$(call print,Running ruff check and fix)
+	ruff check --fix
 
 .PHONY: format-check
-format-check: ## Check that all files are formatted
-	$(call print,Running black)
-	black ./bibtexautocomplete/ ./tests/ --check
-	$(call print,Running isort)
-	isort ./bibtexautocomplete/ ./tests/ --check
+check: ## Check that all files are formatted and lint
+	$(call print,Running ruff format)
+	ruff format --check
+	$(call print,Running ruff check)
+	ruff check
 
 # =================================================
 # Installation
@@ -143,15 +137,15 @@ clean: ## Remove package
 .PHONY: clean-all
 clean-all: ## Remove package and venv
 	$(call print,Removing package and dependencies and virtual environment)
-	rm -rf build bibtexautocomplete.egg-info
+	rm -rf build bibtexautocomplete.egg-info htmlcov
 	rm -rf venv
 
 .PHONY: deploy
 deploy: ## Build and deploys the package
 	$(call print,Removing previous dist)
-	rm -rf dist/*
+	rm -rf dist/* bibtexautocomplete.egg-info build
 	$(call print,Building package)
-	$(PYTHON) setup.py sdist bdist_wheel
+	$(PYTHON) -m build
 	$(call print,Deploying package)
 	twine upload dist/*
 
