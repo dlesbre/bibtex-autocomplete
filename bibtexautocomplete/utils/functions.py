@@ -17,9 +17,7 @@ def list_unduplicate(lst: List[T]) -> Tuple[List[T], Set[T]]:
     return unique, dups
 
 
-def list_sort_using(
-    to_sort: Iterable[Q], reference: List[T], map: Callable[[Q], T]
-) -> List[Q]:
+def list_sort_using(to_sort: Iterable[Q], reference: List[T], map: Callable[[Q], T]) -> List[Q]:
     """Sorts to_sort based on the order in reference, using map for conversion"""
     order = {q: i for i, q in enumerate(reference)}
     return sorted(to_sort, key=lambda t: order[map(t)])

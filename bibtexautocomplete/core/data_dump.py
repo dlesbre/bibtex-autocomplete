@@ -17,9 +17,7 @@ class DataDump:
         self.new_fields = 0
         self.results = {}
 
-    def add_entry(
-        self, lookup_name: str, entry: Optional[BibtexEntry], info: Dict[str, JSONType]
-    ) -> None:
+    def add_entry(self, lookup_name: str, entry: Optional[BibtexEntry], info: Dict[str, JSONType]) -> None:
         if entry is None:
             self.results[lookup_name] = None
             return

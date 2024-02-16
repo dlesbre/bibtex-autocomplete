@@ -38,9 +38,7 @@ class MultipleQueryMixin(AbstractLookup[Input, Output]):
         return None
 
 
-class DAT_Query_Mixin(
-    MultipleQueryMixin[BibtexEntry, BibtexEntry], AbstractEntryLookup
-):
+class DAT_Query_Mixin(MultipleQueryMixin[BibtexEntry, BibtexEntry], AbstractEntryLookup):
     """Performs queries using
     - the entry's DOI if it is known and if query_doi is True
     - the entry's title and author if known and if query_author_title is True

@@ -39,9 +39,7 @@ class SafeJSON:
                 else:
                     log("SafeJSON: dict has no key {}", key)
             elif self.value is not None:
-                log(
-                    "SafeJSON: access to {} on non-dict {}", repr(key), type(self.value)
-                )
+                log("SafeJSON: access to {} on non-dict {}", repr(key), type(self.value))
         return SafeJSON(result)
 
     @staticmethod

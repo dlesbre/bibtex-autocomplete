@@ -131,9 +131,7 @@ class SemanticScholarLookup(JSON_Lookup):
 
         # Black formatting is VERY ugly without the two variables
         j1 = result["publicationVenue"]["type"].to_str() == "journal"
-        j2 = "JournalArticle" in [
-            x.to_str() for x in result["publicationTypes"].iter_list()
-        ]
+        j2 = "JournalArticle" in [x.to_str() for x in result["publicationTypes"].iter_list()]
         is_journal = j1 or j2
 
         venue = result["venue"].to_str()

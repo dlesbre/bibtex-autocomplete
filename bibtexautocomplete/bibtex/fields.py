@@ -168,9 +168,7 @@ class NameBaseField(BibtexField[Author]):
             return FIELD_FULL_MATCH // 2
         if normalize_str(a.firstnames) == normalize_str(b.firstnames):
             return FIELD_FULL_MATCH
-        if is_abbrev(a.firstnames, b.firstnames) or is_abbrev(
-            b.firstnames, a.firstnames
-        ):
+        if is_abbrev(a.firstnames, b.firstnames) or is_abbrev(b.firstnames, a.firstnames):
             return 3 * FIELD_FULL_MATCH // 4
         return FIELD_NO_MATCH
 

@@ -124,9 +124,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         if ignore_mark:
             self.filter = lambda x: x["ID"] in self.entries
         else:
-            self.filter = (
-                lambda x: x["ID"] in self.entries and MARKED_FIELD.lower() not in x
-            )
+            self.filter = lambda x: x["ID"] in self.entries and MARKED_FIELD.lower() not in x
         self.escape_unicode = escape_unicode
         self.fields_to_protect_uppercase = fields_to_protect_uppercase
 
@@ -159,9 +157,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         """Return the max length of entries' ID
         to use for pretty printing"""
         max_id_padding = 40
-        return min(
-            max((len(entry["ID"]) + 1 for entry in self), default=0), max_id_padding
-        )
+        return min(max((len(entry["ID"]) + 1 for entry in self), default=0), max_id_padding)
 
     def autocomplete(self, no_progressbar: bool = False) -> None:
         """Main function that does all the work
@@ -209,26 +205,20 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 if is_verbose:
                     bar.text = " ".join(thread_positions)
                 else:
-                    bar.text = (
-                        f"Processed {position}/{nb_entries} entries, "
-                        f"found {self.changed_fields} new fields"
-                    )
+                    bar.text = f"Processed {position}/{nb_entries} entries, " f"found {self.changed_fields} new fields"
                 if not step:  # Some threads have not found data for current entry
                     condition.wait()
                 else:  # update data for current entry
                     self.update_entry(entries[position], threads, position)
                     position += 1
         logger.info(
-            "Modified {changed_entries} / {count_entries} entries"
-            ", added {changed_fields} fields",
+            "Modified {changed_entries} / {count_entries} entries" ", added {changed_fields} fields",
             changed_entries=self.changed_entries,
             count_entries=self.count_entries(),
             changed_fields=self.changed_fields,
         )
 
-    def update_entry(
-        self, entry: EntryType, threads: List[LookupThread], position: int
-    ) -> None:
+    def update_entry(self, entry: EntryType, threads: List[LookupThread], position: int) -> None:
         """Reads all data the threads have found on a new entry,
         and uses it to update the entry with new fields"""
         changes: List[Changes] = []
@@ -246,11 +236,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
 
         for field in new_fields:
             # Filter which fields to add
-            if not (
-                self.force_overwrite_all
-                or (field in self.force_overwrite)
-                or (not has_field(entry, field))
-            ):
+            if not (self.force_overwrite_all or (field in self.force_overwrite) or (not has_field(entry, field))):
                 continue
             bib_field = self.combine_field(results, field)
             if bib_field is None:
@@ -280,9 +266,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         if self.mark:
             entry[MARKED_FIELD] = datetime.today().strftime("%Y-%m-%d")
 
-    def combine_field(
-        self, results: List[BibtexEntry], fieldname: FieldType
-    ) -> Optional[BibtexField[Any]]:
+    def combine_field(self, results: List[BibtexEntry], fieldname: FieldType) -> Optional[BibtexField[Any]]:
         """Combine the values of a single field"""
         fields = [entry.get_field(fieldname) for entry in results if fieldname in entry]
         groups: List[Tuple[int, BibtexField[Any]]] = []

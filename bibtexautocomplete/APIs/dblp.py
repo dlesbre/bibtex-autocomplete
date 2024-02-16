@@ -73,9 +73,7 @@ class DBLPLookup(JSON_Lookup):
         values.pages.set_str(info["pages"].to_str())
         values.title.set(info["title"].to_str())
         values.volume.set(info["volume"].to_str())
-        values.url.set(
-            info["ee"].to_str() if info["access"].to_str() == "open" else None
-        )
+        values.url.set(info["ee"].to_str() if info["access"].to_str() == "open" else None)
         values.year.set(info["year"].to_str())
         return values
 

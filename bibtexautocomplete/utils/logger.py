@@ -81,9 +81,7 @@ class Logger:
         message = self.add_thread_info(ansi_format(message, *args, **kwargs))
         self.logger.log(level=level, msg=message)
 
-    def warn(
-        self, message: str, error: str = "WARNING", *args: Any, **kwargs: Any
-    ) -> None:
+    def warn(self, message: str, error: str = "WARNING", *args: Any, **kwargs: Any) -> None:
         """Issue a warning, extra arguments are formatter options"""
         self.to_logger(
             logging.WARN,
@@ -93,21 +91,17 @@ class Logger:
             **kwargs,
         )
 
-    def error(
-        self, message: str, error: str = "ERROR", *args: Any, **kwargs: Any
-    ) -> None:
+    def error(self, message: str, error: str = "ERROR", *args: Any, **kwargs: Any) -> None:
         """Issue an error, extra arguments are formatter options"""
         self.to_logger(
             logging.ERROR,
             "{FgRed}{error}:{Reset} " + message,
-            error=error,
             *args,
+            error=error,
             **kwargs,
         )
 
-    def critical(
-        self, message: str, error: str = "CRITICAL ERROR", *args: Any, **kwargs: Any
-    ) -> None:
+    def critical(self, message: str, error: str = "CRITICAL ERROR", *args: Any, **kwargs: Any) -> None:
         """Issue a critical error, extra arguments are formatter options"""
         self.to_logger(
             logging.CRITICAL,
@@ -178,13 +172,7 @@ class Logger:
     def header(self, title: str, level: Level = logging.INFO) -> None:
         """Shows a pretty header, 100% inspired by opam's output"""
         self.to_logger(level, "")  # newline
-        title = (
-            "{FgBlue}===={Reset} {StBold}"
-            + title
-            + "{Reset} {FgBlue}"
-            + ("=" * (74 - len(title)))
-            + "{Reset}"
-        )
+        title = "{FgBlue}===={Reset} {StBold}" + title + "{Reset} {FgBlue}" + ("=" * (74 - len(title))) + "{Reset}"
         self.to_logger(level, title)
 
     def traceback(self, message: str, _err: Exception) -> None:
@@ -212,9 +200,7 @@ class Logger:
             error="UNEXPECTED ERROR",
             tmessage=message,
             ISSUES_URL=ISSUES_URL,
-            exn=format_exc()
-            .strip()
-            .replace("\n", "\n" + prefix + ansi_format("{FgRed}")),
+            exn=format_exc().strip().replace("\n", "\n" + prefix + ansi_format("{FgRed}")),
         )
 
 

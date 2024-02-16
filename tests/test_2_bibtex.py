@@ -167,8 +167,8 @@ def test_BibtexEntry_editor_set(author: str, res: List[Author]) -> None:
 
 def iterate_nested(list: List[List[str]]) -> Iterator[Tuple[int, str]]:
     """Iterate over a nested list, returning (index of sublist, element)"""
-    for i, l in enumerate(list):
-        for x in l:
+    for i, sublist in enumerate(list):
+        for x in sublist:
             yield (i, x)
 
 
@@ -323,9 +323,7 @@ listify_match_merge: List[Tuple[str, str, bool, Optional[str]]] = [
 
 
 @pytest.mark.parametrize(("a", "b", "matches", "merged"), listify_match_merge)
-def test_listify_match_merge(
-    a: str, b: str, matches: bool, merged: Optional[str]
-) -> None:
+def test_listify_match_merge(a: str, b: str, matches: bool, merged: Optional[str]) -> None:
     field_a = ListString("list_string", "test")
     field_a.set_str(a)
     field_b = ListString("list_string", "test")
@@ -365,9 +363,7 @@ author_match_merge: List[Tuple[str, str, bool, Optional[str]]] = [
 
 
 @pytest.mark.parametrize(("a", "b", "matches", "merged"), author_match_merge)
-def test_author_match_merge(
-    a: str, b: str, matches: bool, merged: Optional[str]
-) -> None:
+def test_author_match_merge(a: str, b: str, matches: bool, merged: Optional[str]) -> None:
     field_a = NameField("author", "test")
     field_a.set_str(a)
     field_b = NameField("author", "test")
@@ -409,9 +405,7 @@ abbrevs: List[Tuple[str, str, bool, Optional[str]]] = [
 
 
 @pytest.mark.parametrize(("a", "b", "matches", "merged"), abbrevs)
-def test_abbrev_match_merge(
-    a: str, b: str, matches: bool, merged: Optional[str]
-) -> None:
+def test_abbrev_match_merge(a: str, b: str, matches: bool, merged: Optional[str]) -> None:
     field_a = AbbreviatedStringField("abbrev", "test")
     field_a.set_str(a)
     field_b = AbbreviatedStringField("abbrev", "test")

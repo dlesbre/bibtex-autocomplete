@@ -100,9 +100,7 @@ class BibtexField(Generic[T]):
         (eg. fewer abbreviations). This will only be called on fields that match"""
         if self.value is not None:
             if other.value is not None:
-                obj = self.__class__(
-                    self.field, self.source + SOURCE_SEPARATOR + other.source
-                )
+                obj = self.__class__(self.field, self.source + SOURCE_SEPARATOR + other.source)
                 obj.value = self.combine_values(self.value, other.value)
                 return obj
         logger.warn("Combining fields which store None")
@@ -267,9 +265,7 @@ class ListField(BibtexField[List[T]]):
         return cls.compute_score(a, b, common_scores, common)
 
     @classmethod
-    def compute_score(
-        cls, a: List[T], b: List[T], common_scores: int, common: int
-    ) -> int:
+    def compute_score(cls, a: List[T], b: List[T], common_scores: int, common: int) -> int:
         """Compute the final score from the number of common elements
         and the sum of the scores"""
         if common == 0:

@@ -91,11 +91,7 @@ def main(argv: Optional[List[str]] = None) -> None:
 
     HTTPSLookup.connection_timeout = args.timeout if args.timeout > 0.0 else None
     HTTPSLookup.ignore_ssl = args.ignore_ssl
-    lookups = (
-        OnlyExclude[str]
-        .from_nonempty(args.only_query, args.dont_query)
-        .filter(LOOKUPS, lambda x: x.name)
-    )
+    lookups = OnlyExclude[str].from_nonempty(args.only_query, args.dont_query).filter(LOOKUPS, lambda x: x.name)
     if args.only_query != []:
         # remove duplicate from list
         args.only_query, dups = list_unduplicate(args.only_query)
@@ -110,18 +106,14 @@ def main(argv: Optional[List[str]] = None) -> None:
     if args.protect_all_uppercase:
         fields_to_protect_uppercase: Container[str] = FieldNamesSet
     else:
-        fields_to_protect_proto = OnlyExclude[str].from_nonempty(
-            args.protect_uppercase, args.dont_protect_uppercase
-        )
+        fields_to_protect_proto = OnlyExclude[str].from_nonempty(args.protect_uppercase, args.dont_protect_uppercase)
         fields_to_protect_proto.default = False
         fields_to_protect_uppercase = fields_to_protect_proto
 
     overwrite = OnlyExclude[str].from_nonempty(args.overwrite, args.dont_overwrite)
     overwrite.default = False
 
-    FieldConditionMixin.fields_to_complete = set(
-        fields.filter(SearchedFields, lambda x: x)
-    )
+    FieldConditionMixin.fields_to_complete = set(fields.filter(SearchedFields, lambda x: x))
     FieldConditionMixin.overwrites = set(overwrite.filter(SearchedFields, lambda x: x))
 
     if args.force_overwrite:

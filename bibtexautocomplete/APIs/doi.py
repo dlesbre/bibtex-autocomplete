@@ -13,9 +13,7 @@ from ..utils.logger import logger
 from ..utils.safe_json import SafeJSON
 
 
-class URLCheck(
-    ConditionMixin[str, Optional[Data]], RedirectFollower[str, Optional[Data]]
-):
+class URLCheck(ConditionMixin[str, Optional[Data]], RedirectFollower[str, Optional[Data]]):
     """Checks that an URL exists (should return 200)
     Follows redirection (up to a certain depth)"""
 

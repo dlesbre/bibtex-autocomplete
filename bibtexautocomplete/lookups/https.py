@@ -166,17 +166,13 @@ class HTTPSLookup(AbstractDataLookup[Input, Output]):
                 reason=" " + self.response.reason if self.response.reason else "",
                 delay=delay,
             )
-            logger.very_verbose_debug(
-                "response headers: {headers}", headers=self.response.headers
-            )
+            logger.very_verbose_debug("response headers: {headers}", headers=self.response.headers)
             data = self.response.read()
             connection.close()
         except timeout:
             if self.silent_fail:
                 return None
-            logger.warn(
-                "connection timeout ({timeout}s)", timeout=self.connection_timeout
-            )
+            logger.warn("connection timeout ({timeout}s)", timeout=self.connection_timeout)
             TIMEOUT_Hint.emit()
             return None
         except (gaierror, OSError) as err:

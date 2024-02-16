@@ -18,12 +18,16 @@ class SearchEval(AbstractLookup[BibtexEntry, BibtexEntry]):
     index: int = 0
     expected: List[ToCheck] = []
 
+    doi: Optional[str]
+    title: Optional[str]
+    authors: Optional[List[str]]
+
     def query(self) -> Optional[BibtexEntry]:
         test = self.expected[self.index]
-        assert getattr(self, "doi") == test.doi
-        assert getattr(self, "authors") == test.author
+        assert self.doi == test.doi
+        assert self.authors == test.author
         title = None if test.title is None else normalize_str(test.title)
-        assert getattr(self, "title") == title
+        assert self.title == title
         self.index += 1
         return None
 
@@ -184,9 +188,7 @@ class TestCondition:
         self.run({"junk": "junk", "more junk": "more junk"}, True)
 
     def test_full(self) -> None:
-        self.run(
-            {"doi": "10.1234/1234", "title": "A Title", "author": "John Jones"}, False
-        )
+        self.run({"doi": "10.1234/1234", "title": "A Title", "author": "John Jones"}, False)
 
     def test_partial(self) -> None:
         self.run(
@@ -217,9 +219,7 @@ class TestCondition:
     def test_invalid(self) -> None:
         self.run({"doi": "", "title": "A Title", "author": "John Jones"}, True)
         self.run({"doi": "10.1234/1234", "title": "A Title", "author": "{}"}, True)
-        self.run(
-            {"doi": "10.1234/1234", "title": "A Title", "author": "{{}{{}}}"}, True
-        )
+        self.run({"doi": "10.1234/1234", "title": "A Title", "author": "{{}{{}}}"}, True)
 
     def test_filter(self) -> None:
         old = self.parent.fields_to_complete

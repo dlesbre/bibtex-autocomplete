@@ -28,9 +28,7 @@ class AbstractEntryLookup(AbstractLookup[BibtexEntry, BibtexEntry]):
         self.entry = input
 
 
-class FieldConditionMixin(
-    ConditionMixin["BibtexEntry", "BibtexEntry"], AbstractEntryLookup
-):
+class FieldConditionMixin(ConditionMixin["BibtexEntry", "BibtexEntry"], AbstractEntryLookup):
     """Mixin used to query only if there exists a field in self.fields
     that does not exists in self.entry, or is in self.overwrites
 

@@ -60,10 +60,9 @@ def indent_string(indent: str) -> str:
     sane = indent.replace("t", "\t").replace("n", "\n").replace("_", " ")
     if not (sane.isspace() or sane == ""):
         logger.critical(
-            (
-                "--fi/--indent should be a number or string "
-                "with spaces, '_', 't' and 'n' only.\nGot: '{}'"
-            ).format(indent)
+            ("--fi/--indent should be a number or string " "with spaces, '_', 't' and 'n' only.\nGot: '{}'").format(
+                indent
+            )
         )
         exit(5)
     return sane
@@ -108,36 +107,20 @@ parser = ArgumentParser(
 
 FIELD_NAMES = sorted(FieldNamesSet)
 
-parser.add_argument(
-    "--dont-query", "-Q", action="append", default=[], choices=LOOKUP_NAMES
-)
-parser.add_argument(
-    "--only-query", "-q", action="append", default=[], choices=LOOKUP_NAMES
-)
-parser.add_argument(
-    "--dont-complete", "-C", action="append", default=[], choices=FIELD_NAMES
-)
-parser.add_argument(
-    "--only-complete", "-c", action="append", default=[], choices=FIELD_NAMES
-)
-parser.add_argument(
-    "--dont-overwrite", "-W", action="append", default=[], choices=FIELD_NAMES
-)
-parser.add_argument(
-    "--overwrite", "-w", action="append", default=[], choices=FIELD_NAMES
-)
+parser.add_argument("--dont-query", "-Q", action="append", default=[], choices=LOOKUP_NAMES)
+parser.add_argument("--only-query", "-q", action="append", default=[], choices=LOOKUP_NAMES)
+parser.add_argument("--dont-complete", "-C", action="append", default=[], choices=FIELD_NAMES)
+parser.add_argument("--only-complete", "-c", action="append", default=[], choices=FIELD_NAMES)
+parser.add_argument("--dont-overwrite", "-W", action="append", default=[], choices=FIELD_NAMES)
+parser.add_argument("--overwrite", "-w", action="append", default=[], choices=FIELD_NAMES)
 
 parser.add_argument("--exclude-entry", "-E", action="append", default=[])
 parser.add_argument("--only-entry", "-e", action="append", default=[])
 
 parser.add_argument("--escape-unicode", "--fu", action="store_true")
 parser.add_argument("--protect-all-uppercase", "--fpa", action="store_true")
-parser.add_argument(
-    "--protect-uppercase", "--fp", action="append", default=[], choices=FIELD_NAMES
-)
-parser.add_argument(
-    "--dont-protect-uppercase", "--FP", action="append", default=[], choices=FIELD_NAMES
-)
+parser.add_argument("--protect-uppercase", "--fp", action="append", default=[], choices=FIELD_NAMES)
+parser.add_argument("--dont-protect-uppercase", "--FP", action="append", default=[], choices=FIELD_NAMES)
 
 parser.add_argument("--align-values", "--fa", action="store_true")
 parser.add_argument("--comma-first", "--fc", action="store_true")

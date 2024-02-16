@@ -93,7 +93,7 @@ coverage: ## build html coverage and open in browser
 .PHONY: mypy
 mypy: ## Typecheck all files
 	$(call print,Running mypy)
-	$(MYPY) --strict ./bibtexautocomplete/ ./tests ./setup.py
+	$(MYPY) --strict ./bibtexautocomplete/ ./tests
 
 .PHONY: format
 format: ## Format files with black and isort

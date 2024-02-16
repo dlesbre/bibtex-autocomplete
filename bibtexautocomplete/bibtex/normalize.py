@@ -44,11 +44,7 @@ def has_field(entry: EntryType, field: str) -> bool:
 def strip_accents(string: str) -> str:
     """replace accented characters with their non-accented variants"""
     # Solution from https://stackoverflow.com/a/518232
-    return "".join(
-        c
-        for c in unicodedata.normalize("NFD", string)
-        if unicodedata.category(c) != "Mn"
-    )
+    return "".join(c for c in unicodedata.normalize("NFD", string) if unicodedata.category(c) != "Mn")
 
 
 def normalize_str_weak(string: str) -> str:
@@ -90,9 +86,7 @@ def normalize_doi(doi_or_url: Optional[str]) -> Optional[str]:
     return None
 
 
-def normalize_url(
-    url: str, previous: Optional[str] = None
-) -> Optional[Tuple[str, str]]:
+def normalize_url(url: str, previous: Optional[str] = None) -> Optional[Tuple[str, str]]:
     """Splits and url into domain/path
     Returns none if url is not valid"""
     url_copy = url
