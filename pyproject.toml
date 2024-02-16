@@ -57,6 +57,9 @@ dev = [
   "pytest-cov",
 ]
 
+[tool.setuptools.packages.find]
+include = ["bibtexautocomplete*"]
+
 [tool.ruff]
 line-length = 120
 
