@@ -87,6 +87,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
     mark: bool
     filter: Callable[[EntryType], bool]
     dumps: List[DataDump]
+    diff_mode: bool
 
     changed_fields: int
     changed_entries: int
@@ -107,6 +108,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         ignore_mark: bool = False,
         prefix: bool = False,
         escape_unicode: bool = False,
+        diff_mode: bool = False,
         fields_to_protect_uppercase: Container[str] = set(),
     ):
         self.bibdatabases = bibdatabases
@@ -127,6 +129,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
             self.filter = lambda x: x["ID"] in self.entries and MARKED_FIELD.lower() not in x
         self.escape_unicode = escape_unicode
         self.fields_to_protect_uppercase = fields_to_protect_uppercase
+        self.diff_mode = diff_mode
 
     def __iter__(self) -> Iterator[EntryType]:
         """Iterate through entries"""
@@ -234,6 +237,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 results.append(result)
                 new_fields = new_fields.union(result.fields())
 
+        new_entry: EntryType = dict()
         for field in new_fields:
             # Filter which fields to add
             if not (self.force_overwrite_all or (field in self.force_overwrite) or (not has_field(entry, field))):
@@ -249,7 +253,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 assert isinstance(value, str)
             if field in self.fields_to_protect_uppercase:
                 value = sub(r"([a-z]*[A-Z]+[a-zA-Z]*)", "{\\g<1>}", value)
-            entry[self.prefix + field] = value
+            new_entry[self.prefix + field] = value
             changes.append(Changes(field, value, bib_field.source))
 
         dump.new_fields = len(changes)
@@ -259,12 +263,17 @@ class BibtexAutocomplete(Iterable[EntryType]):
             self.changes.append((entry_id, changes))
         logger.verbose_info(
             BULLET + "{StBold}{entry}{StBoldOff} {nb} new fields",
-            entry=entry["ID"].ljust(self.get_id_padding()),
+            entry=entry_id.ljust(self.get_id_padding()),
             nb=len(changes),
         )
         self.dumps.append(dump)
         if self.mark:
-            entry[MARKED_FIELD] = datetime.today().strftime("%Y-%m-%d")
+            new_entry[MARKED_FIELD] = datetime.today().strftime("%Y-%m-%d")
+        if self.diff_mode:
+            new_entry["ID"] = entry_id
+            new_entry["ENTRYTYPE"] = entry.get("ENTRYTYPE", "unknown")
+            entry.clear()
+        entry.update(new_entry)
 
     def combine_field(self, results: List[BibtexEntry], fieldname: FieldType) -> Optional[BibtexField[Any]]:
         """Combine the values of a single field"""

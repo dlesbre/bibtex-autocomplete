@@ -130,6 +130,7 @@ parser.add_argument("--indent", "--fi", default="\t")
 parser.add_argument("--force-overwrite", "-f", action="store_true")
 parser.add_argument("--prefix", "-p", action="store_true")
 parser.add_argument("--inplace", "-i", action="store_true")
+parser.add_argument("--diff", "-D", action="store_true")
 
 parser.add_argument("--mark", "-m", action="store_true")
 parser.add_argument("--ignore-mark", "-M", action="store_true")
@@ -170,11 +171,14 @@ More information and demo:
       ignores any '.btac.bib' files, not recursive on subfolders.
   {StBold}{FgYellow}{NAME}{Reset}                    same as 'btac .'
 
-{StBold}Optional arguments:{Reset} can all be used multiple times
+{StBold}Output selection:{Reset}
   {FgYellow}-o --output{Reset} {FgGreen}<file.bib>{Reset}      Write output to given file
         With multiple input/outputs they are mapped in appearance order
         Extra inputs use default output name <filename>.btac.bib
+  {FgYellow}-i --inplace{Reset}          Modify input files inplace
+        ignores any specified output files via -o / --output
 
+{StBold}Query filtering:{Reset} can all be used multiple times
   {FgYellow}-q --only-query{Reset} {FgGreen}<website>{Reset}   Only query the given sites,
   {FgYellow}-Q --dont-query{Reset} {FgGreen}<website>{Reset}   Don't query the given sites
         Website must be one of:
@@ -194,6 +198,10 @@ More information and demo:
         Implicitly forces overwrite of all others.
         Field is a bibtex field (e.g. 'author', 'doi',...)
 
+  {FgYellow}-m --mark{Reset}             Add a "{MARKEDFIELD}" field to queried entries.
+        Entries with such a field are not queried in subsequent calls to btac
+  {FgYellow}-M --ignore-mark{Reset}      Also query entries with a "{MARKEDFIELD}" field
+
 {StBold}New field formatting:{Reset}
   {FgYellow}--fu --escape-unicode{Reset}      Replace unicode symbol by latex escapes (é -> {{\\'e}})
   {FgYellow}--fpa --protect-all-uppercase{Reset} Protect uppercases with '{{' '}}' in all fields
@@ -211,18 +219,14 @@ More information and demo:
         and '_' 't' 'n' characters to mark space, tabs and newlines.
 
 {StBold}Flags:{Reset}
-  {FgYellow}-i --inplace{Reset}          Modify input files inplace
-        ignores any specified output files
   {FgYellow}-f --force-overwrite{Reset}  Overwrite all already present fields
         Supercedes any and all -w or -W arguments.
   {FgYellow}-p --prefix{Reset}           Write new fields with a prefix
         eg: will write "{PREFIX}title = ..." instead of "title = ..." in the bib file.
         Can overwrite existing fields starting with BTACxxxx, even without the -f option.
         Can be combined with -f to safely show info for already present fields.
-
-  {FgYellow}-m --mark{Reset}             Add a "{MARKEDFIELD}" field to queried entries.
-        Entries with such a field are not queried in subsequent calls to btac
-  {FgYellow}-M --ignore-mark{Reset}      Also query entries with a "{MARKEDFIELD}" field
+  {FgYellow}-D --diff{Reset}             In diff mode, only the new fields are written
+        Entries with no new fields are removed. Cannot be used with -i / --inplace flag.
 
   {FgYellow}-t --timeout{Reset} {FgGreen}<float>{Reset}  set timeout on request, default: {TIMEOUT} s
         Set to -1 for no timeout.

@@ -119,6 +119,16 @@ def main(argv: Optional[List[str]] = None) -> None:
     if args.force_overwrite:
         FieldConditionMixin.overwrites = SearchedFields
 
+    if args.diff and args.inplace:
+        logger.error(
+            "Cannot use {FgYellow}-D/--diff{Reset} flag and {FgYellow}-i/--inplace{Reset} flag "
+            "simultaneously, as there\n"
+            "       is a big risk of deleting data.\n"
+            "       If that is truly what you want to do, specify the output file explictly\n"
+            "       with {FgYellow}-o / --output {FgGreen}<filename>{Reset}."
+        )
+        exit(5)
+
     databases = BibtexAutocomplete.read(args.input)
     completer = BibtexAutocomplete(
         databases,
@@ -132,6 +142,7 @@ def main(argv: Optional[List[str]] = None) -> None:
         prefix=args.prefix,
         fields_to_protect_uppercase=fields_to_protect_uppercase,
         escape_unicode=args.escape_unicode,
+        diff_mode=args.diff,
     )
     completer.print_filters()
     try:
