@@ -316,8 +316,8 @@ class BibtexAutocomplete(Iterable[EntryType]):
             for field, value, source in changes:
                 logger.verbose_info(
                     "    {FgBlue}{field}{Reset}{FgWhite}{StFaint} = {{{Reset}"
-                    "{value}{FgWhite}{StFaint}}},{Reset}"
-                    " {FgGreen}{StItalics}% {source}{Reset}",
+                    "{value}{FgWhite}{StFaint}}},{Reset}\n"
+                    "    {FgGreen}{StItalics}% source: {source}{Reset}",
                     field=field,
                     value=value,
                     source=source,
