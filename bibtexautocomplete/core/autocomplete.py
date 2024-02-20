@@ -220,13 +220,16 @@ class BibtexAutocomplete(Iterable[EntryType]):
             count_entries=self.count_entries(),
             changed_fields=self.changed_fields,
         )
+        # Delete empty entries (in diff mode)
+        for db in self.bibdatabases:
+            db.entries = filter(None, db.entries)
 
     def update_entry(self, entry: EntryType, threads: List[LookupThread], position: int) -> None:
         """Reads all data the threads have found on a new entry,
         and uses it to update the entry with new fields"""
         changes: List[Changes] = []
         results: List[BibtexEntry] = []
-        entry_id = entry.get("ID", "<unnamed>")
+        entry_id = entry.get("ID", "unnamed")
         new_fields: Set[FieldType] = set()
 
         dump = DataDump(entry_id)
@@ -270,8 +273,11 @@ class BibtexAutocomplete(Iterable[EntryType]):
         if self.mark:
             new_entry[MARKED_FIELD] = datetime.today().strftime("%Y-%m-%d")
         if self.diff_mode:
-            new_entry["ID"] = entry_id
-            new_entry["ENTRYTYPE"] = entry.get("ENTRYTYPE", "unknown")
+            if len(new_entry) > (1 if self.mark else 0):
+                new_entry["ID"] = entry_id
+                new_entry["ENTRYTYPE"] = entry.get("ENTRYTYPE", "unknown")
+            else:
+                new_entry = dict()
             entry.clear()
         entry.update(new_entry)
 
