@@ -106,7 +106,7 @@ class DOICheck(
                     data = final.data.decode()
                     with open("dump.text", "w") as file:
                         file.write(data)
-                    text = normalize_str_weak(data, from_latex=True)
+                    text = normalize_str_weak(data, from_latex=False)
                     for elem in self.not_available_checks:
                         if elem in text:
                             logger.debug("INVALID TEXT IN RESPONSE PAGE " + elem)
