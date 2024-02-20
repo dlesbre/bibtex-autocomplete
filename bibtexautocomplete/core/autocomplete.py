@@ -348,7 +348,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
 
     def write(self, files: List[Path]) -> None:
         """Writes the databases in self to the given files
-        If not enough files, extra databases are written to stdout
+        If not enough files, an error is raised.
         If too many files, extras are ignored"""
         self.write_header()
         total = len(self.bibdatabases)

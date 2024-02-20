@@ -68,6 +68,7 @@ narrow down the list of sources if some aren't relevant using command line optio
   - [Dependencies](#dependencies)
 - [Usage](#usage)
 - [Command line arguments](#command-line-arguments)
+  - [Specifying output](#specifying-output)
   - [Query filtering](#query-filtering)
   - [New field formatting](#new-field-formatting)
   - [Global output formatting](#global-output-formatting)
@@ -208,6 +209,11 @@ to respond and slow `btac`.
 
 ## Command line arguments
 
+As `btac` has a lot of option I'd recommend setting up an alias if you use a lot
+regularly.
+
+### Specifying output
+
 - `-o --output <file.bib>`
 
   Write output to given file. Can be used multiple times when also giving
@@ -217,6 +223,13 @@ to respond and slow `btac`.
   For example `btac db1.bib db2.bib db3.bib -o out1.bib -o out2.bib` reads `db1.bib`,
   `db2.bib` and `db3.bib`, and write their outputs to `out1.bib`, `out2.bib`
   and `db3.btac.bib` respectively.
+
+- `-i --inplace` Modify input files inplace, ignores any specified output files.
+  Avoid on non backed-up/version-controlled files, I'd hate it if my script
+  corrupted your data.
+
+- `-O --no-output` don't write any output files (except the one specified by `--dump-data`)
+  can be used with `-v/--verbose` mode to only print a list of changes to the terminal
 
 ### Query filtering
 
@@ -306,9 +319,6 @@ are a few options you can use to control the output format:
 
 ### Optional flags
 
-- `-i --inplace` Modify input files inplace, ignores any specified output files.
-  Avoid on non backed-up/version-controlled files, I'd hate it if my script
-  corrupted your data.
 - `-p --prefix` Write new fields with a prefix. The script will add `BTACtitle =
   ...` instead of `title = ...` in the bib file. This can be combined with `-f`
   to safely show info for already present fields.
@@ -317,6 +327,12 @@ are a few options you can use to control the output format:
   without the `-f` option.
 - `-f --force-overwrite` Overwrite already present fields. The default is to
   overwrite a field only if it is empty or absent
+- `-D --diff` only print the new fields in the output file. In this mode, old
+  fields are removed and entries with no new fields are deleted. This cannot be
+  used with the `-i --inplace` flag for safety reasons. If you really want to overwrite
+  your input file (and delete a bunch of data in the process), you can do so with
+  by specifying it explicitly via the `-o --output` option.
+
 - `-t --timeout <float>` set timeout on request in seconds, default: 20.0 s,
   increase this if you are getting a lot of timeouts. Set it to -1 for no timeout.
 - `-S --ignore-ssl` bypass SSL verification. Use this if you encounter the error:
@@ -354,9 +370,6 @@ are a few options you can use to control the output format:
     ...
   ]
   ```
-
-- `-O --no-output` don't write any output files (except the one specified by `--dump-data`)
-  can be used with `-v/--verbose` mode to only print a list of changes to the terminal
 
 - `-v --verbose` verbose mode shows more info. It details entries as they are
   being processed and shows a summary of new fields and their source at the end.
