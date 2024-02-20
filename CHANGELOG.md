@@ -1,5 +1,18 @@
 # Change Log
 
+## Version 1.3.1 - 2024-02-20
+
+- Add `-D --diff` flag
+- Changes to verbose mode output:
+  - display per source query counter under the
+    progress bar (hoping to make this even prettier once
+    https://github.com/rsalmei/alive-progress/issues/188 gets resolved)
+  - display source list on a new line in final output
+- Fix a new error occurring when checking DOIs (issue #12)
+- Officially support python 3.12
+- Build system change: now using `pyproject.toml` instead of `setup.py` and
+  [ruff](https://github.com/astral-sh/ruff) instead of black, isort and flake8.
+
 ## Version 1.3.0 - 2024-02-05
 
 - Add https://openalex.org/ as a source
