@@ -62,6 +62,9 @@ dev = [
 [tool.setuptools.packages.find]
 include = ["bibtexautocomplete*"]
 
+[tool.setuptools.dynamic]
+version = {attr = "bibtexautocomplete.__version__"}
+
 [tool.ruff]
 line-length = 120
 
