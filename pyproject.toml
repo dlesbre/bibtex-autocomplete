@@ -42,7 +42,7 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://github.com/dlesbre/bibtex-autocomplete"
-Repository = "https://github.com/dlesbre/bibtex-autocomplete/spam.git"
+Repository = "https://github.com/dlesbre/bibtex-autocomplete.git"
 Issues = "https://github.com/dlesbre/bibtex-autocomplete/issues"
 Changelog = "https://github.com/dlesbre/bibtex-autocomplete/blob/master/CHANGELOG.md"
 
