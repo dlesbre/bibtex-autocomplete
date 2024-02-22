@@ -67,7 +67,7 @@ class ResearchrLookup(JSON_Lookup):
     def get_value(self, result: SafeJSON) -> BibtexEntry:
         page_1 = result["firstpage"].to_str()
         page_n = result["lastpage"].to_str()
-        values = BibtexEntry(self.name)
+        values = BibtexEntry(self.name, self.entry.id)
         values.address.set(result["address"].to_str())
         values.author.set(self.get_authors(result["authors"]))
         values.booktitle.set(result["booktitle"].to_str())

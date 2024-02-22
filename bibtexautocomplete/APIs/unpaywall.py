@@ -91,7 +91,7 @@ class UnpaywallLookup(JSON_Lookup):
         title = result["journal_name"].to_str()
         is_journal = result["genre"].to_str() == "journal-article"
 
-        values = BibtexEntry(self.name)
+        values = BibtexEntry(self.name, self.entry.id)
 
         values.author.set(self.get_authors(result["z_authors"]))
         values.booktitle.set(None if is_journal else title)

@@ -100,7 +100,9 @@ class CrossrefLookup(JSON_Lookup):
         year, month = self.get_date(result)
         title = result["container-title"][0].to_str()
         is_journal = result["type"].to_str() == "journal-article"
-        values = BibtexEntry(self.name)
+
+        values = BibtexEntry(self.name, self.entry.id)
+
         values.author.set(self.get_authors(result["author"]))
         values.booktitle.set(None if is_journal else title)
         values.doi.set(result["DOI"].to_str())
@@ -113,6 +115,7 @@ class CrossrefLookup(JSON_Lookup):
         values.title.set(result["title"][0].to_str())
         values.volume.set(result["volume"].to_str())
         values.year.set(year)
+
         return values
 
     # Set of fields we can get from a query.

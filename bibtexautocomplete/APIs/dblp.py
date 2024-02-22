@@ -67,7 +67,7 @@ class DBLPLookup(JSON_Lookup):
 
     def get_value(self, result: SafeJSON) -> BibtexEntry:
         info = result["info"]
-        values = BibtexEntry(self.name)
+        values = BibtexEntry(self.name, self.entry.id)
         values.author.set(self.get_authors(info))
         values.doi.set(info["doi"].to_str())
         values.pages.set_str(info["pages"].to_str())

@@ -170,8 +170,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         entries = list(self)
         bib_entries: List[BibtexEntry] = []
         for x in entries:
-            bib = BibtexEntry("input")
-            bib.from_entry(x)
+            bib = BibtexEntry.from_entry("input", x)
             bib_entries.append(bib)
         condition = Condition()
         assert len(self.lookups) < MAX_THREAD_NB

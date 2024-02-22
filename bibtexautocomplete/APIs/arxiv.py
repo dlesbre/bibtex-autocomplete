@@ -107,7 +107,7 @@ class ArxivLookup(XML_Lookup):
     def get_value(self, result: Element) -> BibtexEntry:
         """Extract bibtex data from JSON output"""
         year, month = self.get_date(result)
-        values = BibtexEntry(self.name)
+        values = BibtexEntry(self.name, self.entry.id)
         values.author.set(self.get_authors(result))
         values.doi.set(self.get_doi(result))
         values.month.set(month)

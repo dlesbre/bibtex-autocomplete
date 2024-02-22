@@ -104,7 +104,7 @@ class InpireHEPLookup(JSON_Lookup):
         first_page = journal["page_start"].force_str()
         last_page = journal["page_end"].force_str()
 
-        values = BibtexEntry(self.name)
+        values = BibtexEntry(self.name, self.entry.id)
         values.author.set(self.get_authors(metadata["authors"]))
         values.doi.set(metadata["dois"][0]["value"].to_str())
         values.isbn.set(metadata["isbns"][0]["value"].force_str())

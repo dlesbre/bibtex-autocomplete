@@ -44,12 +44,14 @@ class BibtexField(Generic[T]):
 
     field: str
     source: str
+    entry_name: str
     value: Optional[T]
 
-    def __init__(self, field: str, source: str) -> None:
+    def __init__(self, field: str, source: str, entry_name: str) -> None:
         self.value = None
         self.source = source
         self.field = field
+        self.entry_name = entry_name
 
     #  Methods to override in subclasses
 
@@ -100,7 +102,7 @@ class BibtexField(Generic[T]):
         (eg. fewer abbreviations). This will only be called on fields that match"""
         if self.value is not None:
             if other.value is not None:
-                obj = self.__class__(self.field, self.source + SOURCE_SEPARATOR + other.source)
+                obj = self.__class__(self.field, self.source + SOURCE_SEPARATOR + other.source, self.entry_name)
                 obj.value = self.combine_values(self.value, other.value)
                 return obj
         logger.warn("Combining fields which store None")

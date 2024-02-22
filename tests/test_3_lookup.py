@@ -38,8 +38,7 @@ class TestDATQuery:
             return f"<doi:{self.doi}; author:{self.authors}; title:{self.title}>"
 
     def make_query(self, expected: List[ToCheck], entry: Dict[str, str]) -> None:
-        bib = BibtexEntry("test")
-        bib.from_entry(entry)
+        bib = BibtexEntry.from_entry("test", entry)
         p = self.parent(bib)
         p.index = 0
         p.expected = expected
@@ -116,8 +115,7 @@ class TestDTQuery:
             return f"<doi:{self.doi}; title:{self.title}>"
 
     def make_query(self, expected: List[ToCheck], entry: Dict[str, str]) -> None:
-        bib = BibtexEntry("test")
-        bib.from_entry(entry)
+        bib = BibtexEntry.from_entry("test", entry)
         p = self.parent(bib)
         p.index = 0
         p.expected = expected
@@ -177,8 +175,7 @@ class TestCondition:
         }
 
     def run(self, entry: Dict[str, str], expected: bool) -> None:
-        bib = BibtexEntry("test")
-        bib.from_entry(entry)
+        bib = BibtexEntry.from_entry("test", entry)
         p = self.parent(bib)
         p.query()
         assert p.queried == expected

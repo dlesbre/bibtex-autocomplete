@@ -114,7 +114,7 @@ class OpenAlexLookup(JSON_Lookup):
         first_page = result["biblio"]["first_page"].to_str()
         last_page = result["biblio"]["last_page"].to_str()
 
-        values = BibtexEntry(self.name)
+        values = BibtexEntry(self.name, self.entry.id)
         values.author.set(self.get_authors(result["authorships"]))
         values.doi.set(result["doi"].to_str())
         values.issn.set_str(location["source"]["issn_l"].to_str())

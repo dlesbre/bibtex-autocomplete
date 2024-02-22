@@ -140,7 +140,7 @@ class SemanticScholarLookup(JSON_Lookup):
         if venue is None:
             venue = result["journal"]["name"].to_str()
 
-        values = BibtexEntry(self.name)
+        values = BibtexEntry(self.name, self.entry.id)
         values.author.set(self.get_authors(result["authors"]))
         values.booktitle.set(None if is_journal else venue)
         values.doi.set(result["externalIds"]["DOI"].to_str())

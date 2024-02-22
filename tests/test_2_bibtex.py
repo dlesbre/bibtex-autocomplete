@@ -73,18 +73,18 @@ def test_normalize_doi() -> None:
     for d in doi:
         for p in prefixes:
             assert normalize_doi(p + d) == d
-            field = DOIField("doi", "test")
+            field = DOIField("doi", "test", "testentry")
             field.set(p + d)
             assert field.value == d
 
 
 def test_month() -> None:
     for month, norm in MonthField.EN_MONTHS.items():
-        field = MonthField("month", "test")
+        field = MonthField("month", "test", "testentry")
         field.set_str(month)
         assert field.value == str(norm)
     for month in ("bla", "not.a.month", "6496489", "#!!0"):
-        field = MonthField("month", "test")
+        field = MonthField("month", "test", "testentry")
         field.set_str(month)
         assert field.value is None
 
@@ -132,35 +132,33 @@ def test_get_authors(author: str, res: List[Author]) -> None:
 
 @pytest.mark.parametrize(("author", "res"), authors)
 def test_name_field(author: str, res: List[Author]) -> None:
-    field = NameField("author", "test")
+    field = NameField("author", "test", "testentry")
     field.set_str(author)
     assert field.value == (res if res != [] else None)
 
 
 @pytest.mark.parametrize(("author", "res"), authors)
 def test_BibtexEntry_author_get(author: str, res: List[Author]) -> None:
-    b = BibtexEntry("test")
-    b.from_entry({FieldNames.AUTHOR: author})
+    b = BibtexEntry.from_entry("test", {FieldNames.AUTHOR: author})
     assert b.author.value == (res if res != [] else None)
 
 
 @pytest.mark.parametrize(("author", "res"), authors)
 def test_BibtexEntry_editor_get(author: str, res: List[Author]) -> None:
-    b = BibtexEntry("test")
-    b.from_entry({FieldNames.EDITOR: author})
+    b = BibtexEntry.from_entry("test", {FieldNames.EDITOR: author})
     assert b.editor.value == (res if res != [] else None)
 
 
 @pytest.mark.parametrize(("author", "res"), authors)
 def test_BibtexEntry_author_set(author: str, res: List[Author]) -> None:
-    b = BibtexEntry("test")
+    b = BibtexEntry("test", "testentry")
     b.author.set(res)
     assert b.author.value == (res if res != [] else None)
 
 
 @pytest.mark.parametrize(("author", "res"), authors)
 def test_BibtexEntry_editor_set(author: str, res: List[Author]) -> None:
-    b = BibtexEntry("test")
+    b = BibtexEntry("test", "testentry")
     b.editor.set(res)
     assert b.editor.value == (res if res != [] else None)
 
@@ -173,11 +171,9 @@ def iterate_nested(list: List[List[str]]) -> Iterator[Tuple[int, str]]:
 
 
 def test_matching() -> None:
-    assert BibtexEntry("test").matches(BibtexEntry("test")) <= ENTRY_NO_MATCH
-    doi1 = BibtexEntry("test")
-    doi1.from_entry({"doi": "10.1234/12345"})
-    doi2 = BibtexEntry("test")
-    doi2.from_entry({"doi": "10.1234/different.12345"})
+    assert BibtexEntry("test", "testentry").matches(BibtexEntry("test", "testentry")) <= ENTRY_NO_MATCH
+    doi1 = BibtexEntry.from_entry("test", {"doi": "10.1234/12345"})
+    doi2 = BibtexEntry.from_entry("test", {"doi": "10.1234/different.12345"})
     assert doi1.matches(doi1) >= ENTRY_CERTAIN_MATCH
     assert doi1.matches(doi2) <= ENTRY_NO_MATCH
     # in same sublist should match (weakly)
@@ -192,13 +188,11 @@ def test_matching() -> None:
         ["Henry, F."],
     ]
     for id, title in iterate_nested(titles):
-        entry = BibtexEntry("test")
-        entry.from_entry({"title": title})
+        entry = BibtexEntry.from_entry("test", {"title": title})
         score_same = entry.matches(entry)
         assert score_same >= ENTRY_NO_MATCH
         for id2, title2 in iterate_nested(titles):
-            entry2 = BibtexEntry("test")
-            entry2.from_entry({"title": title2})
+            entry2 = BibtexEntry.from_entry("test", {"title": title2})
             score_diff = entry.matches(entry2)
             assert score_same >= score_diff
             assert score_diff == entry2.matches(entry)
@@ -209,13 +203,11 @@ def test_matching() -> None:
 
     title = "My Awesome paper"
     for id, author in iterate_nested(authors):
-        entry = BibtexEntry("test")
-        entry.from_entry({"title": title, "author": author})
+        entry = BibtexEntry.from_entry("test", {"title": title, "author": author})
         score_same = entry.matches(entry)
         assert score_same >= ENTRY_NO_MATCH
         for id2, author2 in iterate_nested(authors):
-            entry2 = BibtexEntry("test")
-            entry2.from_entry({"title": title, "author": author2})
+            entry2 = BibtexEntry.from_entry("test", {"title": title, "author": author2})
             score_diff = entry.matches(entry2)
             assert score_same >= score_diff
             assert score_diff == entry2.matches(entry)
@@ -225,12 +217,9 @@ def test_matching() -> None:
             else:
                 assert score_diff <= ENTRY_NO_MATCH
 
-    entry = BibtexEntry("test")
-    entry.from_entry({"title": title, "year": "2023"})
-    entry2 = BibtexEntry("test")
-    entry2.from_entry({"title": title, "year": "2024"})
-    entry3 = BibtexEntry("test")
-    entry3.from_entry({"title": title, "year": "Invalid"})
+    entry = BibtexEntry.from_entry("test", {"title": title, "year": "2023"})
+    entry2 = BibtexEntry.from_entry("test", {"title": title, "year": "2024"})
+    entry3 = BibtexEntry.from_entry("test", {"title": title, "year": "Invalid"})
     assert entry.matches(entry) > ENTRY_NO_MATCH
     assert entry.matches(entry2) <= ENTRY_NO_MATCH
     assert entry.matches(entry3) > ENTRY_NO_MATCH
@@ -268,7 +257,7 @@ urls2: List[Tuple[str, Optional[str]]] = [
 
 @pytest.mark.parametrize(("url", "result"), urls2)
 def test_normalize_url2(url: str, result: Optional[str]) -> None:
-    field = URLField("url", "test")
+    field = URLField("url", "test", "testentry")
     assert field.normalize(url) == result
 
 
@@ -305,7 +294,7 @@ listify_to_from: List[Tuple[str, Optional[str]]] = [
 
 @pytest.mark.parametrize(("source", "converted"), listify_to_from)
 def test_listify_to_from(source: str, converted: Optional[str]) -> None:
-    field = ListString("list_string", "test")
+    field = ListString("list_string", "test", "testentry")
     field.set_str(source)
     assert field.to_str() == converted
 
@@ -324,9 +313,9 @@ listify_match_merge: List[Tuple[str, str, bool, Optional[str]]] = [
 
 @pytest.mark.parametrize(("a", "b", "matches", "merged"), listify_match_merge)
 def test_listify_match_merge(a: str, b: str, matches: bool, merged: Optional[str]) -> None:
-    field_a = ListString("list_string", "test")
+    field_a = ListString("list_string", "test", "testentry")
     field_a.set_str(a)
-    field_b = ListString("list_string", "test")
+    field_b = ListString("list_string", "test", "testentry")
     field_b.set_str(b)
     score = field_a.matches(field_b)
     assert score is not None
@@ -364,9 +353,9 @@ author_match_merge: List[Tuple[str, str, bool, Optional[str]]] = [
 
 @pytest.mark.parametrize(("a", "b", "matches", "merged"), author_match_merge)
 def test_author_match_merge(a: str, b: str, matches: bool, merged: Optional[str]) -> None:
-    field_a = NameField("author", "test")
+    field_a = NameField("author", "test", "testentry")
     field_a.set_str(a)
-    field_b = NameField("author", "test")
+    field_b = NameField("author", "test", "testentry")
     field_b.set_str(b)
     score = field_a.matches(field_b)
     assert score is not None
@@ -406,9 +395,9 @@ abbrevs: List[Tuple[str, str, bool, Optional[str]]] = [
 
 @pytest.mark.parametrize(("a", "b", "matches", "merged"), abbrevs)
 def test_abbrev_match_merge(a: str, b: str, matches: bool, merged: Optional[str]) -> None:
-    field_a = AbbreviatedStringField("abbrev", "test")
+    field_a = AbbreviatedStringField("abbrev", "test", "testentry")
     field_a.set_str(a)
-    field_b = AbbreviatedStringField("abbrev", "test")
+    field_b = AbbreviatedStringField("abbrev", "test", "testentry")
     field_b.set_str(b)
     score = field_a.matches(field_b)
     assert score is not None
@@ -433,7 +422,7 @@ issns: List[Tuple[str, Optional[str]]] = [
 
 @pytest.mark.parametrize(("input", "value"), issns)
 def test_issn(input: str, value: Optional[str]) -> None:
-    field = ISSNField("issn", "test")
+    field = ISSNField("issn", "test", "testentry")
     field.set_str(input)
     assert field.to_str() == value
 
@@ -448,7 +437,7 @@ isbns: List[Tuple[str, Optional[str]]] = [
 
 @pytest.mark.parametrize(("input", "value"), isbns)
 def test_isbn(input: str, value: Optional[str]) -> None:
-    field = ISBNField("isbn", "test")
+    field = ISBNField("isbn", "test", "testentry")
     field.set_str(input)
     assert field.to_str() == value
 
@@ -463,7 +452,7 @@ years: List[Tuple[str, Optional[str]]] = [
 
 @pytest.mark.parametrize(("input", "value"), years)
 def test_year(input: str, value: Optional[str]) -> None:
-    field = YearField("year", "test")
+    field = YearField("year", "test", "testentry")
     field.set_str(input)
     assert field.to_str() == value
 
@@ -480,6 +469,6 @@ pages: List[Tuple[str, Optional[str]]] = [
 
 @pytest.mark.parametrize(("input", "value"), pages)
 def test_pages(input: str, value: Optional[str]) -> None:
-    field = PagesField("pages", "test")
+    field = PagesField("pages", "test", "testentry")
     field.set_str(input)
     assert field.to_str() == value
