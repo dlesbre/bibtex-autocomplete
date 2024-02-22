@@ -73,18 +73,18 @@ def test_normalize_doi() -> None:
     for d in doi:
         for p in prefixes:
             assert normalize_doi(p + d) == d
-            field = DOIField("doi", "test", "testentry")
+            field = DOIField("doi", "test")
             field.set(p + d)
             assert field.value == d
 
 
 def test_month() -> None:
     for month, norm in MonthField.EN_MONTHS.items():
-        field = MonthField("month", "test", "testentry")
+        field = MonthField("month", "test")
         field.set_str(month)
         assert field.value == str(norm)
     for month in ("bla", "not.a.month", "6496489", "#!!0"):
-        field = MonthField("month", "test", "testentry")
+        field = MonthField("month", "test")
         field.set_str(month)
         assert field.value is None
 
@@ -132,7 +132,7 @@ def test_get_authors(author: str, res: List[Author]) -> None:
 
 @pytest.mark.parametrize(("author", "res"), authors)
 def test_name_field(author: str, res: List[Author]) -> None:
-    field = NameField("author", "test", "testentry")
+    field = NameField("author", "test")
     field.set_str(author)
     assert field.value == (res if res != [] else None)
 
@@ -257,7 +257,7 @@ urls2: List[Tuple[str, Optional[str]]] = [
 
 @pytest.mark.parametrize(("url", "result"), urls2)
 def test_normalize_url2(url: str, result: Optional[str]) -> None:
-    field = URLField("url", "test", "testentry")
+    field = URLField("url", "test")
     assert field.normalize(url) == result
 
 
@@ -294,7 +294,7 @@ listify_to_from: List[Tuple[str, Optional[str]]] = [
 
 @pytest.mark.parametrize(("source", "converted"), listify_to_from)
 def test_listify_to_from(source: str, converted: Optional[str]) -> None:
-    field = ListString("list_string", "test", "testentry")
+    field = ListString("list_string", "test")
     field.set_str(source)
     assert field.to_str() == converted
 
@@ -313,9 +313,9 @@ listify_match_merge: List[Tuple[str, str, bool, Optional[str]]] = [
 
 @pytest.mark.parametrize(("a", "b", "matches", "merged"), listify_match_merge)
 def test_listify_match_merge(a: str, b: str, matches: bool, merged: Optional[str]) -> None:
-    field_a = ListString("list_string", "test", "testentry")
+    field_a = ListString("list_string", "test")
     field_a.set_str(a)
-    field_b = ListString("list_string", "test", "testentry")
+    field_b = ListString("list_string", "test")
     field_b.set_str(b)
     score = field_a.matches(field_b)
     assert score is not None
@@ -353,9 +353,9 @@ author_match_merge: List[Tuple[str, str, bool, Optional[str]]] = [
 
 @pytest.mark.parametrize(("a", "b", "matches", "merged"), author_match_merge)
 def test_author_match_merge(a: str, b: str, matches: bool, merged: Optional[str]) -> None:
-    field_a = NameField("author", "test", "testentry")
+    field_a = NameField("author", "test")
     field_a.set_str(a)
-    field_b = NameField("author", "test", "testentry")
+    field_b = NameField("author", "test")
     field_b.set_str(b)
     score = field_a.matches(field_b)
     assert score is not None
@@ -395,9 +395,9 @@ abbrevs: List[Tuple[str, str, bool, Optional[str]]] = [
 
 @pytest.mark.parametrize(("a", "b", "matches", "merged"), abbrevs)
 def test_abbrev_match_merge(a: str, b: str, matches: bool, merged: Optional[str]) -> None:
-    field_a = AbbreviatedStringField("abbrev", "test", "testentry")
+    field_a = AbbreviatedStringField("abbrev", "test")
     field_a.set_str(a)
-    field_b = AbbreviatedStringField("abbrev", "test", "testentry")
+    field_b = AbbreviatedStringField("abbrev", "test")
     field_b.set_str(b)
     score = field_a.matches(field_b)
     assert score is not None
@@ -422,7 +422,7 @@ issns: List[Tuple[str, Optional[str]]] = [
 
 @pytest.mark.parametrize(("input", "value"), issns)
 def test_issn(input: str, value: Optional[str]) -> None:
-    field = ISSNField("issn", "test", "testentry")
+    field = ISSNField("issn", "test")
     field.set_str(input)
     assert field.to_str() == value
 
@@ -437,7 +437,7 @@ isbns: List[Tuple[str, Optional[str]]] = [
 
 @pytest.mark.parametrize(("input", "value"), isbns)
 def test_isbn(input: str, value: Optional[str]) -> None:
-    field = ISBNField("isbn", "test", "testentry")
+    field = ISBNField("isbn", "test")
     field.set_str(input)
     assert field.to_str() == value
 
@@ -452,7 +452,7 @@ years: List[Tuple[str, Optional[str]]] = [
 
 @pytest.mark.parametrize(("input", "value"), years)
 def test_year(input: str, value: Optional[str]) -> None:
-    field = YearField("year", "test", "testentry")
+    field = YearField("year", "test")
     field.set_str(input)
     assert field.to_str() == value
 
@@ -469,6 +469,6 @@ pages: List[Tuple[str, Optional[str]]] = [
 
 @pytest.mark.parametrize(("input", "value"), pages)
 def test_pages(input: str, value: Optional[str]) -> None:
-    field = PagesField("pages", "test", "testentry")
+    field = PagesField("pages", "test")
     field.set_str(input)
     assert field.to_str() == value

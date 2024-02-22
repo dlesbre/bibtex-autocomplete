@@ -244,7 +244,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
             # Filter which fields to add
             if not (self.force_overwrite_all or (field in self.force_overwrite) or (not has_field(entry, field))):
                 continue
-            bib_field = self.combine_field(results, field)
+            bib_field = self.combine_field(results, field, entry_id)
             if bib_field is None:
                 continue
             value = bib_field.to_str()
@@ -280,7 +280,9 @@ class BibtexAutocomplete(Iterable[EntryType]):
             entry.clear()
         entry.update(new_entry)
 
-    def combine_field(self, results: List[BibtexEntry], fieldname: FieldType) -> Optional[BibtexField[Any]]:
+    def combine_field(
+        self, results: List[BibtexEntry], fieldname: FieldType, entry_name: str
+    ) -> Optional[BibtexField[Any]]:
         """Combine the values of a single field"""
         fields = [entry.get_field(fieldname) for entry in results if fieldname in entry]
         groups: List[Tuple[int, BibtexField[Any]]] = []
@@ -297,7 +299,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         # While retaining order on elements with equal counts
         groups.sort(key=lambda x: x[0], reverse=True)
         for _, elt in groups:
-            if elt.value is not None and elt.slow_check(elt.value):
+            if elt.value is not None and elt.slow_check(elt.value, entry_name):
                 return elt
         return None
 

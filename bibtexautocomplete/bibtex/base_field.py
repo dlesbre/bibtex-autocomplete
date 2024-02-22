@@ -44,14 +44,12 @@ class BibtexField(Generic[T]):
 
     field: str
     source: str
-    entry_name: str
     value: Optional[T]
 
-    def __init__(self, field: str, source: str, entry_name: str) -> None:
+    def __init__(self, field: str, source: str) -> None:
         self.value = None
         self.source = source
         self.field = field
-        self.entry_name = entry_name
 
     #  Methods to override in subclasses
 
@@ -62,9 +60,10 @@ class BibtexField(Generic[T]):
         return value
 
     @classmethod
-    def slow_check(cls, value: T) -> bool:
+    def slow_check(cls, value: T, entry_name: str) -> bool:
         """Performs a slow check (e.g. query URL to ensure it resolves)
-        Only done if we want to use this in our field"""
+        Only done if we want to use this in our field
+        entry_name is the name of the current entry, used for error printing"""
         return True
 
     @classmethod
@@ -102,7 +101,7 @@ class BibtexField(Generic[T]):
         (eg. fewer abbreviations). This will only be called on fields that match"""
         if self.value is not None:
             if other.value is not None:
-                obj = self.__class__(self.field, self.source + SOURCE_SEPARATOR + other.source, self.entry_name)
+                obj = self.__class__(self.field, self.source + SOURCE_SEPARATOR + other.source)
                 obj.value = self.combine_values(self.value, other.value)
                 return obj
         logger.warn("Combining fields which store None")
@@ -234,8 +233,8 @@ class ListField(BibtexField[List[T]]):
         return None
 
     @classmethod
-    def slow_check(cls, value: List[T]) -> bool:
-        return all(cls.base_class.slow_check(x) for x in value)
+    def slow_check(cls, value: List[T], entry_name: str) -> bool:
+        return all(cls.base_class.slow_check(x, entry_name) for x in value)
 
     @classmethod
     def match_values(cls, a: List[T], b: List[T]) -> int:

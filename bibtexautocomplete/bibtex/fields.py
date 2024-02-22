@@ -101,7 +101,7 @@ class DOIField(StrictStringField):
         return None
 
     @classmethod
-    def slow_check(cls, doi: str) -> bool:
+    def slow_check(cls, doi: str, entry_name: str) -> bool:
         """Query doi.org API to check DOI exists"""
         try:
             doi_checker = DOICheck(doi)
@@ -109,7 +109,7 @@ class DOIField(StrictStringField):
         except Exception as err:
             logger.traceback(
                 f"Uncaught exception when checking DOI resolution\n"
-                f"Entry = {id}\n"
+                f"Entry = {entry_name}\n"
                 f"DOI = {doi}\n\n"
                 "As a result, this DOI will NOT be added to the entry",
                 err,
@@ -130,14 +130,14 @@ class URLField(StrictStringField):
         return None
 
     @classmethod
-    def slow_check(cls, value: str) -> bool:
+    def slow_check(cls, value: str, entry_name: str) -> bool:
         try:
             checker = URLCheck(value)
             return checker.query() is not None
         except Exception as err:
             logger.traceback(
                 f"Uncaught exception when checking URL resolution\n"
-                f"Entry = {id}\n"
+                f"Entry = {entry_name}\n"
                 f"URL = {value}\n\n"
                 "As a result, this URL will NOT be added to the entry",
                 err,
