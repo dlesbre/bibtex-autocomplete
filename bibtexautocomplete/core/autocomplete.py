@@ -242,7 +242,10 @@ class BibtexAutocomplete(Iterable[EntryType]):
         new_entry: EntryType = dict()
         for field in new_fields:
             # Filter which fields to add
-            if not (self.force_overwrite_all or (field in self.force_overwrite) or (not has_field(entry, field))):
+            not_on_entry = not has_field(entry, field)
+            should_overwrite = self.force_overwrite_all or (field in self.force_overwrite)
+            should_complete = field in self.fields
+            if not (should_complete and (not_on_entry or should_overwrite)):
                 continue
             bib_field = self.combine_field(results, field, entry_id)
             if bib_field is None:
