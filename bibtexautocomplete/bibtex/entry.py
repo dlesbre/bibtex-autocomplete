@@ -3,7 +3,7 @@ Wraps around bibtexparser's entry representations for safer access
 and field normalization
 """
 
-from typing import Any, Dict, Set, cast
+from typing import Any, Dict, NamedTuple, Set, cast
 
 from ..utils.constants import EntryType
 from .base_field import BibtexField
@@ -29,6 +29,100 @@ from .fields import (
 )
 
 
+class FieldSets(NamedTuple):
+    """A struct to represent which fields are required/optional/non-standard
+    for bibtex entry types"""
+
+    required: Set[FieldType]
+    optional: Set[FieldType]
+    non_standard: Set[FieldType]
+
+
+# Source: https://tex.stackexchange.com/questions/239042/where-can-we-find-a-list-of-all-available-bibtex-entries-and-the-available-fiel
+ENTRY_TYPES = {
+    "article": FieldSets(
+        required={"author", "title", "journal", "year"},
+        optional={"volume", "number", "pages", "month", "note"},
+        non_standard={"doi", "issn"},  # also "zblnumber" and "eprint"
+    ),
+    "book": FieldSets(
+        required={"author", "editor", "title", "publisher", "year"},
+        optional={"volume", "number", "series", "address", "edition", "month", "note"},
+        non_standard={"doi", "isbn", "issn"},
+    ),
+    "booklet": FieldSets(
+        required={"title"},
+        optional={"author", "howpublished", "address", "month", "year", "note"},
+        non_standard={"doi"},
+    ),
+    "conference": FieldSets(
+        required={"author", "title", "booktitle", "year"},
+        optional={
+            "editor",
+            "volume",
+            "number",
+            "series",
+            "pages",
+            "address",
+            "month",
+            "organization",
+            "publisher",
+            "note",
+        },
+        non_standard={"doi", "isbn", "issn"},
+    ),
+    "inbook": FieldSets(
+        required={"author", "editor", "title", "chapter", "pages", "publisher", "year"},
+        optional={"volume", "number", "series", "type", "address", "edition", "month", "note"},
+        non_standard={"doi", "isbn"},
+    ),
+    "incollection": FieldSets(
+        required={"author", "title", "booktitle", "publisher", "year"},
+        optional={
+            "editor",
+            "volume",
+            "number",
+            "series",
+            "type",
+            "chapter",
+            "pages",
+            "address",
+            "edition",
+            "month",
+            "note",
+        },
+        non_standard={"doi", "isbn"},
+    ),
+    "manual": FieldSets(
+        required={"title"},
+        optional={"author", "organization", "address", "edition", "month", "year", "note"},
+        non_standard={"doi", "isbn"},
+    ),
+    "mastersthesis": FieldSets(
+        required={"author", "title", "school", "year"},
+        optional={"type", "address", "month", "note"},
+        non_standard={"doi"},
+    ),
+    "misc": FieldSets(
+        required=set(),
+        optional={"author", "title", "howpublished", "month", "year", "note"},
+        non_standard={"doi"},
+    ),
+    "techreport": FieldSets(
+        required={"author", "title", "institution", "year"},
+        optional={"type", "number", "address", "month", "note"},
+        non_standard={"doi", "isbn"},
+    ),
+    "unpublished": FieldSets(
+        required={"author", "title", "note"},
+        optional={"month", "year"},
+        non_standard={"doi"},
+    ),
+}
+ENTRY_TYPES["inproceedings"] = ENTRY_TYPES["conference"]
+ENTRY_TYPES["phdthesis"] = ENTRY_TYPES["mastersthesis"]
+
+
 class BibtexEntry:
     """A class to encapsulate bibtex entries
     Avoids spelling errors in field names
@@ -38,14 +132,17 @@ class BibtexEntry:
     >>> entry.doi.set("10.1234/123456")
     >>> entry.doi.set("not_a_doi") # Invalid format, set DOI to None
     >>> entry.doi.to_str() # None
-    They are not performed on initialization !
-    >>> entry = BibtexEntry({'doi': 'not_a_doi'})
-    >>> entry.doi.to_str() # None
-    >>> entry.to_entry() # {'doi': 'not_a_doi'}
+    Additional (field slow_checks) are only performed when setting the field
+    in the Autocomplete class, to avoid needless queries
+    (i.e. checking URL resolves)
 
     Some fields have special treatment:
     - author and editor return/are set by a list of authors instead of a string
     - doi is formatted on get/set to remove leading url
+    - ISSN and ISBN have their check digits verified, and imposed format of
+      nnnn-nnnx for ISSN and nnn-nnnnnnnnnn for ISBN
+    - year is formatted to a number between 100 and current year + 10
+    - pages are normalized to use "--" as separator
     - month is formatted to "1" -- "12" if possible (recognizes "jan", "FeB.", "March"...)
     """
 
