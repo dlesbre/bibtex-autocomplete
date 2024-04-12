@@ -113,6 +113,7 @@ parser.add_argument("--dont-complete", "-C", action="append", default=[], choice
 parser.add_argument("--only-complete", "-c", action="append", default=[], choices=FIELD_NAMES)
 parser.add_argument("--dont-overwrite", "-W", action="append", default=[], choices=FIELD_NAMES)
 parser.add_argument("--overwrite", "-w", action="append", default=[], choices=FIELD_NAMES)
+parser.add_argument("--by-entrytype", "-b", default="no", choices=["required", "optional", "all"])
 
 parser.add_argument("--exclude-entry", "-E", action="append", default=[])
 parser.add_argument("--only-entry", "-e", action="append", default=[])
@@ -191,6 +192,11 @@ More information and demo:
   {FgYellow}-c --only-complete{Reset} {FgGreen}<field>{Reset}  Only complete the given fields
   {FgYellow}-C --dont-complete{Reset} {FgGreen}<field>{Reset}  Don't complete the given fields
         Field is a bibtex field (e.g. 'author', 'doi',...)
+  {FgYellow}-b --by-entrytype{Reset} {FgGreen}required|optional|all{Reset} Disabled by default
+        Only add fields defined as part of given entry type by bibtex (e.g. no
+        'publisher' on '@article'). 'required' only adds required fields,
+        'optional' adds required and optional, 'all' adds required, optional and
+        non-standard ('doi', 'issn' and 'isbn').
 
   {FgYellow}-w --overwrite{Reset} {FgGreen}<field>{Reset}       Overwrite the given fields,
         even if already present. Default is to overwrite nothing. See also "-f" flag
