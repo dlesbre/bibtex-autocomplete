@@ -2,7 +2,7 @@
 
 ## Version 1.3.2 - 2024-04-12
 
-- Add `-b / --by-entrytype` option (issue #13).
+- Add `-b --filter-fields-by-entrytype` option (issue [#13](https://github.com/dlesbre/bibtex-autocomplete/issues/13)).
 - Fix `-c / -C` flags only filtering queries and not results since 1.3.0
 - Fix output of some error messages not displaying entry ID
 
@@ -14,7 +14,7 @@
     progress bar (hoping to make this even prettier once
     https://github.com/rsalmei/alive-progress/issues/188 gets resolved)
   - display source list on a new line in final output
-- Fix a new error occurring when checking DOIs (issue #12)
+- Fix a new error occurring when checking DOIs (issue [#12](https://github.com/dlesbre/bibtex-autocomplete/issues/12))
 - Officially support python 3.12
 - Build system change: now using `pyproject.toml` instead of `setup.py` and
   [ruff](https://github.com/astral-sh/ruff) instead of black, isort and flake8.
@@ -46,7 +46,7 @@
 - Fix author names with `von` prefix not formatted correctly
 - Fix author names with capitalized prefix (`De`, `Von`, ...) not formatted correctly
 - Fix `btac` removing capital-preserving brackets and converting to unicode in
-  user supplied fields (issue #11).
+  user supplied fields (issue [#11](https://github.com/dlesbre/bibtex-autocomplete/issues/11)).
 
 ## Version 1.2.2 - 2023-11-26
 
@@ -72,11 +72,11 @@
 ## Version 1.1.8 - 2023-02-27
 
 - Add global exception catches to resume work if a single lookup fails
-- Fix websites returning invalid URLs leading to errors (issue #8, part 2)
+- Fix websites returning invalid URLs leading to errors (issue [#8](https://github.com/dlesbre/bibtex-autocomplete/issues/8), part 2)
 
 ## Version 1.1.7 - 2023-02-27
 
-- Fix trying to decode non-text doi response (issue #8)
+- Fix trying to decode non-text doi response (issue [#8](https://github.com/dlesbre/bibtex-autocomplete/issues/8))
 - Add entry name to error/warning messages
 
 ## Version 1.1.6 - 2023-01-06

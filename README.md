@@ -252,6 +252,13 @@ regularly.
   Restrict which fields you wish to autocomplete. Field is a BibTeX field (e.g.
   `author`, `doi`,...). So if you only wish to add missing DOIs use `-c doi`.
 
+- `-b --filter-fields-by-entrytype <required|optional|all>` only add fields that correspond to
+  the given entry type in bibtex's data model. Disabled by default. `required`
+  only adds required fields, `optional` adds required and optional fields, and
+  `all` adds required, optional and non-standard fields (doi, issn and isbn).
+  A list of required/optional fields by entry type can be found
+  [on the tex stackexchange](https://tex.stackexchange.com/questions/239042/where-can-we-find-a-list-of-all-available-bibtex-entries-and-the-available-fiel)
+
 - `-w --overwrite <field>` or `-W --dont-overwrite <field>`
 
   Force overwriting of the selected fields. If using `-W author -W journal`
@@ -259,7 +266,7 @@ regularly.
   default is to override nothing (only complete absent and blank fields).
 
   For a more complex example `btac -C doi -w author` means complete all fields
-  save DOI, and only overwrite author fields
+  save DOI, and only overwrite author fields.
 
   You can also use the `-f` flag to overwrite everything or the `-p` flag to add
   a prefix to new fields, thus avoiding overwrites.
