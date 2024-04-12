@@ -1,5 +1,11 @@
 # Change Log
 
+## Version 1.3.2 - 2024-04-12
+
+
+- Fix `-c / -C` flags only filtering queries and not results since 1.3.0
+- Fix output of some error messages not displaying entry ID
+
 ## Version 1.3.1 - 2024-02-20
 
 - Add `-D --diff` flag

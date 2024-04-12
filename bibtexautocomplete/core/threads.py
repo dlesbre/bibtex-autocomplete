@@ -1,6 +1,7 @@
 from threading import Condition, Thread
-from typing import Callable, Dict, List, Optional, Tuple
+from typing import Callable, Dict, List, Optional, Set, Tuple
 
+from ..bibtex.constants import FieldType, SearchedFields
 from ..bibtex.entry import BibtexEntry
 from ..lookups.abstract_entry_lookup import LookupType
 from ..utils.logger import logger
@@ -14,6 +15,7 @@ class LookupThread(Thread):
 
     lookup: LookupType
     entries: List[BibtexEntry] = []  # Read only
+    to_complete: List[Set[FieldType]] = []  # Read only
     condition: Condition
     entry_name: Optional[str]
     result: List[
@@ -30,10 +32,12 @@ class LookupThread(Thread):
         self,
         lookup: LookupType,
         entries: List[BibtexEntry],
+        to_complete: List[Set[FieldType]],
         condition: Condition,
         bar: Callable[[], None],
     ):
         self.entries = entries
+        self.to_complete = to_complete
         self.lookup = lookup
         self.condition = condition
         self.position = 0
@@ -53,19 +57,27 @@ class LookupThread(Thread):
             lookup = self.lookup(entry)
             self.condition.release()
 
-            try:
-                result = lookup.query()
-            except Exception as err:
+            fields: Set[FieldType] = getattr(lookup, "fields", SearchedFields)
+            if fields.isdisjoint(self.to_complete):
+                # Skip query as no fields need to be completed
                 result = None
-                logger.traceback(
-                    "Uncaught exception when trying to autocomplete entry\n"
-                    f"Entry = {self.entry_name}\n"
-                    f"Website = {self.name}",
-                    err,
-                )
+                info = dict()
+            else:
+                try:
+                    result = lookup.query()
+                    info = lookup.get_last_query_info()
+                except Exception as err:
+                    result = None
+                    info = lookup.get_last_query_info()
+                    logger.traceback(
+                        "Uncaught exception when trying to autocomplete entry\n"
+                        f"Entry = {self.entry_name}\n"
+                        f"Website = {self.name}",
+                        err,
+                    )
 
             self.condition.acquire()
-            self.result.append((result, lookup.get_last_query_info()))
+            self.result.append((result, info))
             self.position += 1
             self.bar()
             self.condition.notify()

@@ -17,6 +17,7 @@ from typing import (
     Iterable,
     Iterator,
     List,
+    Literal,
     NamedTuple,
     Optional,
     Set,
@@ -31,7 +32,7 @@ from bibtexparser.latexenc import string_to_latex
 
 from ..bibtex.base_field import BibtexField
 from ..bibtex.constants import FIELD_NO_MATCH, FieldType
-from ..bibtex.entry import BibtexEntry
+from ..bibtex.entry import ENTRY_TYPES, BibtexEntry
 from ..bibtex.io import file_read, file_write, get_entries
 from ..bibtex.normalize import has_field
 from ..lookups.abstract_entry_lookup import LookupType
@@ -77,7 +78,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
 
     bibdatabases: List[BibDatabase]
     lookups: List[LookupType]
-    fields: Container[str]
+    fields: Set[FieldType]  # Set of fields to complete
     entries: OnlyExclude[str]
     force_overwrite: Container[str]
     force_overwrite_all: bool
@@ -88,6 +89,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
     filter: Callable[[EntryType], bool]
     dumps: List[DataDump]
     diff_mode: bool
+    filter_by_entrytype: Literal["no", "required", "optional", "all"]
 
     changed_fields: int
     changed_entries: int
@@ -100,7 +102,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         self,
         bibdatabases: List[BibDatabase],
         lookups: Iterable[LookupType],
-        fields: Container[str],
+        fields: Set[FieldType],
         entries: OnlyExclude[str],
         force_overwrite: Container[str] = [],
         force_overwrite_all: bool = False,
@@ -110,6 +112,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         escape_unicode: bool = False,
         diff_mode: bool = False,
         fields_to_protect_uppercase: Container[str] = set(),
+        filter_by_entrytype: Literal["no", "required", "optional", "all"] = "no",
     ):
         self.bibdatabases = bibdatabases
         self.lookups = list(lookups)
@@ -130,6 +133,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         self.escape_unicode = escape_unicode
         self.fields_to_protect_uppercase = fields_to_protect_uppercase
         self.diff_mode = diff_mode
+        self.filter_by_entrytype = filter_by_entrytype
 
     def __iter__(self) -> Iterator[EntryType]:
         """Iterate through entries"""
@@ -169,9 +173,11 @@ class BibtexAutocomplete(Iterable[EntryType]):
         total = self.count_entries() * len(self.lookups)
         entries = list(self)
         bib_entries: List[BibtexEntry] = []
+        to_complete: List[Set[FieldType]] = []
         for x in entries:
             bib = BibtexEntry.from_entry("input", x)
             bib_entries.append(bib)
+            to_complete.append(self.get_fields_to_complete(x))
         condition = Condition()
         assert len(self.lookups) < MAX_THREAD_NB
         threads: List[LookupThread] = []
@@ -189,7 +195,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         ) as bar:
             # Create all threads
             for lookup in self.lookups:
-                threads.append(LookupThread(lookup, bib_entries, condition, bar))
+                threads.append(LookupThread(lookup, bib_entries, to_complete, condition, bar))
             condition.acquire()
             # Start all threads
             for thread in threads:
@@ -211,7 +217,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 if not step:  # Some threads have not found data for current entry
                     condition.wait()
                 else:  # update data for current entry
-                    self.update_entry(entries[position], threads, position)
+                    self.update_entry(entries[position], to_complete[position], threads, position)
                     position += 1
         logger.info(
             "Modified {changed_entries} / {count_entries} entries" ", added {changed_fields} fields",
@@ -223,7 +229,35 @@ class BibtexAutocomplete(Iterable[EntryType]):
         for db in self.bibdatabases:
             db.entries = filter(None, db.entries)
 
-    def update_entry(self, entry: EntryType, threads: List[LookupThread], position: int) -> None:
+    def get_fields_to_complete_by_entrytype(self, entry: EntryType) -> Set[FieldType]:
+        """Set of fields that can be accepted by the current entry,
+        Only looking at the given entry type"""
+        field_set = self.fields.copy()
+        if self.filter_by_entrytype == "no":
+            return field_set
+        entry_type = entry.get("ENTRYTYPE", "misc")
+        if entry_type not in ENTRY_TYPES:
+            entry_type = "misc"
+        entry_fields = ENTRY_TYPES[entry_type]
+        if self.filter_by_entrytype == "all":
+            return field_set & (entry_fields.required | entry_fields.optional | entry_fields.non_standard)
+        if self.filter_by_entrytype == "optional":
+            return field_set & (entry_fields.required | entry_fields.optional)
+        return field_set & entry_fields.required
+
+    def get_fields_to_complete(self, entry: EntryType) -> Set[FieldType]:
+        """Set of fields that can be accepted by the current entry,
+        looking at the entrytype and list of present fields"""
+        fields = self.get_fields_to_complete_by_entrytype(entry)
+        return set(
+            field
+            for field in fields
+            if (not has_field(entry, field)) or self.force_overwrite_all or field in self.force_overwrite
+        )
+
+    def update_entry(
+        self, entry: EntryType, to_complete: Set[FieldType], threads: List[LookupThread], position: int
+    ) -> None:
         """Reads all data the threads have found on a new entry,
         and uses it to update the entry with new fields"""
         changes: List[Changes] = []
@@ -242,10 +276,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         new_entry: EntryType = dict()
         for field in new_fields:
             # Filter which fields to add
-            not_on_entry = not has_field(entry, field)
-            should_overwrite = self.force_overwrite_all or (field in self.force_overwrite)
-            should_complete = field in self.fields
-            if not (should_complete and (not_on_entry or should_overwrite)):
+            if field not in to_complete:
                 continue
             bib_field = self.combine_field(results, field, entry_id)
             if bib_field is None:

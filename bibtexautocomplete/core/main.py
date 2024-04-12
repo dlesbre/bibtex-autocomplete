@@ -4,7 +4,6 @@ from typing import Container, List, Optional
 
 from ..bibtex.constants import FieldNamesSet, SearchedFields
 from ..bibtex.io import writer
-from ..lookups.abstract_entry_lookup import FieldConditionMixin
 from ..lookups.https import HTTPSLookup
 from ..utils.ansi import ANSICodes, ansi_format
 from ..utils.constants import (
@@ -113,12 +112,6 @@ def main(argv: Optional[List[str]] = None) -> None:
     overwrite = OnlyExclude[str].from_nonempty(args.overwrite, args.dont_overwrite)
     overwrite.default = False
 
-    FieldConditionMixin.fields_to_complete = set(fields.filter(SearchedFields, lambda x: x))
-    FieldConditionMixin.overwrites = set(overwrite.filter(SearchedFields, lambda x: x))
-
-    if args.force_overwrite:
-        FieldConditionMixin.overwrites = SearchedFields
-
     if args.diff and args.inplace:
         logger.error(
             "Cannot use {FgYellow}-D/--diff{Reset} flag and {FgYellow}-i/--inplace{Reset} flag "
@@ -133,7 +126,7 @@ def main(argv: Optional[List[str]] = None) -> None:
     completer = BibtexAutocomplete(
         databases,
         lookups,
-        fields,
+        set(fields.filter(SearchedFields, lambda x: x)),
         entries,
         force_overwrite=overwrite,
         force_overwrite_all=args.force_overwrite,
