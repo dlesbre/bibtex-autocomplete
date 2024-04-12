@@ -73,7 +73,6 @@ narrow down the list of sources if some aren't relevant using command line optio
   - [New field formatting](#new-field-formatting)
   - [Global output formatting](#global-output-formatting)
   - [Optional flags](#optional-flags)
-- [Running from python](#running-from-python)
 - [Credit and license](#credit-and-license)
 
 ## New in version 1.3
@@ -386,38 +385,6 @@ are a few options you can use to control the output format:
 
 - `--version` show version number
 - `-h --help` show help
-
-## Running from python
-
-You can also run this script from python directly. Here is a small demonstration:
-```python
-from bibtexautocomplete import BibtexAutocomplete
-
-# 1 - Create a BibtexAutocomplete instance with the desired settings
-completer = BibtexAutocomplete(**settings)
-
-# 2 - Load a Bibtex files using any of the following
-# 2.1 - Load a single file or list of files
-completer.load_file("ex.bib")
-completer.load_file(["ex1.bib", "ex2.bib"])
-# 2.2 - Load bibtex content as string or list of strings
-completer.load_str(bibtex)
-completer.load_str([bibtex1, bibtex2])
-# 2.3 - Load bibtex content from stdin directly
-completer.load_stdin()
-# 2.4 - Load entry, list of entries, or list of list of entries as a dict
-# Lowercase name for fields, "ID" and "ENTRYTYPE" for entry id and type
-completer.load_entry({"author": "John Doe", ...})
-
-# 3 - Run the completer (may take a while)
-completer.autocomplete()
-
-# 4 - Get the results
-completer.write_file("ex.btac.bib")
-completer.write_file(["ex1.bib", "ex2.bib"]) # list must be same length as input
-completer.write_str() # type: str | list[str]
-completer.write_entry() # type: EntryType or list[EntryType] or list[list[EntryType]]
-```
 
 ## Credit and license
 
