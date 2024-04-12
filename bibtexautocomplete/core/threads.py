@@ -1,7 +1,7 @@
 from threading import Condition, Thread
 from typing import Callable, Dict, List, Optional, Set, Tuple
 
-from ..bibtex.constants import FieldType, SearchedFields
+from ..bibtex.constants import FieldType
 from ..bibtex.entry import BibtexEntry
 from ..lookups.abstract_entry_lookup import LookupType
 from ..utils.logger import logger
@@ -57,11 +57,11 @@ class LookupThread(Thread):
             lookup = self.lookup(entry)
             self.condition.release()
 
-            fields: Set[FieldType] = getattr(lookup, "fields", SearchedFields)
-            if fields.isdisjoint(self.to_complete):
+            if lookup.fields.isdisjoint(self.to_complete[self.position]):
                 # Skip query as no fields need to be completed
                 result = None
                 info = dict()
+                logger.debug("Skipping query, no data to add")
             else:
                 try:
                     result = lookup.query()
