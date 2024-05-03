@@ -57,7 +57,7 @@ It attempts to complete a BibTeX file by querying the following domains:
 
 Big thanks to all of them for allowing open, easy and well-documented access to
 their databases. This project wouldn't be possible without them. You can easily
-narrow down the list of sources if some aren't relevant using command line options.
+narrow down the list of sources if some aren't relevant using [command line options](#query-filtering).
 
 ### Contents
 
@@ -236,10 +236,10 @@ regularly.
 - `-q --only-query <site>` or `-Q --dont-query <site>`
 
   Restrict which websites to query from. `<site>` must be one of: `openalex`,
-  `crossref`, `arxiv`, `s2`, `unpaywall`, `dblp`, `researchr`, `inspire`. These arguments
+  `crossref`, `arxiv`, `s2`, `unpaywall`, `dblp`, `researchr`, `hep`. These arguments
   can be used multiple times, for example to only query Crossref and DBLP use
   `-q crossref -q dblp` or
-  `-Q openalex -Q researchr -Q unpaywall -Q arxiv -Q s2 -Q inspire`
+  `-Q openalex -Q researchr -Q unpaywall -Q arxiv -Q s2 -Q hep`
 
 - `-e --only-entry <id>` or `-E --exclude-entry <id>`
 
