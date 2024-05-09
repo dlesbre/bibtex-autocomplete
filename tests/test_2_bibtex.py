@@ -212,7 +212,6 @@ def test_matching() -> None:
             assert score_same >= score_diff
             assert score_diff == entry2.matches(entry)
             if id == id2:
-                print(author, author2)
                 assert score_diff > ENTRY_NO_MATCH
             else:
                 assert score_diff <= ENTRY_NO_MATCH

@@ -1,0 +1,9 @@
+@article{entry1,
+	title = {My awesome article},
+	author = {Yours Truly},
+	journal = {Generated Journal 1},
+	month = {2},
+	organization = {organization 1},
+	pages = {1},
+	volume = {1},
+}

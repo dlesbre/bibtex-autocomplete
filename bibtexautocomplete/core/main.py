@@ -27,7 +27,7 @@ from .parser import (
     get_bibfiles,
     indent_string,
     make_output_names,
-    parser,
+    make_parser,
 )
 
 
@@ -36,6 +36,7 @@ def main(argv: Optional[List[str]] = None) -> None:
     Takes an argv like List as argument,
     if none, uses sys.argv
     see HELP_TEXT or main(["-h"]) for details"""
+    parser = make_parser()
     if argv is None:
         args = parser.parse_args()
     else:
