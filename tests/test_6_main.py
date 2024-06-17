@@ -48,12 +48,15 @@ class FakeLookup(EntryMatchSearchMixin[SafeJSON], AbstractDataLookup[BibtexEntry
         # Add basic defaults
         entry.title.set(f"Generated title {count}")
         entry.author.set_str(f"John Doe{count}")
+        entry.booktitle.set(f"Generated booktitle {count}")
         # entry.doi.set(f"10.00000/generated.{count}")
         entry.journal.set_str(f"Generated Journal {count}")
         entry.month.set(str(count % 12 + 1))
         entry.pages.set_str(f"1 -- {count}")
         entry.organization.set_str(f"organization {count}")
         entry.volume.set_str(str(count))
+        entry.note.set(f"Note: this is query number {count}")
+        entry.edition.set(f"Edition {count}")
         # entry.url.set("https://example.com/")
 
         # Cheekily copy fields from the source entry
