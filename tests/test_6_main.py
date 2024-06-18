@@ -57,6 +57,7 @@ class FakeLookup(EntryMatchSearchMixin[SafeJSON], AbstractDataLookup[BibtexEntry
         entry.volume.set_str(str(count))
         entry.note.set(f"Note: this is query number {count}")
         entry.edition.set(f"Edition {count}")
+        entry.issn.set_str(f"{str(count).zfill(4)}-0001")
         # entry.url.set("https://example.com/")
 
         # Cheekily copy fields from the source entry
