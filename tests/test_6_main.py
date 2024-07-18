@@ -88,12 +88,17 @@ LOOKUPS.append(FakeLookup)
 # - files to compare afterwards (expected first)
 tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
     ([input_bib], [("input.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "-o", path.join(test_dir, "input.btac.bib")], [("input.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--output", path.join(test_dir, "input.btac.bib")], [("input.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--output=" + path.join(test_dir, "foo.btac.bib")], [("input.btac.bib.exp", "foo.btac.bib")]),
+    ([input_bib, "--fi", "t"], [("input.btac.bib.exp", "input.btac.bib")]),
 ]
 
 
 @pytest.mark.parametrize(("argv", "files_to_compare"), tests)
 def test_main(argv: List[str], files_to_compare: List[Tuple[str, str]]) -> None:
     main(argv)
+    FakeLookup.count = 0
     for generated, expected in files_to_compare:
         with open(path.join(test_dir, expected), "r") as expected_file:
             expected_contents = expected_file.read()
