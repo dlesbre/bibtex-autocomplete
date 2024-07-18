@@ -3,7 +3,7 @@ from typing import Iterable, List, Optional, Tuple
 
 import pytest
 
-from bibtexautocomplete.bibtex.constants import SearchedFields
+from bibtexautocomplete.bibtex.constants import FieldNames
 from bibtexautocomplete.bibtex.entry import BibtexEntry
 from bibtexautocomplete.core.apis import LOOKUPS
 from bibtexautocomplete.core.main import main
@@ -23,7 +23,19 @@ class FakeLookup(EntryMatchSearchMixin[SafeJSON], AbstractDataLookup[BibtexEntry
 
     name = "fake_lookup"
     count: int = 0
-    fields = SearchedFields
+    fields = {
+        FieldNames.TITLE,
+        FieldNames.AUTHOR,
+        FieldNames.BOOKTITLE,
+        FieldNames.JOURNAL,
+        FieldNames.MONTH,
+        FieldNames.PAGES,
+        FieldNames.ORGANIZATION,
+        FieldNames.VOLUME,
+        FieldNames.NOTE,
+        FieldNames.EDITION,
+        FieldNames.ISSN,
+    }
 
     def get_data(self) -> Optional[Data]:
         """Dummy data"""
