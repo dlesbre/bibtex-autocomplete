@@ -92,6 +92,7 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
     ([input_bib, "--output", path.join(test_dir, "input.btac.bib")], [("input.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--output=" + path.join(test_dir, "foo.btac.bib")], [("input.btac.bib.exp", "foo.btac.bib")]),
     ([input_bib, "--fi", "t"], [("input.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--fi", "\t"], [("input.btac.bib.exp", "input.btac.bib")]),
 ]
 
 
