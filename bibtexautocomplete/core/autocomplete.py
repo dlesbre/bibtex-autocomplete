@@ -227,7 +227,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         )
         # Delete empty entries (in diff mode)
         for db in self.bibdatabases:
-            db.entries = filter(None, db.entries)
+            db.entries = list(filter(None, db.entries))
 
     def get_fields_to_complete_by_entrytype(self, entry: EntryType) -> Set[FieldType]:
         """Set of fields that can be accepted by the current entry,
