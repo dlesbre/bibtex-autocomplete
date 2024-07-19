@@ -1,5 +1,9 @@
 # Change Log
 
+## Unreleased
+
+- Fix using the `--fa` / `--align-values` option leading to empty output
+
 ## Version 1.3.2 - 2024-04-12
 
 - Add `-b --filter-fields-by-entrytype` option (issue [#13](https://github.com/dlesbre/bibtex-autocomplete/issues/13)).

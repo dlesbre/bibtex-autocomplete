@@ -149,6 +149,7 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
     ([input_bib, "--fc"], [("format-leading.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--comma-first"], [("format-leading.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--fa"], [("format-align.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--align-values"], [("format-align.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--fa", "--fc", "--fl", "--fi=  \t"], [("format-all.btac.bib.exp", "input.btac.bib")]),
 ]
 
