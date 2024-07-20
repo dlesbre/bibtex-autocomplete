@@ -28,6 +28,7 @@ from typing import (
 
 from alive_progress import alive_bar  # type: ignore
 from bibtexparser.bibdatabase import BibDatabase
+from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.latexenc import string_to_latex
 
 from ..bibtex.base_field import BibtexField
@@ -381,7 +382,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 err=err,
             )
 
-    def write(self, files: List[Path]) -> None:
+    def write(self, files: List[Path], writer: BibTexWriter) -> None:
         """Writes the databases in self to the given files
         If not enough files, an error is raised.
         If too many files, extras are ignored"""
@@ -396,7 +397,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 total=total,
                 file=file,
             )
-            wrote += file_write(file, db)
+            wrote += file_write(file, db, writer)
         logger.info(
             "Wrote {total} {files}",
             total=wrote,

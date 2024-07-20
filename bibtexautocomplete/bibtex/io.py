@@ -15,14 +15,16 @@ from ..utils.logger import logger
 # from bibtexparser.customization import convert_to_unicode
 
 
-writer = BibTexWriter()
-writer.indent = "\t"
-writer.add_trailing_comma = True
-writer.order_entries_by = None  # preserve order
-writer.display_order = ("title", "author")
+def make_writer() -> BibTexWriter:
+    writer = BibTexWriter()
+    writer.indent = "\t"
+    writer.add_trailing_comma = True
+    writer.order_entries_by = None  # preserve order
+    writer.display_order = ("title", "author")
+    return writer
 
 
-def write(database: BibDatabase) -> str:
+def write(database: BibDatabase, writer: BibTexWriter) -> str:
     """Transform the database to a bibtex string"""
     return cast(str, writer.write(database).strip() + "\n")
 
@@ -45,9 +47,9 @@ def read(bibtex: str, src: str = "") -> BibDatabase:
     return database
 
 
-def file_write(filepath: Path, database: BibDatabase) -> bool:
+def file_write(filepath: Path, database: BibDatabase, writer: BibTexWriter) -> bool:
     """Writes database to given file, stdout if None"""
-    output = write(database)
+    output = write(database, writer)
     if filepath is None:
         print(output)
         return True

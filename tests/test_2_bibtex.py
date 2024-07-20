@@ -24,7 +24,7 @@ from bibtexautocomplete.bibtex.fields import (
     URLField,
     YearField,
 )
-from bibtexautocomplete.bibtex.io import file_read, write
+from bibtexautocomplete.bibtex.io import file_read, make_writer, write
 from bibtexautocomplete.bibtex.normalize import (
     normalize_doi,
     normalize_str,
@@ -91,7 +91,7 @@ def test_month() -> None:
 
 def io_test(file: str) -> None:
     db = file_read(Path(file))
-    write(db)
+    write(db, make_writer())
 
 
 def test_case() -> None:

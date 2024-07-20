@@ -3,7 +3,7 @@ from sys import stdout
 from typing import Container, List, Optional
 
 from ..bibtex.constants import FieldNamesSet, SearchedFields
-from ..bibtex.io import writer
+from ..bibtex.io import make_writer
 from ..lookups.https import HTTPSLookup
 from ..utils.ansi import ANSICodes, ansi_format
 from ..utils.constants import (
@@ -84,6 +84,7 @@ def main(argv: Optional[List[str]] = None) -> None:
     else:
         args.output = make_output_names(args.input, args.output)
 
+    writer = make_writer()
     writer.align_values = args.align_values
     writer.comma_first = args.comma_first
     writer.add_trailing_comma = args.no_trailing_comma
@@ -146,6 +147,6 @@ def main(argv: Optional[List[str]] = None) -> None:
         if args.dump_data is not None:
             completer.write_dumps(args.dump_data)
         if not args.no_output:
-            completer.write(args.output)
+            completer.write(args.output, writer)
     except KeyboardInterrupt:
         logger.warn("Interrupted")
