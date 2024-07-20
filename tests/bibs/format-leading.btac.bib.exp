@@ -93,6 +93,21 @@
 	,
 }
 
+@misc{marked
+	, title = {marked entry is not queried}
+	, btacqueried = {2024-07-20}
+	, journal = {Something}
+	, pages = {1--150}
+	,
+}
+
+@article{markedbis
+	, title = {marked entry is not queried}
+	, btacqueried = {not necessarily a data}
+	, doi = {10.22222/123456789}
+	,
+}
+
 @article{entry0
 	, title = {Title of entry 0}
 	, author = {Doe7, John}
