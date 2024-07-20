@@ -1,3 +1,4 @@
+from datetime import datetime
 from os import path
 from typing import Iterable, List, Optional, Tuple
 
@@ -94,6 +95,7 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
     # Tests for options which match their default values
     ([input_bib], [("input.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "-o", path.join(test_dir, "input.btac.bib")], [("input.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "-o", path.join(test_dir, "output.btac.bib")], [("input.btac.bib.exp", "output.btac.bib")]),
     ([input_bib, "--output", path.join(test_dir, "input.btac.bib")], [("input.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--output=" + path.join(test_dir, "foo.btac.bib")], [("input.btac.bib.exp", "foo.btac.bib")]),
     ([input_bib, "--fi", "t"], [("input.btac.bib.exp", "input.btac.bib")]),
@@ -155,6 +157,14 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
     ([input_bib, "--fa"], [("format-align.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--align-values"], [("format-align.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--fa", "--fc", "--fl", "--fi=  \t"], [("format-all.btac.bib.exp", "input.btac.bib")]),
+    # Prefix and marked tests
+    ([input_bib, "-p"], [("prefix.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--prefix"], [("prefix.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "-M"], [("mark-ignore.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--ignore-mark"], [("mark-ignore.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "-m"], [("mark.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--mark"], [("mark.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--mark", "--prefix"], [("mark-prefix.btac.bib.exp", "input.btac.bib")]),
 ]
 
 
@@ -162,13 +172,14 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
 def test_main(argv: List[str], files_to_compare: List[Tuple[str, str]]) -> None:
     main(argv)
     FakeLookup.count = 0
+    day = datetime.today().strftime("%Y-%m-%d")
     for expected, generated in files_to_compare:
-        with open(path.join(test_dir, expected), "r") as expected_file:
-            expected_contents = expected_file.read()
         with open(path.join(test_dir, generated), "r") as generated_file:
             generated_contents = generated_file.read()
         if PROMOTE:
             with open(path.join(test_dir, expected), "w") as expected_file:
-                expected_file.write(generated_contents)
+                expected_file.write(generated_contents.replace(day, "DATE"))
         else:
+            with open(path.join(test_dir, expected), "r") as expected_file:
+                expected_contents = expected_file.read().replace("DATE", day)
             assert expected_contents == generated_contents
