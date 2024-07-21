@@ -79,6 +79,7 @@ class FakeLookup(EntryMatchSearchMixin[SafeJSON], AbstractDataLookup[BibtexEntry
 
         # Cheekily copy fields from the source entry
         present_fields = self.entry.fields()
+        present_fields.discard(FieldNames.JOURNAL)
         for field in present_fields:
             entry.get_field(field).set(self.entry.get_field(field).value)
 
@@ -165,6 +166,9 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
     ([input_bib, "-m"], [("mark.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--mark"], [("mark.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--mark", "--prefix"], [("mark-prefix.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "-f"], [("overwrite.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--force-overwrite"], [("overwrite.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "-fp"], [("overwrite-prefix.btac.bib.exp", "input.btac.bib")]),
 ]
 
 
