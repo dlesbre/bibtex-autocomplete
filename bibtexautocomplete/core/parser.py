@@ -3,9 +3,11 @@ Command-line argument parser
 """
 
 from argparse import ArgumentParser
+from logging import CRITICAL
 from os import listdir
 from pathlib import Path
-from typing import Iterable, List, TypeVar
+from sys import stderr
+from typing import IO, Iterable, List, NoReturn, Optional, TypeVar
 
 from ..bibtex.constants import FieldNamesSet
 from ..utils.constants import BTAC_FILENAME, CONNECTION_TIMEOUT, SCRIPT_NAME
@@ -102,8 +104,25 @@ def get_bibfiles(input: Path) -> List[Path]:
 FIELD_NAMES = sorted(FieldNamesSet)
 
 
+class MyParser(ArgumentParser):
+    """Parser with prettier printers then argparse's default"""
+
+    USAGE = (
+        "{StBold}Usage:{Reset} {StBold}{FgYellow}{NAME}{Reset} {FgYellow}[--options] [input_files]{Reset}\n"
+        "See {FgYellow}{NAME} --help{Reset} for a list of options."
+    )
+
+    def print_usage(self, file: Optional[IO[str]] = None) -> None:
+        logger.to_logger(CRITICAL, self.USAGE, NAME=SCRIPT_NAME)
+
+    def error(self, message: str) -> NoReturn:
+        logger.critical(message + "\n", error="Invalid command line", NAME=SCRIPT_NAME)
+        self.print_usage(stderr)
+        exit(2)
+
+
 def make_parser() -> ArgumentParser:
-    parser = ArgumentParser(
+    parser = MyParser(
         prog=SCRIPT_NAME,
         add_help=False,
         usage="btac [--options] <input_files>\nSee help for a list of options.\n",
@@ -166,7 +185,7 @@ More information and demo:
   {StUnderline}{URL}{Reset}
 
 {StBold}Usage:{Reset}
-  {StBold}{FgYellow}{NAME}{Reset} {FgYellow}[--flags] <input_files>{Reset}
+  {StBold}{FgYellow}{NAME}{Reset} {FgYellow}[--options] [input_files]{Reset}
 
 {StBold}Examples:{Reset}
   {StBold}{FgYellow}{NAME}{Reset} {FgYellow}my_bib.bib{Reset}         writes to my_bib.btac.bib

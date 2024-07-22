@@ -122,28 +122,6 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
         ],
         [("input.btac.bib.exp", "input.btac.bib")],
     ),
-    (
-        [
-            input_bib,
-            "-c",
-            "title",
-            "-c=author",
-            "--only-complete",
-            "booktitle",
-            "-c=journal",
-            "--only-complete=month",
-            "-c=pages",
-            "-c=organization",
-            "-c=volume",
-            "-c=note",
-            "-c=edition",
-            "-c=issn",
-            "-C",
-            "author",
-            "--fi=t",
-        ],
-        [("input.btac.bib.exp", "input.btac.bib")],
-    ),
     # Formatting tests
     ([input_bib, "--fi", "  "], [("format-space.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--indent", "  "], [("format-space.btac.bib.exp", "input.btac.bib")]),
@@ -249,27 +227,6 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
     (
         [
             input_bib,
-            "-e",
-            "entry_basic",
-            "-e=almost_empty",
-            "--only-entry",
-            "doi",
-            "--only-entry=marked",
-            "-e=entry0",
-            "-e=entry2",
-            "-e=entry4",
-            "-e=entry6",
-            "-e=entry8",
-            "-e=entry10",
-            "-e=entry12",
-            "-e=absent",
-            "-E=IGNORED",
-        ],
-        [("selection.btac.bib.exp", "input.btac.bib")],
-    ),
-    (
-        [
-            input_bib,
             "-M",
             "-e",
             "entry_basic",
@@ -324,6 +281,69 @@ def test_main(argv: List[str], files_to_compare: List[Tuple[str, str]]) -> None:
             with open(path.join(test_dir, expected), "r") as expected_file:
                 expected_contents = expected_file.read().replace("DATE", day)
             assert expected_contents == generated_contents
+
+
+exit_tests: List[Tuple[List[str], int]] = [
+    (
+        [
+            input_bib,
+            "-c",
+            "title",
+            "-c=author",
+            "--only-complete",
+            "booktitle",
+            "-c=journal",
+            "--only-complete=month",
+            "-c=pages",
+            "-c=organization",
+            "-c=volume",
+            "-c=note",
+            "-c=edition",
+            "-c=issn",
+            "-C",
+            "author",
+            "--fi=t",
+        ],
+        2,
+    ),
+    (
+        [
+            input_bib,
+            "-e",
+            "entry_basic",
+            "-e=almost_empty",
+            "--only-entry",
+            "doi",
+            "--only-entry=marked",
+            "-e=entry0",
+            "-e=entry2",
+            "-e=entry4",
+            "-e=entry6",
+            "-e=entry8",
+            "-e=entry10",
+            "-e=entry12",
+            "-e=absent",
+            "-E=IGNORED",
+        ],
+        2,
+    ),
+    ([input_bib, "-D", "-i"], 2),
+    ([input_bib, "--diff", "--inplace"], 2),
+    ([input_bib, "-q", "nonsense"], 2),
+    ([input_bib, "--only-query", "nonsense"], 2),
+    ([input_bib, "-Q", "nonsense"], 2),
+    ([input_bib, "--dont-query", "nonsense"], 2),
+    ([input_bib, "-q", "arxiv", "-Q", "dblp"], 2),
+    ([input_bib, "--inexistant"], 2),
+]
+
+
+@pytest.mark.parametrize(("argv", "exit_code"), exit_tests)
+def test_main_exit(argv: List[str], exit_code: int) -> None:
+    with pytest.raises(SystemExit) as test_exit:
+        main(argv)
+    assert test_exit.type is SystemExit
+    assert test_exit.value.code == exit_code
 
 
 def test_promote() -> None:

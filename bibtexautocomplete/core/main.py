@@ -93,6 +93,8 @@ def main(argv: Optional[List[str]] = None) -> None:
     HTTPSLookup.connection_timeout = args.timeout if args.timeout > 0.0 else None
     HTTPSLookup.ignore_ssl = args.ignore_ssl
     lookups = OnlyExclude[str].from_nonempty(args.only_query, args.dont_query).filter(LOOKUPS, lambda x: x.name)
+    if args.only_query != [] and args.dont_query != []:
+        parser.error("Specified both a {FgYellow}-q/--only-query{Reset} and a {FgYellow}-Q/--dont-query{Reset} option")
     if args.only_query != []:
         # remove duplicate from list
         args.only_query, dups = list_unduplicate(args.only_query)
@@ -102,7 +104,16 @@ def main(argv: Optional[List[str]] = None) -> None:
         lookups = list_sort_using(lookups, args.only_query, lambda x: x.name)
 
     fields = OnlyExclude[str].from_nonempty(args.only_complete, args.dont_complete)
+    if args.only_complete != [] and args.dont_complete != []:
+        parser.error(
+            "Specified both a {FgYellow}-c/--only-complete{Reset} and a {FgYellow}-C/--dont-complete{Reset} option"
+        )
+
     entries = OnlyExclude[str].from_nonempty(args.only_entry, args.exclude_entry)
+    if args.only_entry != [] and args.exclude_entry != []:
+        parser.error(
+            "Specified both a {FgYellow}-e/--only-entry{Reset} and a {FgYellow}-E/--exclude-entry{Reset} option"
+        )
 
     if args.protect_all_uppercase:
         fields_to_protect_uppercase: Container[str] = FieldNamesSet
@@ -115,14 +126,13 @@ def main(argv: Optional[List[str]] = None) -> None:
     overwrite.default = False
 
     if args.diff and args.inplace:
-        logger.error(
+        parser.error(
             "Cannot use {FgYellow}-D/--diff{Reset} flag and {FgYellow}-i/--inplace{Reset} flag "
             "simultaneously, as there\n"
             "       is a big risk of deleting data.\n"
             "       If that is truly what you want to do, specify the output file explictly\n"
             "       with {FgYellow}-o / --output {FgGreen}<filename>{Reset}."
         )
-        exit(5)
 
     databases = BibtexAutocomplete.read(args.input)
     completer = BibtexAutocomplete(
