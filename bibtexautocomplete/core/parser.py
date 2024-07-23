@@ -109,7 +109,7 @@ class MyParser(ArgumentParser):
 
     USAGE = (
         "{StBold}Usage:{Reset} {StBold}{FgYellow}{NAME}{Reset} {FgYellow}[--options] [input_files]{Reset}\n"
-        "See {FgYellow}{NAME} --help{Reset} for a list of options."
+        "  See {FgYellow}{NAME} --help{Reset} for a list of options."
     )
 
     def print_usage(self, file: Optional[IO[str]] = None) -> None:
@@ -121,7 +121,7 @@ class MyParser(ArgumentParser):
         exit(2)
 
 
-def make_parser() -> ArgumentParser:
+def make_parser() -> MyParser:
     parser = MyParser(
         prog=SCRIPT_NAME,
         add_help=False,

@@ -1,6 +1,6 @@
 from pathlib import Path
 from sys import stdout
-from typing import Container, List, Optional
+from typing import Container, List, NoReturn, Optional
 
 from ..bibtex.constants import FieldNamesSet, SearchedFields
 from ..bibtex.io import make_writer
@@ -23,12 +23,26 @@ from .apis import LOOKUP_NAMES, LOOKUPS
 from .autocomplete import BibtexAutocomplete
 from .parser import (
     HELP_TEXT,
+    MyParser,
     flatten,
     get_bibfiles,
     indent_string,
     make_output_names,
     make_parser,
 )
+
+
+def conflict(parser: MyParser, prefix: str, option1: str, option2: str) -> NoReturn:
+    parser.error(
+        "{StBold}Conflicting options:\n{Reset}"
+        + "  Specified both "
+        + prefix
+        + "{FgYellow}"
+        + option1
+        + "{Reset} and a {FgYellow}"
+        + option2
+        + "{Reset} option."
+    )
 
 
 def main(argv: Optional[List[str]] = None) -> None:
@@ -94,7 +108,7 @@ def main(argv: Optional[List[str]] = None) -> None:
     HTTPSLookup.ignore_ssl = args.ignore_ssl
     lookups = OnlyExclude[str].from_nonempty(args.only_query, args.dont_query).filter(LOOKUPS, lambda x: x.name)
     if args.only_query != [] and args.dont_query != []:
-        parser.error("Specified both a {FgYellow}-q/--only-query{Reset} and a {FgYellow}-Q/--dont-query{Reset} option")
+        conflict(parser, "a ", "-q/--only-query", "-Q/--dont-query")
     if args.only_query != []:
         # remove duplicate from list
         args.only_query, dups = list_unduplicate(args.only_query)
@@ -105,15 +119,11 @@ def main(argv: Optional[List[str]] = None) -> None:
 
     fields = OnlyExclude[str].from_nonempty(args.only_complete, args.dont_complete)
     if args.only_complete != [] and args.dont_complete != []:
-        parser.error(
-            "Specified both a {FgYellow}-c/--only-complete{Reset} and a {FgYellow}-C/--dont-complete{Reset} option"
-        )
+        conflict(parser, "a ", "-c/--only-complete", "-C/--dont-complete")
 
     entries = OnlyExclude[str].from_nonempty(args.only_entry, args.exclude_entry)
     if args.only_entry != [] and args.exclude_entry != []:
-        parser.error(
-            "Specified both a {FgYellow}-e/--only-entry{Reset} and a {FgYellow}-E/--exclude-entry{Reset} option"
-        )
+        conflict(parser, "a ", "-e/--only-entry", "-E/--exclude-entry")
 
     if args.protect_all_uppercase:
         fields_to_protect_uppercase: Container[str] = FieldNamesSet
@@ -121,6 +131,12 @@ def main(argv: Optional[List[str]] = None) -> None:
         fields_to_protect_proto = OnlyExclude[str].from_nonempty(args.protect_uppercase, args.dont_protect_uppercase)
         fields_to_protect_proto.default = False
         fields_to_protect_uppercase = fields_to_protect_proto
+    if args.protect_all_uppercase != [] and args.protect_uppercase != []:
+        conflict(parser, "", "--fpa/--protect-all-uppercase", "--fp/--protect-uppercase")
+    if args.protect_all_uppercase != [] and args.dont_protect_uppercase != []:
+        conflict(parser, "", "--fpa/--protect-all-uppercase", "--FP/--dont-protect-uppercase")
+    if args.protect_uppercase != [] and args.dont_protect_uppercase != []:
+        conflict(parser, "a ", "--fp/--protect-uppercase", "--FP/--dont-protect-uppercase")
 
     overwrite = OnlyExclude[str].from_nonempty(args.overwrite, args.dont_overwrite)
     overwrite.default = False

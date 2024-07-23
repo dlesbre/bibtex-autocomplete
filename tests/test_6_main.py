@@ -338,6 +338,14 @@ exit_tests: List[Tuple[List[str], int]] = [
     ([input_bib, "--dont-query", "nonsense"], 2),
     ([input_bib, "-q", "arxiv", "-Q", "dblp"], 2),
     ([input_bib, "--inexistant"], 2),
+    ([input_bib, "-c", "not-a-field"], 2),
+    ([input_bib, "-C", "not-a-field"], 2),
+    ([input_bib, "--fp", "not-a-field"], 2),
+    ([input_bib, "--FP", "not-a-field"], 2),
+    ([input_bib, "--FP", "title", "--fp", "author"], 2),
+    ([input_bib, "--fpa", "--FP", "title"], 2),
+    ([input_bib, "--fpa", "--fp", "author"], 2),
+    ([input_bib, "not-a-file"], 1),
 ]
 
 
