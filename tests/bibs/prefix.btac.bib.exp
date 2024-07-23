@@ -10,7 +10,8 @@
 	BTACedition = {Edition 1},
 	BTACjournal = {Generated Journal 1},
 	BTACmonth = {2},
-	BTACnote = {Note: this is query number 1},
+	BTACnote = {Note: this is query number 1
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	BTACorganization = {organization 1},
 	BTACpages = {1},
 	BTACvolume = {1},
@@ -24,7 +25,8 @@
 	BTACissn = {0002-0001},
 	BTACjournal = {Generated Journal 2},
 	BTACmonth = {3},
-	BTACnote = {Note: this is query number 2},
+	BTACnote = {Note: this is query number 2
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	BTACorganization = {organization 2},
 	BTACpages = {1--2},
 	BTACvolume = {2},
@@ -44,7 +46,8 @@
 	BTACedition = {Edition 5},
 	BTACjournal = {Generated Journal 5},
 	BTACmonth = {6},
-	BTACnote = {Note: this is query number 5},
+	BTACnote = {Note: this is query number 5
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	BTACorganization = {organization 5},
 	BTACpages = {1--5},
 	BTACtitle = {Generated title 5},
@@ -58,7 +61,8 @@
 	BTACbooktitle = {Generated booktitle 6},
 	BTACedition = {Edition 6},
 	BTACjournal = {Generated Journal 6},
-	BTACnote = {Note: this is query number 6},
+	BTACnote = {Note: this is query number 6
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	BTACorganization = {organization 6},
 	BTACvolume = {6},
 	date = {long ago},
@@ -106,7 +110,8 @@
 	BTACedition = {Edition 7},
 	BTACjournal = {Generated Journal 7},
 	BTACmonth = {8},
-	BTACnote = {Note: this is query number 7},
+	BTACnote = {Note: this is query number 7
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	BTACorganization = {organization 7},
 	BTACpages = {1--7},
 	BTACvolume = {7},
@@ -119,7 +124,8 @@
 	BTACedition = {Edition 8},
 	BTACjournal = {Generated Journal 8},
 	BTACmonth = {9},
-	BTACnote = {Note: this is query number 8},
+	BTACnote = {Note: this is query number 8
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	BTACorganization = {organization 8},
 	BTACpages = {1--8},
 	BTACvolume = {8},
@@ -132,7 +138,8 @@
 	BTACedition = {Edition 9},
 	BTACjournal = {Generated Journal 9},
 	BTACmonth = {10},
-	BTACnote = {Note: this is query number 9},
+	BTACnote = {Note: this is query number 9
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	BTACorganization = {organization 9},
 	BTACpages = {1--9},
 	BTACvolume = {9},
@@ -145,7 +152,8 @@
 	BTACedition = {Edition 10},
 	BTACjournal = {Generated Journal 10},
 	BTACmonth = {11},
-	BTACnote = {Note: this is query number 10},
+	BTACnote = {Note: this is query number 10
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	BTACorganization = {organization 10},
 	BTACpages = {1--10},
 	BTACvolume = {10},
@@ -158,7 +166,8 @@
 	BTACedition = {Edition 11},
 	BTACjournal = {Generated Journal 11},
 	BTACmonth = {12},
-	BTACnote = {Note: this is query number 11},
+	BTACnote = {Note: this is query number 11
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	BTACorganization = {organization 11},
 	BTACpages = {1--11},
 	BTACvolume = {11},
@@ -171,7 +180,8 @@
 	BTACedition = {Edition 12},
 	BTACjournal = {Generated Journal 12},
 	BTACmonth = {1},
-	BTACnote = {Note: this is query number 12},
+	BTACnote = {Note: this is query number 12
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	BTACorganization = {organization 12},
 	BTACpages = {1--12},
 	BTACvolume = {12},
@@ -185,7 +195,8 @@
 	BTACissn = {0013-0001},
 	BTACjournal = {Generated Journal 13},
 	BTACmonth = {2},
-	BTACnote = {Note: this is query number 13},
+	BTACnote = {Note: this is query number 13
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	BTACorganization = {organization 13},
 	BTACpages = {1--13},
 	BTACvolume = {13},
@@ -198,7 +209,8 @@
 	BTACedition = {Edition 14},
 	BTACjournal = {Generated Journal 14},
 	BTACmonth = {3},
-	BTACnote = {Note: this is query number 14},
+	BTACnote = {Note: this is query number 14
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	BTACorganization = {organization 14},
 	BTACpages = {1--14},
 	BTACvolume = {14},
@@ -211,7 +223,8 @@
 	BTACedition = {Edition 15},
 	BTACjournal = {Generated Journal 15},
 	BTACmonth = {4},
-	BTACnote = {Note: this is query number 15},
+	BTACnote = {Note: this is query number 15
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	BTACorganization = {organization 15},
 	BTACpages = {1--15},
 	BTACvolume = {15},
@@ -224,7 +237,8 @@
 	BTACedition = {Edition 16},
 	BTACjournal = {Generated Journal 16},
 	BTACmonth = {5},
-	BTACnote = {Note: this is query number 16},
+	BTACnote = {Note: this is query number 16
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	BTACorganization = {organization 16},
 	BTACpages = {1--16},
 	BTACvolume = {16},
@@ -237,7 +251,8 @@
 	BTACedition = {Edition 17},
 	BTACjournal = {Generated Journal 17},
 	BTACmonth = {6},
-	BTACnote = {Note: this is query number 17},
+	BTACnote = {Note: this is query number 17
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	BTACorganization = {organization 17},
 	BTACpages = {1--17},
 	BTACvolume = {17},
@@ -250,7 +265,8 @@
 	BTACedition = {Edition 18},
 	BTACjournal = {Generated Journal 18},
 	BTACmonth = {7},
-	BTACnote = {Note: this is query number 18},
+	BTACnote = {Note: this is query number 18
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	BTACorganization = {organization 18},
 	BTACpages = {1--18},
 	BTACvolume = {18},
@@ -263,8 +279,23 @@
 	BTACedition = {Edition 19},
 	BTACjournal = {Generated Journal 19},
 	BTACmonth = {8},
-	BTACnote = {Note: this is query number 19},
+	BTACnote = {Note: this is query number 19
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	BTACorganization = {organization 19},
 	BTACpages = {1--19},
 	BTACvolume = {19},
+}
+
+@misc{with_accents,
+	title = {Lots OF accents AnD Capitalization: éàêïæøçÉÀÊÏÆØÇ},
+	author = {Somebody},
+	BTACbooktitle = {Generated booktitle 20},
+	BTACedition = {Edition 20},
+	BTACjournal = {Generated Journal 20},
+	BTACmonth = {9},
+	BTACnote = {Note: this is query number 20
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
+	BTACorganization = {organization 20},
+	BTACpages = {1--20},
+	BTACvolume = {20},
 }

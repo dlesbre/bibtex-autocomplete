@@ -11,7 +11,8 @@
 	edition = {Edition 1},
 	journal = {Generated Journal 1},
 	month = {2},
-	note = {Note: this is query number 1},
+	note = {Note: this is query number 1
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {organization 1},
 	pages = {1},
 	volume = {1},
@@ -26,7 +27,8 @@
 	issn = {0002-0001},
 	journal = {Generated Journal 2},
 	month = {3},
-	note = {Note: this is query number 2},
+	note = {Note: this is query number 2
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {organization 2},
 	pages = {1--2},
 	volume = {2},
@@ -51,7 +53,8 @@
 	edition = {Edition 5},
 	journal = {Generated Journal 5},
 	month = {6},
-	note = {Note: this is query number 5},
+	note = {Note: this is query number 5
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {organization 5},
 	pages = {1--5},
 	volume = {5},
@@ -69,7 +72,8 @@
 	issn = {not a number},
 	journal = {Generated Journal 6},
 	month = {brumaire},
-	note = {Note: this is query number 6},
+	note = {Note: this is query number 6
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {organization 6},
 	pages = {not a number},
 	volume = {6},
@@ -114,7 +118,8 @@
 	edition = {Edition 7},
 	journal = {Generated Journal 7},
 	month = {8},
-	note = {Note: this is query number 7},
+	note = {Note: this is query number 7
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {organization 7},
 	pages = {1--7},
 	volume = {7},
@@ -128,7 +133,8 @@
 	edition = {Edition 8},
 	journal = {Generated Journal 8},
 	month = {9},
-	note = {Note: this is query number 8},
+	note = {Note: this is query number 8
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {organization 8},
 	pages = {1--8},
 	volume = {8},
@@ -142,7 +148,8 @@
 	edition = {Edition 9},
 	journal = {Generated Journal 9},
 	month = {10},
-	note = {Note: this is query number 9},
+	note = {Note: this is query number 9
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {organization 9},
 	pages = {1--9},
 	volume = {9},
@@ -156,7 +163,8 @@
 	edition = {Edition 10},
 	journal = {Generated Journal 10},
 	month = {11},
-	note = {Note: this is query number 10},
+	note = {Note: this is query number 10
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {organization 10},
 	pages = {1--10},
 	volume = {10},
@@ -170,7 +178,8 @@
 	edition = {Edition 11},
 	journal = {Generated Journal 11},
 	month = {12},
-	note = {Note: this is query number 11},
+	note = {Note: this is query number 11
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {organization 11},
 	pages = {1--11},
 	volume = {11},
@@ -184,7 +193,8 @@
 	edition = {Edition 12},
 	journal = {Generated Journal 12},
 	month = {1},
-	note = {Note: this is query number 12},
+	note = {Note: this is query number 12
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {organization 12},
 	pages = {1--12},
 	volume = {12},
@@ -199,7 +209,8 @@
 	issn = {0013-0001},
 	journal = {Generated Journal 13},
 	month = {2},
-	note = {Note: this is query number 13},
+	note = {Note: this is query number 13
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {organization 13},
 	pages = {1--13},
 	volume = {13},
@@ -213,7 +224,8 @@
 	edition = {Edition 14},
 	journal = {Generated Journal 14},
 	month = {3},
-	note = {Note: this is query number 14},
+	note = {Note: this is query number 14
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {organization 14},
 	pages = {1--14},
 	volume = {14},
@@ -227,7 +239,8 @@
 	edition = {Edition 15},
 	journal = {Generated Journal 15},
 	month = {4},
-	note = {Note: this is query number 15},
+	note = {Note: this is query number 15
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {organization 15},
 	pages = {1--15},
 	volume = {15},
@@ -241,7 +254,8 @@
 	edition = {Edition 16},
 	journal = {Generated Journal 16},
 	month = {5},
-	note = {Note: this is query number 16},
+	note = {Note: this is query number 16
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {organization 16},
 	pages = {1--16},
 	volume = {16},
@@ -255,7 +269,8 @@
 	edition = {Edition 17},
 	journal = {Generated Journal 17},
 	month = {6},
-	note = {Note: this is query number 17},
+	note = {Note: this is query number 17
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {organization 17},
 	pages = {1--17},
 	volume = {17},
@@ -269,7 +284,8 @@
 	edition = {Edition 18},
 	journal = {Generated Journal 18},
 	month = {7},
-	note = {Note: this is query number 18},
+	note = {Note: this is query number 18
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {organization 18},
 	pages = {1--18},
 	volume = {18},
@@ -283,8 +299,24 @@
 	edition = {Edition 19},
 	journal = {Generated Journal 19},
 	month = {8},
-	note = {Note: this is query number 19},
+	note = {Note: this is query number 19
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {organization 19},
 	pages = {1--19},
 	volume = {19},
+}
+
+@misc{with_accents,
+	title = {Lots OF accents AnD Capitalization: éàêïæøçÉÀÊÏÆØÇ},
+	author = {Somebody},
+	BTACqueried = {DATE},
+	booktitle = {Generated booktitle 20},
+	edition = {Edition 20},
+	journal = {Generated Journal 20},
+	month = {9},
+	note = {Note: this is query number 20
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
+	organization = {organization 20},
+	pages = {1--20},
+	volume = {20},
 }

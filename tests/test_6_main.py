@@ -72,7 +72,7 @@ class FakeLookup(EntryMatchSearchMixin[SafeJSON], AbstractDataLookup[BibtexEntry
         entry.pages.set_str(f"1 -- {count}")
         entry.organization.set_str(f"organization {count}")
         entry.volume.set_str(str(count))
-        entry.note.set(f"Note: this is query number {count}")
+        entry.note.set(f"Note: this is query number {count}\nNewline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ")
         entry.edition.set(f"Edition {count}")
         entry.issn.set_str(f"{str(count).zfill(4)}-0001")
         # entry.url.set("https://example.com/")
@@ -164,6 +164,7 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
             "-e=entry8",
             "-e=entry10",
             "-e=entry12",
+            "-e=with_accents",
         ],
         [("selection.btac.bib.exp", "input.btac.bib")],
     ),
@@ -202,6 +203,7 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
             "-e=entry10",
             "-e=entry12",
             "-e=absent",
+            "-e=with_accents",
         ],
         [("selection.btac.bib.exp", "input.btac.bib")],
     ),
@@ -241,6 +243,7 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
             "-e=entry8",
             "-e=entry10",
             "-e=entry12",
+            "-e=with_accents",
         ],
         [("selection-ignore-mark.btac.bib.exp", "input.btac.bib")],
     ),
