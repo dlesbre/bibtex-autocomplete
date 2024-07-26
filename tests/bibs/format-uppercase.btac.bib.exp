@@ -1,0 +1,301 @@
+@comment{@book{empty_entry,
+}}
+
+@comment{Outside of entries, text is just a comment}
+
+@misc{entry_basic,
+	title = {My awesome article},
+	author = {Yours Truly},
+	booktitle = {Generated booktitle 1},
+	edition = {Edition 1},
+	journal = {Generated Journal 1},
+	month = {2},
+	note = {{Note}: this is query number 1
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 1},
+	pages = {1},
+	volume = {1},
+}
+
+@article{entry_basic2,
+	title = {Something},
+	author = {Someone},
+	booktitle = {Generated booktitle 2},
+	edition = {Edition 2},
+	issn = {0002-0001},
+	journal = {Generated Journal 2},
+	month = {3},
+	note = {{Note}: this is query number 2
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 2},
+	pages = {1--2},
+	volume = {2},
+}
+
+@booklet{almost_empty,
+	note = {This entry shouldn't be queried, no useful data},
+}
+
+@techreport{also_almost_empty,
+	foo = {bar: no standard field at all},
+}
+
+@article{doi,
+	title = {{Generated} title 5},
+	author = {{Doe}5, {John}},
+	booktitle = {Generated booktitle 5},
+	doi = {10.5432/hello},
+	edition = {Edition 5},
+	journal = {Generated Journal 5},
+	month = {6},
+	note = {{Note}: this is query number 5
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 5},
+	pages = {1--5},
+	volume = {5},
+}
+
+@inproceedings{giberish,
+	title = {giberish},
+	author = {1789},
+	booktitle = {Generated booktitle 6},
+	date = {long ago},
+	doi = {invalid format},
+	edition = {Edition 6},
+	isbn = {also not a number},
+	issn = {not a number},
+	journal = {Generated Journal 6},
+	month = {brumaire},
+	note = {{Note}: this is query number 6
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 6},
+	pages = {not a number},
+	volume = {6},
+}
+
+@article{full,
+	title = {Full entry, never queried, but field order changed},
+	author = {1789},
+	booktitle = {full},
+	date = {long ago},
+	doi = {invalid format},
+	edition = {full},
+	isbn = {also not a number},
+	issn = {not a number},
+	journal = {full},
+	month = {brumaire},
+	note = {full},
+	organization = {full},
+	pages = {not a number},
+	volume = {full},
+}
+
+@misc{marked,
+	title = {marked entry is not queried},
+	btacqueried = {2024-07-19},
+	journal = {Something},
+	pages = {1--150},
+}
+
+@article{markedbis,
+	title = {marked entry is not queried},
+	btacqueried = {not necessarily a data},
+	doi = {10.22222/123456789},
+}
+
+@article{entry0,
+	title = {Title of entry 0},
+	author = {{Doe}7, {John}},
+	booktitle = {Generated booktitle 7},
+	edition = {Edition 7},
+	journal = {Generated Journal 7},
+	month = {8},
+	note = {{Note}: this is query number 7
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 7},
+	pages = {1--7},
+	volume = {7},
+}
+
+@book{entry1,
+	title = {Title of entry 1},
+	author = {{Doe}8, {John}},
+	booktitle = {Generated booktitle 8},
+	edition = {Edition 8},
+	journal = {Generated Journal 8},
+	month = {9},
+	note = {{Note}: this is query number 8
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 8},
+	pages = {1--8},
+	volume = {8},
+}
+
+@booklet{entry2,
+	title = {Title of entry 2},
+	author = {{Doe}9, {John}},
+	booktitle = {Generated booktitle 9},
+	edition = {Edition 9},
+	journal = {Generated Journal 9},
+	month = {10},
+	note = {{Note}: this is query number 9
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 9},
+	pages = {1--9},
+	volume = {9},
+}
+
+@conference{entry3,
+	title = {Title of entry 3},
+	author = {{Doe}10, {John}},
+	booktitle = {Generated booktitle 10},
+	edition = {Edition 10},
+	journal = {Generated Journal 10},
+	month = {11},
+	note = {{Note}: this is query number 10
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 10},
+	pages = {1--10},
+	volume = {10},
+}
+
+@inbook{entry4,
+	title = {Title of entry 4},
+	author = {{Doe}11, {John}},
+	booktitle = {Generated booktitle 11},
+	edition = {Edition 11},
+	journal = {Generated Journal 11},
+	month = {12},
+	note = {{Note}: this is query number 11
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 11},
+	pages = {1--11},
+	volume = {11},
+}
+
+@incollection{entry5,
+	title = {Title of entry 5},
+	author = {{Doe}12, {John}},
+	booktitle = {Generated booktitle 12},
+	edition = {Edition 12},
+	journal = {Generated Journal 12},
+	month = {1},
+	note = {{Note}: this is query number 12
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 12},
+	pages = {1--12},
+	volume = {12},
+}
+
+@manual{entry6,
+	title = {Title of entry 6},
+	author = {{Doe}13, {John}},
+	booktitle = {Generated booktitle 13},
+	edition = {Edition 13},
+	issn = {0013-0001},
+	journal = {Generated Journal 13},
+	month = {2},
+	note = {{Note}: this is query number 13
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 13},
+	pages = {1--13},
+	volume = {13},
+}
+
+@mastersthesis{entry7,
+	title = {Title of entry 7},
+	author = {{Doe}14, {John}},
+	booktitle = {Generated booktitle 14},
+	edition = {Edition 14},
+	journal = {Generated Journal 14},
+	month = {3},
+	note = {{Note}: this is query number 14
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 14},
+	pages = {1--14},
+	volume = {14},
+}
+
+@misc{entry8,
+	title = {Title of entry 8},
+	author = {{Doe}15, {John}},
+	booktitle = {Generated booktitle 15},
+	edition = {Edition 15},
+	journal = {Generated Journal 15},
+	month = {4},
+	note = {{Note}: this is query number 15
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 15},
+	pages = {1--15},
+	volume = {15},
+}
+
+@techreport{entry9,
+	title = {Title of entry 9},
+	author = {{Doe}16, {John}},
+	booktitle = {Generated booktitle 16},
+	edition = {Edition 16},
+	journal = {Generated Journal 16},
+	month = {5},
+	note = {{Note}: this is query number 16
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 16},
+	pages = {1--16},
+	volume = {16},
+}
+
+@unpublished{entry10,
+	title = {Title of entry 10},
+	author = {{Doe}17, {John}},
+	booktitle = {Generated booktitle 17},
+	edition = {Edition 17},
+	journal = {Generated Journal 17},
+	month = {6},
+	note = {{Note}: this is query number 17
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 17},
+	pages = {1--17},
+	volume = {17},
+}
+
+@inproceedings{entry11,
+	title = {Title of entry 11},
+	author = {{Doe}18, {John}},
+	booktitle = {Generated booktitle 18},
+	edition = {Edition 18},
+	journal = {Generated Journal 18},
+	month = {7},
+	note = {{Note}: this is query number 18
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 18},
+	pages = {1--18},
+	volume = {18},
+}
+
+@phdthesis{entry12,
+	title = {Title of entry 12},
+	author = {{Doe}19, {John}},
+	booktitle = {Generated booktitle 19},
+	edition = {Edition 19},
+	journal = {Generated Journal 19},
+	month = {8},
+	note = {{Note}: this is query number 19
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 19},
+	pages = {1--19},
+	volume = {19},
+}
+
+@misc{with_accents,
+	title = {Lots OF accents AnD Capitalization: éàêïæøçÉÀÊÏÆØÇ},
+	author = {Somebody},
+	booktitle = {Generated booktitle 20},
+	edition = {Edition 20},
+	journal = {Generated Journal 20},
+	month = {9},
+	note = {{Note}: this is query number 20
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 20},
+	pages = {1--20},
+	volume = {20},
+}

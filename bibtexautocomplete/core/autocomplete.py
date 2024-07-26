@@ -292,11 +292,11 @@ class BibtexAutocomplete(Iterable[EntryType]):
             value = bib_field.to_str()
             if value is None:
                 continue
+            if field in self.fields_to_protect_uppercase:
+                value = sub(WORD_WITH_UPPERCASE, "{\\g<1>}", value)
             if self.escape_unicode:
                 value = string_to_latex(value)
                 assert isinstance(value, str)
-            if field in self.fields_to_protect_uppercase:
-                value = sub(WORD_WITH_UPPERCASE, "{\\g<1>}", value)
             new_entry[self.prefix + field] = value
             changes.append(Changes(field, value, bib_field.source))
 

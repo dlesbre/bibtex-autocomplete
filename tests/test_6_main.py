@@ -164,6 +164,28 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
         [input_bib, "--dont-protect-uppercase", "address", "--FP", "editor"],
         [("format-uppercase-all.btac.bib.exp", "input.btac.bib")],
     ),
+    (
+        [input_bib, "--dont-protect-uppercase=address", "--FP=editor"],
+        [("format-uppercase-all.btac.bib.exp", "input.btac.bib")],
+    ),
+    (
+        [
+            input_bib,
+            "--fp=title",
+            "--fp=author",
+            "--protect-uppercase=month",
+            "--fp=pages",
+            "--fp=organization",
+            "--fp=volume",
+            "--fp=note",
+        ],
+        [("format-uppercase.btac.bib.exp", "input.btac.bib")],
+    ),
+    (
+        [input_bib, "--FP=journal", "--FP=edition", "--FP=booktitle", "--FP=issn"],
+        [("format-uppercase.btac.bib.exp", "input.btac.bib")],
+    ),
+    ([input_bib, "--fu", "--fpa"], [("format-uppercase-unicode.btac.bib.exp", "input.btac.bib")]),
     # Prefix and marked tests
     ([input_bib, "-p"], [("prefix.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--prefix"], [("prefix.btac.bib.exp", "input.btac.bib")]),
