@@ -136,6 +136,9 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
     ([input_bib, "--fa"], [("format-align.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--align-values"], [("format-align.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--fa", "--fc", "--fl", "--fi=  \t"], [("format-all.btac.bib.exp", "input.btac.bib")]),
+    # Field formatting
+    ([input_bib, "--fu"], [("format-unicode.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--escape-unicode"], [("format-unicode.btac.bib.exp", "input.btac.bib")]),
     # Prefix and marked tests
     ([input_bib, "-p"], [("prefix.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--prefix"], [("prefix.btac.bib.exp", "input.btac.bib")]),
