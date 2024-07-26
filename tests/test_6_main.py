@@ -139,6 +139,31 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
     # Field formatting
     ([input_bib, "--fu"], [("format-unicode.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--escape-unicode"], [("format-unicode.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--fpa"], [("format-uppercase-all.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--protect-all-uppercase"], [("format-uppercase-all.btac.bib.exp", "input.btac.bib")]),
+    (
+        [
+            input_bib,
+            "--fp",
+            "title",
+            "--fp=author",
+            "--protect-uppercase",
+            "booktitle",
+            "--fp=journal",
+            "--protect-uppercase=month",
+            "--fp=pages",
+            "--fp=organization",
+            "--fp=volume",
+            "--fp=note",
+            "--fp=edition",
+            "--fp=issn",
+        ],
+        [("format-uppercase-all.btac.bib.exp", "input.btac.bib")],
+    ),
+    (
+        [input_bib, "--dont-protect-uppercase", "address", "--FP", "editor"],
+        [("format-uppercase-all.btac.bib.exp", "input.btac.bib")],
+    ),
     # Prefix and marked tests
     ([input_bib, "-p"], [("prefix.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--prefix"], [("prefix.btac.bib.exp", "input.btac.bib")]),

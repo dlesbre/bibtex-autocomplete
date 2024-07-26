@@ -131,9 +131,9 @@ def main(argv: Optional[List[str]] = None) -> None:
         fields_to_protect_proto = OnlyExclude[str].from_nonempty(args.protect_uppercase, args.dont_protect_uppercase)
         fields_to_protect_proto.default = False
         fields_to_protect_uppercase = fields_to_protect_proto
-    if args.protect_all_uppercase != [] and args.protect_uppercase != []:
+    if args.protect_all_uppercase and args.protect_uppercase != []:
         conflict(parser, "", "--fpa/--protect-all-uppercase", "--fp/--protect-uppercase")
-    if args.protect_all_uppercase != [] and args.dont_protect_uppercase != []:
+    if args.protect_all_uppercase and args.dont_protect_uppercase != []:
         conflict(parser, "", "--fpa/--protect-all-uppercase", "--FP/--dont-protect-uppercase")
     if args.protect_uppercase != [] and args.dont_protect_uppercase != []:
         conflict(parser, "a ", "--fp/--protect-uppercase", "--FP/--dont-protect-uppercase")

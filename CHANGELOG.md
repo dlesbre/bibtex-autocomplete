@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Protect uppercase option now also protects unicode uppercase
 - Fix using the `--fa` / `--align-values` option leading to empty output
 
 ## Version 1.3.2 - 2024-04-12
@@ -43,7 +44,7 @@
   - `--fu/--escape-unicode` to replace unicode character with latex encoding
   - `--fpa/--protect-all-uppercase` or `--fp/--protect-uppercase <field>` or
     `--FP/--dont-protect-uppercase <field>` to protect words containing uppercase
-    letters with braces `{` and `}` in the given fields fields
+    letters with braces `{` and `}` in the given fields
 - Fix 404 warning on DOIs not found in semantic-scholar and others
 - Remove researchr author disambiguation numbers (it would sometimes return
   `John Doe 0002`, which you don't want in your file)

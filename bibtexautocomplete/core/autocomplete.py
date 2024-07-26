@@ -8,7 +8,8 @@ from functools import reduce
 from json import dump as json_dump
 from logging import INFO
 from pathlib import Path
-from re import sub
+from re import compile, sub
+from sys import maxunicode
 from threading import Condition
 from typing import (
     Any,
@@ -51,6 +52,12 @@ from .threads import LookupThread
 
 T = TypeVar("T")
 Q = TypeVar("Q")
+
+
+UPPER = "".join(chr(i) for i in range(maxunicode) if chr(i).isupper())
+LOWER = "".join(chr(i) for i in range(maxunicode) if chr(i).islower())
+
+WORD_WITH_UPPERCASE = compile("([" + LOWER + "]*[" + UPPER + "]+[" + LOWER + UPPER + "]*)")
 
 
 def memoize(method: Callable[[T], Q]) -> Callable[[T], Q]:
@@ -289,7 +296,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 value = string_to_latex(value)
                 assert isinstance(value, str)
             if field in self.fields_to_protect_uppercase:
-                value = sub(r"([a-z]*[A-Z]+[a-zA-Z]*)", "{\\g<1>}", value)
+                value = sub(WORD_WITH_UPPERCASE, "{\\g<1>}", value)
             new_entry[self.prefix + field] = value
             changes.append(Changes(field, value, bib_field.source))
 
