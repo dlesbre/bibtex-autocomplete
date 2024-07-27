@@ -409,6 +409,11 @@ exit_tests: List[Tuple[List[str], int]] = [
     ([input_bib, "--FP", "title", "--fp", "author"], 2),
     ([input_bib, "--fpa", "--FP", "title"], 2),
     ([input_bib, "--fpa", "--fp", "author"], 2),
+    ([input_bib, "-w", "not-a-field"], 2),
+    ([input_bib, "-W", "not-a-field"], 2),
+    ([input_bib, "-W", "title", "-w", "author"], 2),
+    ([input_bib, "-fW=title"], 2),
+    ([input_bib, "-fw", "author"], 2),
     ([input_bib, "not-a-file"], 1),
 ]
 

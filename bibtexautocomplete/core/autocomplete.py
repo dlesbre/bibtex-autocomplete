@@ -33,7 +33,7 @@ from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.latexenc import string_to_latex
 
 from ..bibtex.base_field import BibtexField
-from ..bibtex.constants import FIELD_NO_MATCH, FieldType
+from ..bibtex.constants import FIELD_NO_MATCH, FieldNamesSet, FieldType
 from ..bibtex.entry import ENTRY_TYPES, BibtexEntry
 from ..bibtex.io import file_read, file_write, get_entries
 from ..bibtex.normalize import has_field
@@ -86,10 +86,9 @@ class BibtexAutocomplete(Iterable[EntryType]):
 
     bibdatabases: List[BibDatabase]
     lookups: List[LookupType]
-    fields: Set[FieldType]  # Set of fields to complete
+    fields_to_complete: Set[FieldType]  # Set of fields to complete
     entries: OnlyExclude[str]
-    force_overwrite: Container[str]
-    force_overwrite_all: bool
+    fields_to_overwrite: Container[str]
     escape_unicode: bool
     fields_to_protect_uppercase: Container[str]
     prefix: str
@@ -110,24 +109,22 @@ class BibtexAutocomplete(Iterable[EntryType]):
         self,
         bibdatabases: List[BibDatabase],
         lookups: Iterable[LookupType],
-        fields: Set[FieldType],
         entries: OnlyExclude[str],
-        force_overwrite: Container[str] = [],
-        force_overwrite_all: bool = False,
         mark: bool = False,
         ignore_mark: bool = False,
         prefix: bool = False,
         escape_unicode: bool = False,
         diff_mode: bool = False,
+        fields_to_complete: Set[FieldType] = FieldNamesSet,
+        fields_to_overwrite: Container[str] = set(),
         fields_to_protect_uppercase: Container[str] = set(),
         filter_by_entrytype: Literal["no", "required", "optional", "all"] = "no",
     ):
         self.bibdatabases = bibdatabases
         self.lookups = list(lookups)
-        self.fields = fields
+        self.fields_to_complete = fields_to_complete
         self.entries = entries
-        self.force_overwrite = force_overwrite
-        self.force_overwrite_all = force_overwrite_all
+        self.fields_to_overwrite = fields_to_overwrite
         self.changed_entries = 0
         self.changed_fields = 0
         self.changes = []
@@ -240,7 +237,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
     def get_fields_to_complete_by_entrytype(self, entry: EntryType) -> Set[FieldType]:
         """Set of fields that can be accepted by the current entry,
         Only looking at the given entry type"""
-        field_set = self.fields.copy()
+        field_set = self.fields_to_complete.copy()
         if self.filter_by_entrytype == "no":
             return field_set
         entry_type = entry.get("ENTRYTYPE", "misc")
@@ -257,11 +254,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         """Set of fields that can be accepted by the current entry,
         looking at the entrytype and list of present fields"""
         fields = self.get_fields_to_complete_by_entrytype(entry)
-        return set(
-            field
-            for field in fields
-            if (not has_field(entry, field)) or self.force_overwrite_all or field in self.force_overwrite
-        )
+        return set(field for field in fields if (not has_field(entry, field)) or field in self.fields_to_overwrite)
 
     def update_entry(
         self, entry: EntryType, to_complete: Set[FieldType], threads: List[LookupThread], position: int

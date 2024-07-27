@@ -138,8 +138,18 @@ def main(argv: Optional[List[str]] = None) -> None:
     if args.protect_uppercase != [] and args.dont_protect_uppercase != []:
         conflict(parser, "a ", "--fp/--protect-uppercase", "--FP/--dont-protect-uppercase")
 
-    overwrite = OnlyExclude[str].from_nonempty(args.overwrite, args.dont_overwrite)
-    overwrite.default = False
+    if args.force_overwrite:
+        fields_to_overwrite: Container[str] = FieldNamesSet
+    else:
+        overwrite = OnlyExclude[str].from_nonempty(args.overwrite, args.dont_overwrite)
+        overwrite.default = False
+        fields_to_overwrite = overwrite
+    if args.force_overwrite and args.overwrite != []:
+        conflict(parser, "", "-f/--force-overwrite", "-w/--overwrite")
+    if args.force_overwrite and args.dont_overwrite != []:
+        conflict(parser, "", "-f/--force-overwrite", "-W/--dont-overwrite")
+    if args.overwrite != [] and args.dont_overwrite != []:
+        conflict(parser, "a ", "-w/--overwrite", "-W/--dont-overwrite")
 
     if args.diff and args.inplace:
         parser.error(
@@ -154,16 +164,15 @@ def main(argv: Optional[List[str]] = None) -> None:
     completer = BibtexAutocomplete(
         databases,
         lookups,
-        set(fields.filter(SearchedFields, lambda x: x)),
         entries,
-        force_overwrite=overwrite,
-        force_overwrite_all=args.force_overwrite,
         mark=args.mark,
         ignore_mark=args.ignore_mark,
         prefix=args.prefix,
-        fields_to_protect_uppercase=fields_to_protect_uppercase,
         escape_unicode=args.escape_unicode,
         diff_mode=args.diff,
+        fields_to_complete=set(fields.filter(SearchedFields, lambda x: x)),
+        fields_to_overwrite=fields_to_overwrite,
+        fields_to_protect_uppercase=fields_to_protect_uppercase,
         filter_by_entrytype=args.filter_fields_by_entrytype,
     )
     completer.print_filters()
