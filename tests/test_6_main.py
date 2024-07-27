@@ -110,7 +110,7 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
     ([input_bib, "-vvvv"], [("input.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "-ssss"], [("input.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "-t=5"], [("input.btac.bib.exp", "input.btac.bib")]),
-    ([input_bib, "--timeout" "-1"], [("input.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--timeout", "-1"], [("input.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "-S"], [("input.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--ignore-ssl"], [("input.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "-o", path.join(test_dir, "input.btac.bib")], [("input.btac.bib.exp", "input.btac.bib")]),
@@ -212,9 +212,36 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
     ([input_bib, "-m"], [("mark.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--mark"], [("mark.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--mark", "--prefix"], [("mark-prefix.btac.bib.exp", "input.btac.bib")]),
+    # Overwrites and interactions with prefix
     ([input_bib, "-f"], [("overwrite.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--force-overwrite"], [("overwrite.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "-fp"], [("overwrite-prefix.btac.bib.exp", "input.btac.bib")]),
+    (
+        [
+            input_bib,
+            "-w",
+            "title",
+            "--overwrite",
+            "booktitle",
+            "--overwrite=journal",
+            "-w=month",
+            "-w=pages",
+            "-w=organization",
+            "-w=volume",
+            "-w=note",
+            "-w=edition",
+            "-w=issn",
+        ],
+        [("overwrite-selection.btac.bib.exp", "input.btac.bib")],
+    ),
+    (
+        [input_bib, "--dont-overwrite", "address", "-W", "editor", "-W", "author"],
+        [("overwrite-selection.btac.bib.exp", "input.btac.bib")],
+    ),
+    (
+        [input_bib, "--dont-overwrite=address", "-W=editor", "-W", "author"],
+        [("overwrite-selection.btac.bib.exp", "input.btac.bib")],
+    ),
     # Filtering entries
     (
         [
