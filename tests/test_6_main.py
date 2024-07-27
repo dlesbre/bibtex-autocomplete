@@ -93,8 +93,22 @@ LOOKUPS.append(FakeLookup)
 # - args to pass to main (argv from the command line)
 # - files to compare afterwards (expected first)
 tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
+    # Tests that don't produce output
+    ([input_bib, "-O"], []),
+    ([input_bib, "--no-output"], []),
+    (["--version"], []),
+    (["-h"], []),
+    (["--help"], []),
     # Tests for options which match their default values
     ([input_bib], [("input.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "-n"], [("input.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--no-color"], [("input.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "-v"], [("input.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--verbose"], [("input.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "-s"], [("input.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--silent"], [("input.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "-vvvv"], [("input.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "-ssss"], [("input.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "-o", path.join(test_dir, "input.btac.bib")], [("input.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "-o", path.join(test_dir, "output.btac.bib")], [("input.btac.bib.exp", "output.btac.bib")]),
     ([input_bib, "--output", path.join(test_dir, "input.btac.bib")], [("input.btac.bib.exp", "input.btac.bib")]),
