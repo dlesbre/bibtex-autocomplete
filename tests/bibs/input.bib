@@ -66,6 +66,29 @@ Outside of entries, text is just a comment
   btacqueried = {not necessarily a data},
 }
 
+@misc{all_fields_for_misc,
+  author = {My Guy},
+  title = {Test for filter-by-entrytype},
+  howpublished = {Somehow},
+  month = {June},
+  year = {2015},
+  note = {Shouldn't be queried with "-b all" flag},
+  doi = {10.12345/hello},
+}
+
+@misc{opt_field_for_misc,
+  author = {My Guy},
+  title = {Test for filter-by-entrytype},
+  howpublished = {Somehow},
+  month = {June},
+  year = {2015},
+  note = {Shouldn't be queried with "-b optional" flag, but queried for "-b all"},
+}
+
+@misc{req_field_for_misc,
+  title = {Test for filter-by-entrytype},
+}
+
 @article{entry0,
   title = {Title of entry 0},
 }

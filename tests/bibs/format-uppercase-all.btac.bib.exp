@@ -103,36 +103,39 @@
 	doi = {10.22222/123456789},
 }
 
-@article{entry0,
-	title = {Title of entry 0},
-	author = {{Doe}7, {John}},
+@misc{all_fields_for_misc,
+	title = {Test for filter-by-entrytype},
+	author = {My Guy},
 	booktitle = {{Generated} booktitle 7},
+	doi = {10.12345/hello},
 	edition = {{Edition} 7},
+	howpublished = {Somehow},
 	journal = {{Generated} {Journal} 7},
-	month = {8},
-	note = {{Note}: this is query number 7
-{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	month = {June},
+	note = {Shouldn't be queried with "-b all" flag},
 	organization = {organization 7},
 	pages = {1--7},
 	volume = {7},
+	year = {2015},
 }
 
-@book{entry1,
-	title = {Title of entry 1},
-	author = {{Doe}8, {John}},
+@misc{opt_field_for_misc,
+	title = {Test for filter-by-entrytype},
+	author = {My Guy},
 	booktitle = {{Generated} booktitle 8},
 	edition = {{Edition} 8},
+	howpublished = {Somehow},
 	journal = {{Generated} {Journal} 8},
-	month = {9},
-	note = {{Note}: this is query number 8
-{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	month = {June},
+	note = {Shouldn't be queried with "-b optional" flag, but queried for "-b all"},
 	organization = {organization 8},
 	pages = {1--8},
 	volume = {8},
+	year = {2015},
 }
 
-@booklet{entry2,
-	title = {Title of entry 2},
+@misc{req_field_for_misc,
+	title = {Test for filter-by-entrytype},
 	author = {{Doe}9, {John}},
 	booktitle = {{Generated} booktitle 9},
 	edition = {{Edition} 9},
@@ -145,8 +148,8 @@
 	volume = {9},
 }
 
-@conference{entry3,
-	title = {Title of entry 3},
+@article{entry0,
+	title = {Title of entry 0},
 	author = {{Doe}10, {John}},
 	booktitle = {{Generated} booktitle 10},
 	edition = {{Edition} 10},
@@ -159,8 +162,8 @@
 	volume = {10},
 }
 
-@inbook{entry4,
-	title = {Title of entry 4},
+@book{entry1,
+	title = {Title of entry 1},
 	author = {{Doe}11, {John}},
 	booktitle = {{Generated} booktitle 11},
 	edition = {{Edition} 11},
@@ -173,8 +176,8 @@
 	volume = {11},
 }
 
-@incollection{entry5,
-	title = {Title of entry 5},
+@booklet{entry2,
+	title = {Title of entry 2},
 	author = {{Doe}12, {John}},
 	booktitle = {{Generated} booktitle 12},
 	edition = {{Edition} 12},
@@ -187,8 +190,8 @@
 	volume = {12},
 }
 
-@manual{entry6,
-	title = {Title of entry 6},
+@conference{entry3,
+	title = {Title of entry 3},
 	author = {{Doe}13, {John}},
 	booktitle = {{Generated} booktitle 13},
 	edition = {{Edition} 13},
@@ -202,8 +205,8 @@
 	volume = {13},
 }
 
-@mastersthesis{entry7,
-	title = {Title of entry 7},
+@inbook{entry4,
+	title = {Title of entry 4},
 	author = {{Doe}14, {John}},
 	booktitle = {{Generated} booktitle 14},
 	edition = {{Edition} 14},
@@ -216,8 +219,8 @@
 	volume = {14},
 }
 
-@misc{entry8,
-	title = {Title of entry 8},
+@incollection{entry5,
+	title = {Title of entry 5},
 	author = {{Doe}15, {John}},
 	booktitle = {{Generated} booktitle 15},
 	edition = {{Edition} 15},
@@ -230,8 +233,8 @@
 	volume = {15},
 }
 
-@techreport{entry9,
-	title = {Title of entry 9},
+@manual{entry6,
+	title = {Title of entry 6},
 	author = {{Doe}16, {John}},
 	booktitle = {{Generated} booktitle 16},
 	edition = {{Edition} 16},
@@ -244,8 +247,8 @@
 	volume = {16},
 }
 
-@unpublished{entry10,
-	title = {Title of entry 10},
+@mastersthesis{entry7,
+	title = {Title of entry 7},
 	author = {{Doe}17, {John}},
 	booktitle = {{Generated} booktitle 17},
 	edition = {{Edition} 17},
@@ -258,8 +261,8 @@
 	volume = {17},
 }
 
-@inproceedings{entry11,
-	title = {Title of entry 11},
+@misc{entry8,
+	title = {Title of entry 8},
 	author = {{Doe}18, {John}},
 	booktitle = {{Generated} booktitle 18},
 	edition = {{Edition} 18},
@@ -272,8 +275,8 @@
 	volume = {18},
 }
 
-@phdthesis{entry12,
-	title = {Title of entry 12},
+@techreport{entry9,
+	title = {Title of entry 9},
 	author = {{Doe}19, {John}},
 	booktitle = {{Generated} booktitle 19},
 	edition = {{Edition} 19},
@@ -286,9 +289,9 @@
 	volume = {19},
 }
 
-@misc{with_accents,
-	title = {Lots OF accents AnD Capitalization: éàêïæøçÉÀÊÏÆØÇ},
-	author = {Somebody},
+@unpublished{entry10,
+	title = {Title of entry 10},
+	author = {{Doe}20, {John}},
 	booktitle = {{Generated} booktitle 20},
 	edition = {{Edition} 20},
 	journal = {{Generated} {Journal} 20},
@@ -298,4 +301,46 @@
 	organization = {organization 20},
 	pages = {1--20},
 	volume = {20},
+}
+
+@inproceedings{entry11,
+	title = {Title of entry 11},
+	author = {{Doe}21, {John}},
+	booktitle = {{Generated} booktitle 21},
+	edition = {{Edition} 21},
+	journal = {{Generated} {Journal} 21},
+	month = {10},
+	note = {{Note}: this is query number 21
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 21},
+	pages = {1--21},
+	volume = {21},
+}
+
+@phdthesis{entry12,
+	title = {Title of entry 12},
+	author = {{Doe}22, {John}},
+	booktitle = {{Generated} booktitle 22},
+	edition = {{Edition} 22},
+	journal = {{Generated} {Journal} 22},
+	month = {11},
+	note = {{Note}: this is query number 22
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 22},
+	pages = {1--22},
+	volume = {22},
+}
+
+@misc{with_accents,
+	title = {Lots OF accents AnD Capitalization: éàêïæøçÉÀÊÏÆØÇ},
+	author = {Somebody},
+	booktitle = {{Generated} booktitle 23},
+	edition = {{Edition} 23},
+	journal = {{Generated} {Journal} 23},
+	month = {12},
+	note = {{Note}: this is query number 23
+{Newline} {UppERcaSE} {AND} accents: {éàêïæøçÉÀÊÏÆØÇ}},
+	organization = {organization 23},
+	pages = {1--23},
+	volume = {23},
 }
