@@ -307,6 +307,8 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
             "-w=note",
             "-w=edition",
             "-w=issn",
+            "-w=howpublished",
+            "-w=year",
         ],
         [("overwrite-selection-prefix.btac.bib.exp", "input.btac.bib")],
     ),
@@ -332,6 +334,8 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
             "-e=entry10",
             "-e=entry12",
             "-e=with_accents",
+            "-e=opt_field_for_misc",
+            "-e=req_field_for_misc",
         ],
         [("selection.btac.bib.exp", "input.btac.bib")],
     ),
@@ -350,6 +354,7 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
             "-E=entry7",
             "-E=entry9",
             "-E=entry11",
+            "-E=all_fields_for_misc",
         ],
         [("selection.btac.bib.exp", "input.btac.bib")],
     ),
@@ -371,6 +376,8 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
             "-e=entry12",
             "-e=absent",
             "-e=with_accents",
+            "-e=opt_field_for_misc",
+            "-e=req_field_for_misc",
         ],
         [("selection.btac.bib.exp", "input.btac.bib")],
     ),
@@ -390,6 +397,7 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
             "-E=entry9",
             "-E=entry11",
             "-E=absent",
+            "-E=all_fields_for_misc",
         ],
         [("selection.btac.bib.exp", "input.btac.bib")],
     ),
@@ -411,6 +419,8 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
             "-e=entry10",
             "-e=entry12",
             "-e=with_accents",
+            "-e=opt_field_for_misc",
+            "-e=req_field_for_misc",
         ],
         [("selection-ignore-mark.btac.bib.exp", "input.btac.bib")],
     ),
@@ -430,9 +440,14 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
             "-E=entry7",
             "-E=entry9",
             "-E=entry11",
+            "-E=all_fields_for_misc",
         ],
         [("selection-ignore-mark.btac.bib.exp", "input.btac.bib")],
     ),
+    # Field selection options
+    ([input_bib, "-b=required"], [("select-required.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--filter-fields-by-entrytype", "optional"], [("select-optional.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--filter-fields-by-entrytype", "all"], [("select-all.btac.bib.exp", "input.btac.bib")]),
 ]
 
 
@@ -518,6 +533,8 @@ exit_tests: List[Tuple[List[str], int]] = [
     ([input_bib, "-fW=title"], 2),
     ([input_bib, "-fw", "author"], 2),
     ([input_bib, "not-a-file"], 1),
+    ([input_bib, "--filter-fields-by-entrytype", "invalid"], 2),
+    ([input_bib, "--filter-fields-by-entrytype", "no"], 2),
 ]
 
 
