@@ -33,7 +33,7 @@ from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.latexenc import string_to_latex
 
 from ..bibtex.base_field import BibtexField
-from ..bibtex.constants import FIELD_NO_MATCH, FieldNamesSet, FieldType
+from ..bibtex.constants import FIELD_NO_MATCH, FieldType, SearchedFields
 from ..bibtex.entry import ENTRY_TYPES, BibtexEntry
 from ..bibtex.io import file_read, file_write, get_entries
 from ..bibtex.normalize import has_field
@@ -88,7 +88,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
     lookups: List[LookupType]
     fields_to_complete: Set[FieldType]  # Set of fields to complete
     entries: OnlyExclude[str]
-    fields_to_overwrite: Container[str]
+    fields_to_overwrite: Set[FieldType]
     escape_unicode: bool
     fields_to_protect_uppercase: Container[str]
     prefix: str
@@ -115,16 +115,20 @@ class BibtexAutocomplete(Iterable[EntryType]):
         prefix: bool = False,
         escape_unicode: bool = False,
         diff_mode: bool = False,
-        fields_to_complete: Set[FieldType] = FieldNamesSet,
-        fields_to_overwrite: Container[str] = set(),
+        fields_to_complete: Optional[Set[FieldType]] = None,
+        fields_to_overwrite: Optional[Set[FieldType]] = None,
         fields_to_protect_uppercase: Container[str] = set(),
         filter_by_entrytype: Literal["no", "required", "optional", "all"] = "no",
     ):
+        if fields_to_complete is None:
+            fields_to_complete = SearchedFields.copy()
+        if fields_to_overwrite is None:
+            fields_to_overwrite = set()
         self.bibdatabases = bibdatabases
         self.lookups = list(lookups)
         self.fields_to_complete = fields_to_complete
         self.entries = entries
-        self.fields_to_overwrite = fields_to_overwrite
+        self.fields_to_overwrite = fields_to_complete & fields_to_overwrite
         self.changed_entries = 0
         self.changed_fields = 0
         self.changes = []

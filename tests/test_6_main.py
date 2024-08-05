@@ -467,11 +467,11 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
         [("field-selection.btac.bib.exp", "input.btac.bib")],
     ),
     (
-        [input_bib, "--dont-complete", "address", "-C", "editor", "-C", "author"],
+        [input_bib, "--dont-complete", "address", "-C", "editor", "-C", "author", "-C=year"],
         [("field-selection.btac.bib.exp", "input.btac.bib")],
     ),
     (
-        [input_bib, "--dont-complete=address", "-C=editor", "-C", "author"],
+        [input_bib, "--dont-complete=address", "-C=editor", "-C", "author", "-C=year"],
         [("field-selection.btac.bib.exp", "input.btac.bib")],
     ),
     (
@@ -493,11 +493,11 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
         [("field-selection.btac.bib.exp", "input.btac.bib")],
     ),
     (
-        [input_bib, "--dont-complete", "address", "-C", "editor", "-C", "author"],
+        [input_bib, "--dont-complete", "address", "-C", "editor", "-C", "author", "-C=howpublished", "-C=year"],
         [("field-selection.btac.bib.exp", "input.btac.bib")],
     ),
     (
-        [input_bib, "--dont-complete=address", "-C=editor", "-C", "author"],
+        [input_bib, "--dont-complete=address", "-C=editor", "-C", "author", "-C=howpublished", "-C=year"],
         [("field-selection.btac.bib.exp", "input.btac.bib")],
     ),
     (
@@ -521,7 +521,19 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
         [("field-selection.btac.bib.exp", "input.btac.bib")],
     ),
     (
-        [input_bib, "--dont-complete", "address", "-C", "editor", "-C", "author", "-C", "author"],
+        [
+            input_bib,
+            "--dont-complete",
+            "address",
+            "-C",
+            "editor",
+            "-C",
+            "author",
+            "-C",
+            "author",
+            "-C=howpublished",
+            "-C=year",
+        ],
         [("field-selection.btac.bib.exp", "input.btac.bib")],
     ),
     (
@@ -543,7 +555,7 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
         [("field-selection-force.btac.bib.exp", "input.btac.bib")],
     ),
     (
-        [input_bib, "--dont-complete", "address", "-fC", "editor", "-C", "author"],
+        [input_bib, "--dont-complete", "address", "-fC", "editor", "-C", "author", "-C=howpublished"],
         [("field-selection-force.btac.bib.exp", "input.btac.bib")],
     ),
     (
@@ -565,7 +577,7 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
         [("field-selection-force-prefix.btac.bib.exp", "input.btac.bib")],
     ),
     (
-        [input_bib, "--dont-complete", "address", "-fC", "editor", "-pC", "author"],
+        [input_bib, "--dont-complete", "address", "-fC", "editor", "-pC", "author", "-C=howpublished", "-C=year"],
         [("field-selection-force-prefix.btac.bib.exp", "input.btac.bib")],
     ),
     (
@@ -600,6 +612,8 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
             "editor",
             "-C",
             "author",
+            "-C=year",
+            "-C=howpublished",
             "-w=booktitle",
             "-w=month",
             "-w=pages",
@@ -637,12 +651,11 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
     (
         [
             input_bib,
-            "--dont-complete",
-            "address",
-            "-C",
-            "editor",
-            "-C",
-            "author",
+            "--dont-complete=address",
+            "-C=editor",
+            "-C=author",
+            "-C=year",
+            "-C=howpublished",
             "-W=author",
             "-W=address",
             "-W=editor",

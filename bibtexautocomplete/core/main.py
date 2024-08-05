@@ -1,8 +1,8 @@
 from pathlib import Path
 from sys import stdout
-from typing import Container, List, NoReturn, Optional
+from typing import Container, List, NoReturn, Optional, Set
 
-from ..bibtex.constants import FieldNamesSet, SearchedFields
+from ..bibtex.constants import FieldNamesSet, FieldType, SearchedFields
 from ..bibtex.io import make_writer
 from ..lookups.https import HTTPSLookup
 from ..utils.ansi import ANSICodes, ansi_format
@@ -117,7 +117,7 @@ def main(argv: Optional[List[str]] = None) -> None:
             logger.warn("Duplicate '-q' arguments ignored: {set}", set=str(dups)[1:-1])
         lookups = list_sort_using(lookups, args.only_query, lambda x: x.name)
 
-    fields = OnlyExclude[str].from_nonempty(args.only_complete, args.dont_complete)
+    fields = OnlyExclude[FieldType].from_nonempty(args.only_complete, args.dont_complete)
     if args.only_complete != [] and args.dont_complete != []:
         conflict(parser, "a ", "-c/--only-complete", "-C/--dont-complete")
 
@@ -139,11 +139,11 @@ def main(argv: Optional[List[str]] = None) -> None:
         conflict(parser, "a ", "--fp/--protect-uppercase", "--FP/--dont-protect-uppercase")
 
     if args.force_overwrite:
-        fields_to_overwrite: Container[str] = FieldNamesSet
+        fields_to_overwrite: Set[FieldType] = FieldNamesSet
     else:
-        overwrite = OnlyExclude[str].from_nonempty(args.overwrite, args.dont_overwrite)
+        overwrite = OnlyExclude[FieldType].from_nonempty(args.overwrite, args.dont_overwrite)
         overwrite.default = False
-        fields_to_overwrite = overwrite
+        fields_to_overwrite = set(overwrite.filter(FieldNamesSet, lambda x: x))
     if args.force_overwrite and args.overwrite != []:
         conflict(parser, "", "-f/--force-overwrite", "-w/--overwrite")
     if args.force_overwrite and args.dont_overwrite != []:
