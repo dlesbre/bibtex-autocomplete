@@ -448,6 +448,32 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
     ([input_bib, "-b=required"], [("select-required.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--filter-fields-by-entrytype", "optional"], [("select-optional.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--filter-fields-by-entrytype", "all"], [("select-all.btac.bib.exp", "input.btac.bib")]),
+    (
+        [
+            input_bib,
+            "-c",
+            "title",
+            "--only-complete",
+            "booktitle",
+            "--only-complete=journal",
+            "-c=month",
+            "-c=pages",
+            "-c=organization",
+            "-c=volume",
+            "-c=note",
+            "-c=edition",
+            "-c=issn",
+        ],
+        [("field-selection.btac.bib.exp", "input.btac.bib")],
+    ),
+    (
+        [input_bib, "--dont-complete", "address", "-C", "editor", "-C", "author"],
+        [("field-selection.btac.bib.exp", "input.btac.bib")],
+    ),
+    (
+        [input_bib, "--dont-complete=address", "-C=editor", "-C", "author"],
+        [("field-selection.btac.bib.exp", "input.btac.bib")],
+    ),
 ]
 
 
