@@ -1,0 +1,158 @@
+@comment{@book{empty_entry,
+}}
+
+@comment{Outside of entries, text is just a comment}
+
+@misc{entry_basic,
+	title = {My awesome article},
+	author = {Yours Truly},
+}
+
+@article{entry_basic2,
+	title = {Something},
+	author = {Someone},
+	journal = {Generated Journal 1},
+}
+
+@booklet{almost_empty,
+	note = {This entry shouldn't be queried, no useful data},
+}
+
+@techreport{also_almost_empty,
+	foo = {bar: no standard field at all},
+}
+
+@article{doi,
+	title = {Generated title 4},
+	doi = {10.5432/hello},
+	journal = {Generated Journal 4},
+}
+
+@inproceedings{giberish,
+	title = {giberish},
+	author = {1789},
+	booktitle = {Generated booktitle 5},
+	date = {long ago},
+	doi = {invalid format},
+	isbn = {also not a number},
+	issn = {not a number},
+	month = {brumaire},
+	pages = {not a number},
+}
+
+@article{full,
+	title = {Full entry, never queried, but field order changed},
+	author = {1789},
+	booktitle = {full},
+	date = {long ago},
+	doi = {invalid format},
+	edition = {full},
+	isbn = {also not a number},
+	issn = {not a number},
+	journal = {full},
+	month = {brumaire},
+	note = {full},
+	organization = {full},
+	pages = {not a number},
+	volume = {full},
+}
+
+@misc{marked,
+	title = {marked entry is not queried},
+	btacqueried = {2024-07-19},
+	journal = {Something},
+	pages = {1--150},
+}
+
+@article{markedbis,
+	title = {marked entry is not queried},
+	btacqueried = {not necessarily a data},
+	doi = {10.22222/123456789},
+}
+
+@misc{all_fields_for_misc,
+	title = {Test for filter-by-entrytype},
+	author = {My Guy},
+	doi = {10.12345/hello},
+	howpublished = {Somehow},
+	month = {June},
+	note = {Shouldn't be queried with "-b all" flag},
+	year = {2015},
+}
+
+@misc{opt_field_for_misc,
+	title = {Test for filter-by-entrytype},
+	author = {My Guy},
+	howpublished = {Somehow},
+	month = {June},
+	note = {Shouldn't be queried with "-b optional" flag, but queried for "-b all"},
+	year = {2015},
+}
+
+@misc{req_field_for_misc,
+	title = {Test for filter-by-entrytype},
+}
+
+@article{entry0,
+	title = {Title of entry 0},
+	journal = {Generated Journal 6},
+}
+
+@book{entry1,
+	title = {Title of entry 1},
+}
+
+@booklet{entry2,
+	title = {Title of entry 2},
+}
+
+@conference{entry3,
+	title = {Title of entry 3},
+	booktitle = {Generated booktitle 7},
+}
+
+@inbook{entry4,
+	title = {Title of entry 4},
+	pages = {1--8},
+}
+
+@incollection{entry5,
+	title = {Title of entry 5},
+	booktitle = {Generated booktitle 9},
+}
+
+@manual{entry6,
+	title = {Title of entry 6},
+}
+
+@mastersthesis{entry7,
+	title = {Title of entry 7},
+}
+
+@misc{entry8,
+	title = {Title of entry 8},
+}
+
+@techreport{entry9,
+	title = {Title of entry 9},
+}
+
+@unpublished{entry10,
+	title = {Title of entry 10},
+	note = {Note: this is query number 10
+Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
+}
+
+@inproceedings{entry11,
+	title = {Title of entry 11},
+	booktitle = {Generated booktitle 11},
+}
+
+@phdthesis{entry12,
+	title = {Title of entry 12},
+}
+
+@misc{with_accents,
+	title = {Lots OF accents AnD Capitalization: éàêïæøçÉÀÊÏÆØÇ},
+	author = {Somebody},
+}

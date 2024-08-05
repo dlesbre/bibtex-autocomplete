@@ -667,6 +667,37 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
         ],
         [("field-selection-overwrite.btac.bib.exp", "input.btac.bib")],
     ),
+    (
+        [
+            input_bib,
+            "-c",
+            "title",
+            "--only-complete",
+            "booktitle",
+            "--only-complete=journal",
+            "-c=month",
+            "-c=pages",
+            "-c=organization",
+            "-c=volume",
+            "-c=note",
+            "-c=edition",
+            "-c=issn",
+            "-b=required",
+        ],
+        [("field-selection-and-entrytype.btac.bib.exp", "input.btac.bib")],
+    ),
+    (
+        [
+            input_bib,
+            "--dont-complete=address",
+            "-C=editor",
+            "-C=author",
+            "-C=year",
+            "-C=howpublished",
+            "-b=required",
+        ],
+        [("field-selection-and-entrytype.btac.bib.exp", "input.btac.bib")],
+    ),
 ]
 
 
