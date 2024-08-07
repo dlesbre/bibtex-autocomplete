@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Fix 404 warnings on DOI not found for unpaywall
 - Fix URL escape missing in path (issue [#16](https://github.com/dlesbre/bibtex-autocomplete/issues/16))
 - Fix duplicate silent flag ignored
 - Fix application crash when combining authors (issue [#16](https://github.com/dlesbre/bibtex-autocomplete/issues/16))

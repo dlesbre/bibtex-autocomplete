@@ -56,6 +56,14 @@ class UnpaywallLookup(JSON_Lookup):
             return base + self.doi
         return base + "search/"
 
+    def get_no_warning_codes(self) -> List[int]:
+        """Ignore 404 returned on invalid DOIs"""
+        codes = []
+        codes.extend(super().get_no_warning_codes())
+        if self.doi is not None:
+            codes.append(404)
+        return codes
+
     # ============= Parsing results into entries =====================
 
     def get_results(self, data: bytes) -> Optional[Iterable[SafeJSON]]:
