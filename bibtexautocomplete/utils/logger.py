@@ -3,13 +3,13 @@ Defining and configuring the logger
 """
 
 import logging
-from sys import stderr, stdout
+from sys import stderr, stdout, version
 from threading import current_thread, main_thread
 from traceback import format_exc
 from typing import Any
 
 from .ansi import ansi_format, ansiless_len
-from .constants import ISSUES_URL, NAME
+from .constants import ISSUES_URL, NAME, VERSION_DATE, VERSION_STR
 
 Level = int
 
@@ -194,12 +194,17 @@ class Logger:
             + prefix
             + "\n"
             + prefix
-            + "{StBold}You can report this bug at {StUnderline}{ISSUES_URL}{Reset}"
-            + "\n"
+            + "{StBold}You can report this bug at {StUnderline}{ISSUES_URL}.{Reset}\n"
+            + prefix
+            + "{StBold}Please include the above traceback and the offending entry in your report.{Reset}\n"
+            + prefix
+            + "BTAC: {BTAC_VERSION}, Python: {PYTHON_VERSION}\n"
             + prefix,
             error="UNEXPECTED ERROR",
             tmessage=message,
             ISSUES_URL=ISSUES_URL,
+            BTAC_VERSION=VERSION_STR + " " + VERSION_DATE,
+            PYTHON_VERSION=version,
             exn=format_exc().strip().replace("\n", "\n" + prefix + ansi_format("{FgRed}")),
         )
 
