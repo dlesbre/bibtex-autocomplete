@@ -536,6 +536,8 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
         + ["-C=" + field for field in NOT_SELECTION2],
         [("field-selection-and-entrytype.btac.bib.exp", "input.btac.bib")],
     ),
+    ([input_bib, "-u"], [("doi-to-url.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--copy-doi-to-url"], [("doi-to-url.btac.bib.exp", "input.btac.bib")]),
 ]
 
 
