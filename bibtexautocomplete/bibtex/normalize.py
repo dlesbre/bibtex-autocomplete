@@ -5,7 +5,7 @@ Functions used to normalize bibtex fields
 import unicodedata
 from re import search, sub
 from typing import Optional, Tuple
-from urllib.parse import parse_qsl, urlencode, urljoin, urlsplit
+from urllib.parse import parse_qsl, quote, urlencode, urljoin, urlsplit
 
 from bibtexparser.latexenc import latex_to_unicode
 
@@ -99,7 +99,7 @@ def normalize_url(url: str, previous: Optional[str] = None) -> Optional[Tuple[st
         logger.debug(f"INVALID URL: {url_copy}, FROM {previous}")
         return None
     domain = split.netloc
-    path = split.path
+    path = quote(split.path)
     if split.query != "":
         path += "?" + urlencode(parse_qsl(split.query))
     if split.fragment != "":
