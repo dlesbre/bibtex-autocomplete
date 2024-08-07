@@ -99,7 +99,7 @@ def normalize_url(url: str, previous: Optional[str] = None) -> Optional[Tuple[st
         logger.debug(f"INVALID URL: {url_copy}, FROM {previous}")
         return None
     domain = split.netloc
-    path = quote(split.path)
+    path = quote(split.path, safe="/:+")
     if split.query != "":
         path += "?" + urlencode(parse_qsl(split.query))
     if split.fragment != "":
