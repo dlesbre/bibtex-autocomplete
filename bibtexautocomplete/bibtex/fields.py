@@ -103,6 +103,8 @@ class DOIField(StrictStringField):
     @classmethod
     def slow_check(cls, doi: str, entry_name: str) -> bool:
         """Query doi.org API to check DOI exists"""
+        if cls.skip_slow_checks:
+            return True
         try:
             doi_checker = DOICheck(doi)
             return doi_checker.query() is True
@@ -131,6 +133,8 @@ class URLField(StrictStringField):
 
     @classmethod
     def slow_check(cls, value: str, entry_name: str) -> bool:
+        if cls.skip_slow_checks:
+            return True
         try:
             checker = URLCheck(value)
             return checker.query() is not None

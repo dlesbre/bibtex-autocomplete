@@ -24,6 +24,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
   
 	pages = {1},
   
+	url = {https://example.com/1},
+  
 	volume = {1},
 }
 
@@ -34,6 +36,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	author = {Someone},
   
 	booktitle = {Generated booktitle 2},
+  
+	doi = {10.00000/doi.number.2},
   
 	edition = {Edition 2},
   
@@ -118,6 +122,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
   
 	pages = {not a number},
   
+	url = {https://example.com/6},
+  
 	volume = {6},
 }
 
@@ -148,6 +154,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	organization = {full},
   
 	pages = {not a number},
+  
+	url = {present},
   
 	volume = {full},
 }
@@ -196,6 +204,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
   
 	pages = {1--7},
   
+	url = {https://example.com/7},
+  
 	volume = {7},
   
 	year = {2015},
@@ -208,6 +218,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	author = {My Guy},
   
 	booktitle = {Generated booktitle 8},
+  
+	doi = {10.00000/doi.number.8},
   
 	edition = {Edition 8},
   
@@ -249,6 +261,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
   
 	pages = {1--9},
   
+	url = {https://example.com/9},
+  
 	volume = {9},
 }
 
@@ -273,6 +287,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
   
 	pages = {1--10},
   
+	url = {https://example.com/10},
+  
 	volume = {10},
 }
 
@@ -283,6 +299,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	author = {Doe11, John},
   
 	booktitle = {Generated booktitle 11},
+  
+	doi = {10.00000/doi.number.11},
   
 	edition = {Edition 11},
   
@@ -321,6 +339,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
   
 	pages = {1--12},
   
+	url = {https://example.com/12},
+  
 	volume = {12},
 }
 
@@ -347,6 +367,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
   
 	pages = {1--13},
   
+	url = {https://example.com/13},
+  
 	volume = {13},
 }
 
@@ -357,6 +379,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	author = {Doe14, John},
   
 	booktitle = {Generated booktitle 14},
+  
+	doi = {10.00000/doi.number.14},
   
 	edition = {Edition 14},
   
@@ -395,6 +419,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
   
 	pages = {1--15},
   
+	url = {https://example.com/15},
+  
 	volume = {15},
 }
 
@@ -419,6 +445,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
   
 	pages = {1--16},
   
+	url = {https://example.com/16},
+  
 	volume = {16},
 }
 
@@ -429,6 +457,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	author = {Doe17, John},
   
 	booktitle = {Generated booktitle 17},
+  
+	doi = {10.00000/doi.number.17},
   
 	edition = {Edition 17},
   
@@ -467,6 +497,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
   
 	pages = {1--18},
   
+	url = {https://example.com/18},
+  
 	volume = {18},
 }
 
@@ -491,6 +523,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
   
 	pages = {1--19},
   
+	url = {https://example.com/19},
+  
 	volume = {19},
 }
 
@@ -501,6 +535,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	author = {Doe20, John},
   
 	booktitle = {Generated booktitle 20},
+  
+	doi = {10.00000/doi.number.20},
   
 	edition = {Edition 20},
   
@@ -539,6 +575,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
   
 	pages = {1--21},
   
+	url = {https://example.com/21},
+  
 	volume = {21},
 }
 
@@ -563,6 +601,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
   
 	pages = {1--22},
   
+	url = {https://example.com/22},
+  
 	volume = {22},
 }
 
@@ -573,6 +613,8 @@ Newline UppERcaSE AND accents: éàêïæøçÉÀÊÏÆØÇ},
 	author = {Somebody},
   
 	booktitle = {Generated booktitle 23},
+  
+	doi = {10.00000/doi.number.23},
   
 	edition = {Edition 23},
   

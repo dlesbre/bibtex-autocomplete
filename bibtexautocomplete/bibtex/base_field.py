@@ -42,6 +42,8 @@ class BibtexField(Generic[T]):
     - year, month, issn, isbn: T = int
     """
 
+    skip_slow_checks: bool = False
+
     field: str
     source: str
     value: Optional[T]
