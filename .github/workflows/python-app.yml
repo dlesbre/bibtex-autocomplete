@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 jobs:
-  test-3-11:
+  test-latest:
     runs-on: ubuntu-latest
     name: "Static checks and test (python 3.12)"
 
@@ -35,16 +35,19 @@ jobs:
       - name: Test with pytest
         run: make test
 
-  test-3-8:
+  test-older:
     runs-on: ubuntu-latest
-    name: "Test (python 3.8)"
+    name: "Tests python"
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python 3.8
+      - name: Set up Python $
         uses: actions/setup-python@v3
         with:
-          python-version: "3.8"
+          python-version: $
       - name: Install dependencies
         run: make setup-dev
       - name: Check script
