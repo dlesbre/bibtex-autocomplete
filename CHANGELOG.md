@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- No longer set URL fields to `https://dx.doi.org/<doi>`, instead use this to
+  complete the doi field
+- New flag `-u --copy-doi-to-url` to do the reverse, set the URL field (if absent)
+  to the DOI.
 - Now writes all entries to a temporary file on keyboard interrupt (Ctrl-C) to
   avoid data loss
 - Fix 404 warnings on DOI not found for unpaywall
