@@ -1,9 +1,9 @@
 # Change Log
 
-## Unreleased
+## Version 1.3.3 - 2024-08-07
 
 - No longer set URL fields to `https://dx.doi.org/<doi>`, instead use this to
-  complete the doi field
+  complete the doi field (issue [#14](https://github.com/dlesbre/bibtex-autocomplete/issues/14))
 - New flag `-u --copy-doi-to-url` to do the reverse, set the URL field (if absent)
   to the DOI.
 - Now writes all entries to a temporary file on keyboard interrupt (Ctrl-C) to
