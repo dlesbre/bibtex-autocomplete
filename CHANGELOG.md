@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Now writes all entries to a temporary file on keyboard interrupt (Ctrl-C) to
+  avoid data loss
 - Fix 404 warnings on DOI not found for unpaywall
 - Fix URL escape missing in path (issue [#16](https://github.com/dlesbre/bibtex-autocomplete/issues/16))
 - Fix duplicate silent flag ignored

@@ -1,9 +1,10 @@
 from pathlib import Path
 from sys import stdout
+from tempfile import mkstemp
 from typing import Container, List, NoReturn, Optional, Set
 
 from ..bibtex.constants import FieldNamesSet, FieldType, SearchedFields
-from ..bibtex.io import make_writer
+from ..bibtex.io import make_writer, write
 from ..lookups.https import HTTPSLookup
 from ..utils.ansi import ANSICodes, ansi_format
 from ..utils.constants import (
@@ -184,4 +185,14 @@ def main(argv: Optional[List[str]] = None) -> None:
         if not args.no_output:
             completer.write(args.output, writer)
     except KeyboardInterrupt:
-        logger.warn("Interrupted")
+        try:
+            logger.warn("Interrupted")
+            _, tempfile = mkstemp(suffix=".btac.bib", prefix="btac-interrupt-", text=True)
+            logger.header("Dumping data")
+            with open(tempfile, "w") as file:
+                for db in completer.bibdatabases:
+                    file.write(write(db, writer))
+            logger.info("Wrote partially completed entries to '" + tempfile + "'.")
+            logger.info("Only the first {} entries were completed".format(completer.position))
+        except KeyboardInterrupt:
+            logger.warn("Interrupted x2")

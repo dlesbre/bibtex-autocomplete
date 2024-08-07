@@ -105,6 +105,9 @@ class BibtexAutocomplete(Iterable[EntryType]):
     # changes is a list of (field, new_value, source)
     changes: List[Tuple[str, List[Changes]]]
 
+    # Current position when completing entries
+    position: int
+
     def __init__(
         self,
         bibdatabases: List[BibDatabase],
@@ -143,6 +146,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         self.fields_to_protect_uppercase = fields_to_protect_uppercase
         self.diff_mode = diff_mode
         self.filter_by_entrytype = filter_by_entrytype
+        self.position = 0
 
     def __iter__(self) -> Iterator[EntryType]:
         """Iterate through entries"""
@@ -209,25 +213,27 @@ class BibtexAutocomplete(Iterable[EntryType]):
             # Start all threads
             for thread in threads:
                 thread.start()
-            position = 0
+            self.position = 0
             nb_entries = self.count_entries()
-            while position < nb_entries:
+            while self.position < nb_entries:
                 # Check if all threads have resolved the current entry
                 step = True
                 thread_positions = []
                 for thread in threads:
-                    if position >= thread.position:
+                    if self.position >= thread.position:
                         step = False
                     thread_positions.append(f"{thread.lookup.name}:{thread.position}")
                 if is_verbose:
                     bar.text = " ".join(thread_positions)
                 else:
-                    bar.text = f"Processed {position}/{nb_entries} entries, " f"found {self.changed_fields} new fields"
+                    bar.text = (
+                        f"Processed {self.position}/{nb_entries} entries, " f"found {self.changed_fields} new fields"
+                    )
                 if not step:  # Some threads have not found data for current entry
                     condition.wait()
                 else:  # update data for current entry
-                    self.update_entry(entries[position], to_complete[position], threads, position)
-                    position += 1
+                    self.update_entry(entries[self.position], to_complete[self.position], threads)
+                    self.position += 1
         logger.info(
             "Modified {changed_entries} / {count_entries} entries" ", added {changed_fields} fields",
             changed_entries=self.changed_entries,
@@ -260,9 +266,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         fields = self.get_fields_to_complete_by_entrytype(entry)
         return set(field for field in fields if (not has_field(entry, field)) or field in self.fields_to_overwrite)
 
-    def update_entry(
-        self, entry: EntryType, to_complete: Set[FieldType], threads: List[LookupThread], position: int
-    ) -> None:
+    def update_entry(self, entry: EntryType, to_complete: Set[FieldType], threads: List[LookupThread]) -> None:
         """Reads all data the threads have found on a new entry,
         and uses it to update the entry with new fields"""
         changes: List[Changes] = []
@@ -272,7 +276,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
 
         dump = DataDump(entry_id)
         for thread in threads:
-            result, info = thread.result[position]
+            result, info = thread.result[self.position]
             dump.add_entry(thread.lookup.name, result, info)
             if result is not None:
                 results.append(result)
