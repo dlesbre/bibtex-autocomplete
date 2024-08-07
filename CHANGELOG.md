@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix duplicate silent flag ignored
+- Fix application crash when combining authors
 - Fix interaction between `--escape-unicode` and `--protect-uppercase` options
 - Protect uppercase option now also protects unicode uppercase
 - Fix using the `--fa` / `--align-values` option leading to empty output
