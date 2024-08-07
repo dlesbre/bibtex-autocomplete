@@ -194,7 +194,7 @@ class Logger:
             + prefix
             + "\n"
             + prefix
-            + "{StBold}You can report this bug at {StUnderline}{ISSUES_URL}.{Reset}\n"
+            + "{StBold}You can report this bug at {StUnderline}{ISSUES_URL}{Reset}{StBold}.{Reset}\n"
             + prefix
             + "{StBold}Please include the above traceback and the offending entry in your report.{Reset}\n"
             + prefix
