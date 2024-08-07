@@ -339,6 +339,8 @@ are a few options you can use to control the output format:
   used with the `-i --inplace` flag for safety reasons. If you really want to overwrite
   your input file (and delete a bunch of data in the process), you can do so with
   by specifying it explicitly via the `-o --output` option.
+- `-u --copy-doi-to-url` If a DOI is found but no URL, set the URL field
+  to `https://dx.doi.org/<doi>`
 
 - `-t --timeout <float>` set timeout on request in seconds, default: 20.0 s,
   increase this if you are getting a lot of timeouts. Set it to -1 for no timeout.

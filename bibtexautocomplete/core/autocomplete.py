@@ -96,6 +96,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
     filter: Callable[[EntryType], bool]
     dumps: List[DataDump]
     diff_mode: bool
+    copy_doi_to_url: bool
     filter_by_entrytype: Literal["no", "required", "optional", "all"]
 
     changed_fields: int
@@ -122,6 +123,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         fields_to_overwrite: Optional[Set[FieldType]] = None,
         fields_to_protect_uppercase: Container[str] = set(),
         filter_by_entrytype: Literal["no", "required", "optional", "all"] = "no",
+        copy_doi_to_url: bool = False,
     ):
         if fields_to_complete is None:
             fields_to_complete = SearchedFields.copy()
@@ -147,6 +149,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         self.diff_mode = diff_mode
         self.filter_by_entrytype = filter_by_entrytype
         self.position = 0
+        self.copy_doi_to_url = copy_doi_to_url
 
     def __iter__(self) -> Iterator[EntryType]:
         """Iterate through entries"""
@@ -279,6 +282,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
             result, info = thread.result[self.position]
             dump.add_entry(thread.lookup.name, result, info)
             if result is not None:
+                result.sanitize(self.copy_doi_to_url)
                 results.append(result)
                 new_fields = new_fields.union(result.fields())
 

@@ -264,3 +264,19 @@ class BibtexEntry:
     def fields(self) -> Set[FieldType]:
         """Set of fields with valid values"""
         return {x for x in FieldNamesSet if x in self}
+
+    def sanitize(self, add_doi_url: bool = False) -> None:
+        """Performs crossfields data checks and validation"""
+        # If URL is dx.doi.org/..., copy it to the DOI field and delete
+        if self.url.value is not None:
+            for prefix in ("https://dx.doi.org/", "https://doi.org/", "https://www.doi.org/"):
+                if self.url.value.startswith(prefix):
+                    doi = self.url.value[len(prefix) :]
+                    if self.doi.value is None:
+                        self.doi.set(doi)
+                    if not add_doi_url:
+                        self.url.value = None
+                    break
+        # Set URL to dx.doi.org if no URL is present
+        elif self.doi.value is not None and add_doi_url:
+            self.url.set("https://dx.doi.org/" + self.doi.value)

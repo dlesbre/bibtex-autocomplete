@@ -172,6 +172,8 @@ def make_parser() -> MyParser:
     parser.add_argument("--output", "-o", type=Path, action="append", default=[])
     parser.add_argument("input", nargs="*", type=Path, action="append", default=[])
 
+    parser.add_argument("--copy-doi-to-url", "-u", action="store_true")
+
     return parser
 
 
@@ -257,6 +259,8 @@ More information and demo:
         Can be combined with -f to safely show info for already present fields.
   {FgYellow}-D --diff{Reset}             In diff mode, only the new fields are written
         Entries with no new fields are removed. Cannot be used with -i / --inplace flag.
+  {FgYellow}-u --copy-doi-to-url{Reset}  If a DOI is found but no URL, set the url field
+        to https://dx.doi.org/<doi>
 
   {FgYellow}-t --timeout{Reset} {FgGreen}<float>{Reset}  set timeout on request, default: {TIMEOUT} s
         Set to -1 for no timeout.
