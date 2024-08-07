@@ -77,3 +77,6 @@ class Author:
             if aut is not None:
                 result.append(aut)
         return result
+
+    def __hash__(self) -> int:
+        return hash(self.to_bibtex())
