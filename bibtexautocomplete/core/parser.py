@@ -160,7 +160,7 @@ def make_parser() -> MyParser:
     parser.add_argument("--timeout", "-t", type=float, default=CONNECTION_TIMEOUT)
     parser.add_argument("--verbose", "-v", action="count", default=0)
 
-    parser.add_argument("--silent", "-s", action="store_true")
+    parser.add_argument("--silent", "-s", action="count", default=0)
     parser.add_argument("--no-color", "-n", action="store_true")
     parser.add_argument("--ignore-ssl", "-S", action="store_true")
 
