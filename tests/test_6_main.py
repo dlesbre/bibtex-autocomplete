@@ -292,7 +292,8 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
             "--overwrite",
             "booktitle",
             "--overwrite=journal",
-            "-pw=month",
+            "-pw",
+            "month",
         ]
         + ["-w=" + field for field in SELECTION2],
         [("overwrite-selection-prefix.btac.bib.exp", "input.btac.bib")],
