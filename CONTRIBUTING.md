@@ -30,11 +30,11 @@ source venv/bin/activate &&
 make setup-dev
 ```
 
-This will install the code and dependencies, including the [mypy](http://mypy-lang.org/) type-checker and [black](https://pypi.org/project/black/) formatter. It will also set a pre-commit hook to run these before you commit, to auto-format code and identify errors.
+This will install the code and dependencies, including the [mypy](http://mypy-lang.org/) type-checker and [ruff](https://docs.astral.sh/ruff/) linter/formatter. It will also set a pre-commit hook to run these before you commit, to auto-format code and identify errors.
 
 You can contribute code via the fork/pull request method.
 - By doing so you agree to deploy your code under an MIT License
 - Please make sure you pass type-checking (`make mypy`) and tests (`make test`) before submitting.
-- Please respect coding style (`make format` will auto format the code with black and isort).
-- Please add your changes to the CHANGELOG, at the top (in the `Version ???` section).
+- Please respect coding style (`make format` will auto format the code with ruff).
+- Please add your changes to the CHANGELOG, at the top (in the `Unreleased` section).
 - For new features, consider writing tests to check their functionality.
