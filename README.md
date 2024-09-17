@@ -121,16 +121,17 @@ entries that don't have one of those two fields *will not* be completed.
 
 **How are entries completed?**
 
-Once responses from all websites have been found, the script will add fields
-from website with the following priority by performing a majority vote among the
-source. To do so it uses smart normalization and merging tactics for each field:
+Once responses from all websites have been found, the script will add fields 
+by performing a majority vote among the sources. To do so it uses smart 
+normalization and merging tactics for each field:
 - Authors (and editors) match if they have same last names and, if both first
   names present, the first name of one is equal/an abbreviation of the other.
-  Author list match if their intersection is non-empty.
-- ISSN and ISBN are normalized their check digits verified. ISBN are converted
+  Author list match they have at least one author in common.
+- ISSN and ISBN are normalized and have their check digits verified. ISBN are converted
   to their 13 digit representation
 - URL and DOI are checked for valid format, and further validated by querying
-  them online to ensure they exist
+  them online to ensure they exist. DOI are normalized to strip any leading URL
+  and converted to lowercase.
 - Many fields match with abbreviation detection (journal, institution, booktitle,
   organization, publisher, school and series). So `ACM` will match
   `Association for Computer Machinery`
