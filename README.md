@@ -65,6 +65,7 @@ narrow down the list of sources if some aren't relevant using [command line opti
 - [Demo](#demo)
 - [Quick overview](#quick-overview)
 - [Installation](#installation)
+  - [Shell tab completion](#shell-tab-completion)
   - [Dependencies](#dependencies)
 - [Usage](#usage)
 - [Command line arguments](#command-line-arguments)
@@ -121,8 +122,8 @@ entries that don't have one of those two fields *will not* be completed.
 
 **How are entries completed?**
 
-Once responses from all websites have been found, the script will add fields 
-by performing a majority vote among the sources. To do so it uses smart 
+Once responses from all websites have been found, the script will add fields
+by performing a majority vote among the sources. To do so it uses smart
 normalization and merging tactics for each field:
 - Authors (and editors) match if they have same last names and, if both first
   names present, the first name of one is equal/an abbreviation of the other.
@@ -169,12 +170,40 @@ sudo apt install pipx
 pipx install bibtexautocomplete
 ```
 
+### Shell tab completion
+
+If you want tab based completion for `btac` in your shell, you must install
+the optional [argcomplete](https://pypi.org/project/argcomplete/) dependency.
+```bash
+# Either install the package separately
+pip install argcomplete
+# Or as a btac optional dependency
+pip install bibtexautocomplete[tab]
+```
+You then need to register the tab auto-completer. On bash/zsh:
+- You can activate completion just for this script with
+  ```bash
+  eval "$(register-python-argcomplete btac)"
+  ```
+  For repeated use, I recommend adding this line to your `.bashrc` or `.bash_profile`.
+- Alternatively, you can activate completion for all python scripts
+  using argcomplete by running
+  ```bash
+  activate-global-python-argcomplete
+  ```
+  and then restarting your shell
+
+If using another shell then bash/zsh on Linux or MacOS, support is not guaranteed.
+See [github.com/kislyuk/argcomplete/contrib](https://github.com/kislyuk/argcomplete/tree/develop/contrib) for instructions on getting it working on other shells.
+
 ### Dependencies
 
 This package has two dependencies (automatically installed by pip) :
 
 - [bibtexparser](https://bibtexparser.readthedocs.io/) (<2.0.0)
 - [alive_progress](https://github.com/rsalmei/alive-progress) (>= 3.0.0) for the fancy progress bar
+
+It also has an optional dependency, [argcomplete](https://pypi.org/project/argcomplete/) for tab based completion. It is installed if you `pip install  bibtexautocomplete[tab]`.
 
 ## Usage
 
