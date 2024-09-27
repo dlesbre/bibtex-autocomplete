@@ -50,7 +50,9 @@ Changelog = "https://github.com/dlesbre/bibtex-autocomplete/blob/master/CHANGELO
 btac = "bibtexautocomplete.core:main"
 
 [project.optional-dependencies]
+tab = ["argcomplete"]
 dev = [
+  "argcomplete",
   "pre-commit",
   "pytest",
   "mypy",

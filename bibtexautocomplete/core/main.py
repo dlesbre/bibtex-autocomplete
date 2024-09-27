@@ -1,7 +1,8 @@
+from argparse import ArgumentParser
 from pathlib import Path
 from sys import stdout
 from tempfile import mkstemp
-from typing import Container, List, NoReturn, Optional, Set
+from typing import Any, Callable, Container, List, NoReturn, Optional, Set
 
 from ..bibtex.constants import FieldNamesSet, FieldType, SearchedFields
 from ..bibtex.io import make_writer, write
@@ -32,6 +33,14 @@ from .parser import (
     make_parser,
 )
 
+parser_autocomplete: Optional[Callable[[ArgumentParser], Any]] = None
+try:
+    from argcomplete import autocomplete
+
+    parser_autocomplete = autocomplete
+except ImportError:
+    pass
+
 
 def conflict(parser: MyParser, prefix: str, option1: str, option2: str) -> NoReturn:
     parser.error(
@@ -52,6 +61,8 @@ def main(argv: Optional[List[str]] = None) -> None:
     if none, uses sys.argv
     see HELP_TEXT or main(["-h"]) for details"""
     parser = make_parser()
+    if parser_autocomplete is not None:
+        parser_autocomplete(parser)
     if argv is None:
         args = parser.parse_args()
     else:
