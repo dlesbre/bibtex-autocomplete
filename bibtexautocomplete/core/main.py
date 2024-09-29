@@ -208,16 +208,26 @@ def main(argv: Optional[List[str]] = None) -> None:
             with open(tempfile, "w") as file:
                 for db in completer.bibdatabases:
                     file.write(write(db, writer))
-            logger.info("Wrote partially completed entries to '" + tempfile + "'.")
+            logger.info("Wrote partially completed entries to '{StUnderline}{tempfile}{Reset}'.", tempfile=tempfile)
             i = 0
+            break_next = False
             for entry in completer:
                 i += 1
-                if i == completer.position:
+                if break_next:
                     logger.info(
-                        "Only the first {} entries were completed (up to and including '{}')".format(
-                            completer.position, entry.get("ID", "<no_id>")
-                        )
+                        "You can resume execution using '--start-from {entry}':",
+                        entry=entry.get("ID", "<no_id>"),
+                    )
+                    logger.info(
+                        '{FgBlue}$ btac --start-from {entry} --output "{output}" "{path}"{Reset}',
+                        entry=entry.get("ID", "<no_id>"),
+                        path=tempfile,
+                        output=args.output[0],
                     )
                     break
+                if i == completer.position:
+                    logger.info("Only completed entries up to and including '{}'.\n".format(entry.get("ID", "<no_id>")))
+                    break_next = True
+
         except KeyboardInterrupt:
             logger.warn("Interrupted x2")

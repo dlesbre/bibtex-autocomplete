@@ -187,8 +187,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
 
     @memoize
     def get_id_padding(self) -> int:
-        """Return the max length of entries' ID
-        to use for pretty printing"""
+        """Return the max length of entries' ID to use for pretty printing"""
         max_id_padding = 40
         return min(max((len(entry["ID"]) + 1 for entry in self), default=0), max_id_padding)
 
