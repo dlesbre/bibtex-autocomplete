@@ -88,6 +88,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
     lookups: List[LookupType]
     fields_to_complete: Set[FieldType]  # Set of fields to complete
     entries: OnlyExclude[str]
+    start_from: Optional[str]
     fields_to_overwrite: Set[FieldType]
     escape_unicode: bool
     fields_to_protect_uppercase: Container[str]
@@ -124,6 +125,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         fields_to_protect_uppercase: Container[str] = set(),
         filter_by_entrytype: Literal["no", "required", "optional", "all"] = "no",
         copy_doi_to_url: bool = False,
+        start_from: Optional[str] = None,
     ):
         if fields_to_complete is None:
             fields_to_complete = SearchedFields.copy()
@@ -150,11 +152,19 @@ class BibtexAutocomplete(Iterable[EntryType]):
         self.filter_by_entrytype = filter_by_entrytype
         self.position = 0
         self.copy_doi_to_url = copy_doi_to_url
+        self.start_from = start_from
 
     def __iter__(self) -> Iterator[EntryType]:
         """Iterate through entries"""
+        has_started = False
+        if self.start_from is None:
+            has_started = True
         for db in self.bibdatabases:
-            yield from filter(self.filter, get_entries(db))
+            for entry in get_entries(db):
+                if entry["ID"] == self.start_from:
+                    has_started = True
+                if has_started and self.filter(entry):
+                    yield entry
 
     @memoize
     def count_entries(self) -> int:

@@ -138,6 +138,7 @@ def make_parser() -> MyParser:
 
     parser.add_argument("--exclude-entry", "-E", action="append", default=[])
     parser.add_argument("--only-entry", "-e", action="append", default=[])
+    parser.add_argument("--start-from", "--sf", type=str)
 
     parser.add_argument("--escape-unicode", "--fu", action="store_true")
     parser.add_argument("--protect-all-uppercase", "--fpa", action="store_true")
@@ -205,7 +206,7 @@ More information and demo:
   {FgYellow}-i --inplace{Reset}          Modify input files inplace
         ignores any specified output files via -o / --output
 
-{StBold}Query filtering:{Reset} can all be used multiple times
+{StBold}Query filtering:{Reset} the only/dont flags can be used multiple times to specify a list
   {FgYellow}-q --only-query{Reset} {FgGreen}<website>{Reset}   Only query the given sites,
   {FgYellow}-Q --dont-query{Reset} {FgGreen}<website>{Reset}   Don't query the given sites
         Website must be one of:
@@ -214,6 +215,8 @@ More information and demo:
   {FgYellow}-e --only-entry{Reset}    {FgGreen}<id>{Reset}     Only perform lookup these entries
   {FgYellow}-E --exclude-entry{Reset} {FgGreen}<id>{Reset}     Don't perform lookup these entries
         ID is the identifier in bibtex (e.g. @inproceedings{{<id> ... }})
+  {FgYellow}--sf --start-from{Reset}  {FgGreen}<id>{Reset}     Only complete entries that occur after the given
+        entry (inclusive). Usefull when resuming a previously interrupted autocompletion
 
   {FgYellow}-c --only-complete{Reset} {FgGreen}<field>{Reset}  Only complete the given fields
   {FgYellow}-C --dont-complete{Reset} {FgGreen}<field>{Reset}  Don't complete the given fields

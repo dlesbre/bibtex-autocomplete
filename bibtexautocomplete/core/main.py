@@ -187,6 +187,7 @@ def main(argv: Optional[List[str]] = None) -> None:
         fields_to_protect_uppercase=fields_to_protect_uppercase,
         filter_by_entrytype=args.filter_fields_by_entrytype,
         copy_doi_to_url=args.copy_doi_to_url,
+        start_from=args.start_from,
     )
     completer.print_filters()
     try:

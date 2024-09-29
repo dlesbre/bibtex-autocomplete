@@ -277,6 +277,11 @@ regularly.
   your BibTeX file (e.g. `@inproceedings{<id> ... }`). These arguments can also
   be used multiple times to select only/exclude multiple entries
 
+- `--sf --start-from <id>`
+
+  Only complete the entries that come after the given id (inclusive). This is
+  useful when resuming a previously interrupted auto-completion on the same file.
+
 - `-c --only-complete <field>` or `-C --dont-complete <field>`
 
   Restrict which fields you wish to autocomplete. Field is a BibTeX field (e.g.
