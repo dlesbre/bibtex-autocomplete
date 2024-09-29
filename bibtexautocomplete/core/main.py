@@ -199,12 +199,24 @@ def main(argv: Optional[List[str]] = None) -> None:
     except KeyboardInterrupt:
         try:
             logger.warn("Interrupted")
+            if completer.position == 0:
+                logger.info("No entries were completed")
+                return None
             _, tempfile = mkstemp(suffix=".btac.bib", prefix="btac-interrupt-", text=True)
             logger.header("Dumping data")
             with open(tempfile, "w") as file:
                 for db in completer.bibdatabases:
                     file.write(write(db, writer))
             logger.info("Wrote partially completed entries to '" + tempfile + "'.")
-            logger.info("Only the first {} entries were completed".format(completer.position))
+            i = 0
+            for entry in completer:
+                i += 1
+                if i == completer.position:
+                    logger.info(
+                        "Only the first {} entries were completed (up to and including '{}')".format(
+                            completer.position, entry.get("ID", "<no_id>")
+                        )
+                    )
+                    break
         except KeyboardInterrupt:
             logger.warn("Interrupted x2")
