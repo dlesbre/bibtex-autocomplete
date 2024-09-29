@@ -1,5 +1,12 @@
 # Change Log
 
+## Version ?.?.? - Unreleased
+
+- Add command-line tab completion for flags and some choices (field names)
+- Fix 404 warnings on DOI not found for crossref
+- Add `--sf --start-from` flag and clarify message shown on interrupt, plus show
+  instructions on how to resume.
+
 ## Version 1.3.3 - 2024-08-07
 
 - No longer set URL fields to `https://dx.doi.org/<doi>`, instead use this to
