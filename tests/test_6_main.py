@@ -539,6 +539,7 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
     ),
     ([input_bib, "-u"], [("doi-to-url.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--copy-doi-to-url"], [("doi-to-url.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--start-from", "entry0"], [("start-from.btac.bib.exp", "input.btac.bib")]),
 ]
 
 
