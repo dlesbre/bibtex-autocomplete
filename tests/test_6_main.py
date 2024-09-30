@@ -540,6 +540,7 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
     ([input_bib, "-u"], [("doi-to-url.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--copy-doi-to-url"], [("doi-to-url.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--start-from", "entry0"], [("start-from.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--sf=entry0"], [("start-from.btac.bib.exp", "input.btac.bib")]),
 ]
 
 
@@ -628,6 +629,8 @@ exit_tests: List[Tuple[List[str], int]] = [
     ([input_bib, "not-a-file"], 1),
     ([input_bib, "--filter-fields-by-entrytype", "invalid"], 2),
     ([input_bib, "--filter-fields-by-entrytype", "no"], 2),
+    ([input_bib, "--start-from", "not-an-entry"], 2),
+    ([input_bib, "--sf", "not-an-entry"], 2),
 ]
 
 

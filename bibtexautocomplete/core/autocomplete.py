@@ -184,6 +184,9 @@ class BibtexAutocomplete(Iterable[EntryType]):
             logger.warn('No entry with ID "{ID}"', ID=x)
         for x in sorted(warn_exclude):
             logger.warn('No entry with ID "{ID}"', ID=x)
+        if self.start_from is not None and self.start_from not in all_entries:
+            logger.critical('--start-from / --sf invalid: no entry with ID "{ID}"', ID=self.start_from)
+            exit(2)
 
     @memoize
     def get_id_padding(self) -> int:
