@@ -216,7 +216,7 @@ More information and demo:
   {FgYellow}-E --exclude-entry{Reset} {FgGreen}<id>{Reset}     Don't perform lookup these entries
         ID is the identifier in bibtex (e.g. @inproceedings{{<id> ... }})
   {FgYellow}--sf --start-from{Reset}  {FgGreen}<id>{Reset}     Only complete entries that occur after the given
-        entry (inclusive). Usefull when resuming a previously interrupted autocompletion
+        entry (inclusive). Useful when resuming a previously interrupted autocompletion
 
   {FgYellow}-c --only-complete{Reset} {FgGreen}<field>{Reset}  Only complete the given fields
   {FgYellow}-C --dont-complete{Reset} {FgGreen}<field>{Reset}  Don't complete the given fields
