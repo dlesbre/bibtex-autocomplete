@@ -66,7 +66,7 @@ def indent_string(indent: str) -> str:
                 indent
             )
         )
-        exit(5)
+        exit(2)
     return sane
 
 

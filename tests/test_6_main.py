@@ -631,6 +631,7 @@ exit_tests: List[Tuple[List[str], int]] = [
     ([input_bib, "--filter-fields-by-entrytype", "no"], 2),
     ([input_bib, "--start-from", "not-an-entry"], 2),
     ([input_bib, "--sf", "not-an-entry"], 2),
+    ([input_bib, "--fi", "invalid"], 2),
 ]
 
 
