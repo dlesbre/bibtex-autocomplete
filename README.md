@@ -193,7 +193,7 @@ You then need to register the tab auto-completer. On bash/zsh:
   ```
   and then restarting your shell
 
-If using another shell then bash/zsh on Linux or MacOS, support is not guaranteed.
+If using another shell than bash/zsh on Linux or MacOS, support is not guaranteed.
 See [github.com/kislyuk/argcomplete/contrib](https://github.com/kislyuk/argcomplete/tree/develop/contrib) for instructions on getting it working on other shells.
 
 ### Dependencies
