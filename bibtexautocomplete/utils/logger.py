@@ -6,7 +6,6 @@ import logging
 from sys import stderr, stdout, version
 from threading import current_thread, main_thread
 from traceback import format_exc
-from typing import Any
 
 from .ansi import ansi_format, ansiless_len
 from .constants import ISSUES_URL, NAME, VERSION_DATE, VERSION_STR
@@ -75,13 +74,13 @@ class Logger:
             message = prefix_indent(info, message)
         return message
 
-    def to_logger(self, level: int, message: str, *args: Any, **kwargs: Any) -> None:
+    def to_logger(self, level: int, message: str, *args: object, **kwargs: object) -> None:
         """Formats a message (with given args and ansi colors)
         and sends it to the logger with the given level"""
         message = self.add_thread_info(ansi_format(message, *args, **kwargs))
         self.logger.log(level=level, msg=message)
 
-    def warn(self, message: str, error: str = "WARNING", *args: Any, **kwargs: Any) -> None:
+    def warn(self, message: str, error: str = "WARNING", *args: object, **kwargs: object) -> None:
         """Issue a warning, extra arguments are formatter options"""
         self.to_logger(
             logging.WARN,
@@ -91,7 +90,7 @@ class Logger:
             **kwargs,
         )
 
-    def error(self, message: str, error: str = "ERROR", *args: Any, **kwargs: Any) -> None:
+    def error(self, message: str, error: str = "ERROR", *args: object, **kwargs: object) -> None:
         """Issue an error, extra arguments are formatter options"""
         self.to_logger(
             logging.ERROR,
@@ -101,7 +100,7 @@ class Logger:
             **kwargs,
         )
 
-    def critical(self, message: str, error: str = "CRITICAL ERROR", *args: Any, **kwargs: Any) -> None:
+    def critical(self, message: str, error: str = "CRITICAL ERROR", *args: object, **kwargs: object) -> None:
         """Issue a critical error, extra arguments are formatter options"""
         self.to_logger(
             logging.CRITICAL,
@@ -111,27 +110,27 @@ class Logger:
             **kwargs,
         )
 
-    def info(self, message: str, *args: Any, **kwargs: Any) -> None:
+    def info(self, message: str, *args: object, **kwargs: object) -> None:
         """Show info, extra arguments are formatter options"""
         self.to_logger(logging.INFO, message, *args, **kwargs)
 
-    def verbose_info(self, message: str, *args: Any, **kwargs: Any) -> None:
+    def verbose_info(self, message: str, *args: object, **kwargs: object) -> None:
         """Show info when verbose, extra arguments are formatter options"""
         self.to_logger(VERBOSE_INFO, message, *args, **kwargs)
 
-    def debug(self, message: str, *args: Any, **kwargs: Any) -> None:
+    def debug(self, message: str, *args: object, **kwargs: object) -> None:
         """Show debug info, extra arguments are formatter options"""
         self.to_logger(logging.DEBUG, message, *args, **kwargs)
 
-    def verbose_debug(self, message: str, *args: Any, **kwargs: Any) -> None:
+    def verbose_debug(self, message: str, *args: object, **kwargs: object) -> None:
         """Show verbose debug info, extra arguments are formatter options"""
         self.to_logger(VERBOSE_DEBUG, message, *args, **kwargs)
 
-    def very_verbose_debug(self, message: str, *args: Any, **kwargs: Any) -> None:
+    def very_verbose_debug(self, message: str, *args: object, **kwargs: object) -> None:
         """Show very verbose debug info, extra arguments are formatter options"""
         self.to_logger(VERY_VERBOSE_DEBUG, message, *args, **kwargs)
 
-    def forget(self, message: str, *args: Any, **kwargs: Any) -> None:
+    def forget(self, message: str, *args: object, **kwargs: object) -> None:
         """Forgets info passed to it"""
         pass
 
