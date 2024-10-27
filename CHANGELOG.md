@@ -3,6 +3,7 @@
 ## Version ?.?.? - Unreleased
 
 - Add command-line tab completion for flags and some choices (field names)
+- Simplify and documents ways to call this script from python
 - Fix 404 warnings on DOI not found for crossref
 - Add `--sf --start-from` flag and clarify message shown on interrupt, plus show
   instructions on how to resume. Also display a hint that BTAC can be interrupted

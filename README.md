@@ -493,21 +493,23 @@ completer.write_string() # type: list[str]
 completer.write_entry() # type: list[list[EntryType]]
 ```
 
-The settings passed to the constructor mirror the command-line arguments. They
-must all be specified with their keyword argument:
+The settings passed to the `BibtexAutocomplete` constructor mirror the
+command-line arguments, see [their documentation](#command-line-arguments) for
+details.
 ```python
 lookups: Iterable[LookupType] = ...,
+# Specify which entries should be completed (default: all)
 entries: Optional[Container[str]] = None,
 mark: bool = False,
 ignore_mark: bool = False,
 prefix: bool = False,
 escape_unicode: bool = False,
 diff_mode: bool = False,
-# Restrict which fields should be completed
+# Restrict which fields should be completed (default: all)
 fields_to_complete: Optional[Set[FieldType]] = None,
-# Restrict which fields should be overwritten
+# Specify which fields should be overwritten (default: none)
 fields_to_overwrite: Optional[Set[FieldType]] = None,
-# Specify which fields should have uppercase protection
+# Specify which fields should have uppercase protection (default: none)
 fields_to_protect_uppercase: Container[str] = set(),
 filter_by_entrytype: Literal["no", "required", "optional", "all"] = "no",
 copy_doi_to_url: bool = False,
