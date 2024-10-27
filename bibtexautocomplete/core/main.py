@@ -4,9 +4,10 @@ from sys import stdout
 from tempfile import mkstemp
 from typing import Any, Callable, Container, List, NoReturn, Optional, Set
 
+from bibtexparser.bibdatabase import UndefinedString
+
 from ..bibtex.constants import FieldNamesSet, FieldType, SearchedFields
-from ..bibtex.io import make_writer, write
-from ..lookups.https import HTTPSLookup
+from ..bibtex.io import write
 from ..utils.ansi import ANSICodes, ansi_format
 from ..utils.constants import (
     CONNECTION_TIMEOUT,
@@ -28,7 +29,6 @@ from .parser import (
     MyParser,
     flatten,
     get_bibfiles,
-    indent_string,
     make_output_names,
     make_parser,
 )
@@ -96,7 +96,6 @@ def main(argv: Optional[List[str]] = None) -> None:
 
     if args.silent:
         args.verbose = -args.silent
-    logger.set_verbosity(args.verbose)
 
     args.input = flatten(args.input)
     # No input -> CWD
@@ -110,14 +109,6 @@ def main(argv: Optional[List[str]] = None) -> None:
     else:
         args.output = make_output_names(args.input, args.output)
 
-    writer = make_writer()
-    writer.align_values = args.align_values
-    writer.comma_first = args.comma_first
-    writer.add_trailing_comma = args.no_trailing_comma
-    writer.indent = indent_string(args.indent)
-
-    HTTPSLookup.connection_timeout = args.timeout if args.timeout > 0.0 else None
-    HTTPSLookup.ignore_ssl = args.ignore_ssl
     lookups = OnlyExclude[str].from_nonempty(args.only_query, args.dont_query).filter(LOOKUPS, lambda x: x.name)
     if args.only_query != [] and args.dont_query != []:
         conflict(parser, "a ", "-q/--only-query", "-Q/--dont-query")
@@ -172,32 +163,38 @@ def main(argv: Optional[List[str]] = None) -> None:
             "       with {FgYellow}-o / --output {FgGreen}<filename>{Reset}."
         )
 
-    databases = BibtexAutocomplete.read(args.input)
-    completer = BibtexAutocomplete(
-        databases,
-        lookups,
-        entries,
-        mark=args.mark,
-        ignore_mark=args.ignore_mark,
-        prefix=args.prefix,
-        escape_unicode=args.escape_unicode,
-        diff_mode=args.diff,
-        fields_to_complete=set(fields.filter(SearchedFields, lambda x: x)),
-        fields_to_overwrite=fields_to_overwrite,
-        fields_to_protect_uppercase=fields_to_protect_uppercase,
-        filter_by_entrytype=args.filter_fields_by_entrytype,
-        copy_doi_to_url=args.copy_doi_to_url,
-        start_from=args.start_from,
-        dont_skip_slow_queries=args.no_skip,
-    )
-    completer.print_filters()
     try:
+        completer = BibtexAutocomplete(
+            lookups=lookups,
+            entries=entries,
+            mark=args.mark,
+            ignore_mark=args.ignore_mark,
+            prefix=args.prefix,
+            escape_unicode=args.escape_unicode,
+            diff_mode=args.diff,
+            fields_to_complete=set(fields.filter(SearchedFields, lambda x: x)),
+            fields_to_overwrite=fields_to_overwrite,
+            fields_to_protect_uppercase=fields_to_protect_uppercase,
+            filter_by_entrytype=args.filter_fields_by_entrytype,
+            copy_doi_to_url=args.copy_doi_to_url,
+            start_from=args.start_from,
+            dont_skip_slow_queries=args.no_skip,
+            timeout=args.timeout,
+            ignore_ssl=args.ignore_ssl,
+            align_values=args.align_values,
+            comma_first=args.comma_first,
+            no_trailing_comma=args.no_trailing_comma,
+            indent=args.indent,
+            verbose=args.verbose,
+        )
+        completer.load_file(args.input)
+        completer.print_filters()
         completer.autocomplete(args.verbose < 0)
         completer.print_changes()
         if args.dump_data is not None:
             completer.write_dumps(args.dump_data)
         if not args.no_output:
-            completer.write(args.output, writer)
+            completer.write_file(args.output)
     except KeyboardInterrupt:
         try:
             logger.warn("Interrupted")
@@ -208,7 +205,7 @@ def main(argv: Optional[List[str]] = None) -> None:
             logger.header("Dumping data")
             with open(tempfile, "w") as file:
                 for db in completer.bibdatabases:
-                    file.write(write(db, writer))
+                    file.write(write(db, completer.writer))
             logger.info("Wrote partially completed entries to '{StUnderline}{tempfile}{Reset}'.", tempfile=tempfile)
             i = 0
             break_next = False
@@ -232,3 +229,9 @@ def main(argv: Optional[List[str]] = None) -> None:
 
         except KeyboardInterrupt:
             logger.warn("Interrupted x2")
+    except ValueError:
+        exit(2)
+    except UndefinedString:
+        exit(1)
+    except (IOError, UnicodeDecodeError):
+        exit(1)

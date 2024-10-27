@@ -74,6 +74,7 @@ narrow down the list of sources if some aren't relevant using [command line opti
   - [New field formatting](#new-field-formatting)
   - [Global output formatting](#global-output-formatting)
   - [Optional flags](#optional-flags)
+- [Running from python](#running-from-python)
 - [Credit and license](#credit-and-license)
 
 ## New in version 1.3
@@ -433,6 +434,95 @@ are a few options you can use to control the output format:
 
 - `--version` show version number
 - `-h --help` show help
+
+## Running from python
+
+You can call the main function of this script from python directly, specifying
+a list of arguments as you would on the command line:
+```python
+from bibtexautocomplete import main
+
+main(["file.bib", "-o", "output.bib"])
+```
+
+For more interactivity and more varied inputs/outputs than reading from files and
+writing to files, use the `BibtexAutocomplete` class. Here is a small demonstration:
+```python
+from bibtexautocomplete import BibtexAutocomplete
+
+# 1 - Create a BibtexAutocomplete instance with the desired settings
+# Note: some settings are stored in global variables, so avoid having multiple
+# instances of this class in parrallel
+completer = BibtexAutocomplete(**settings)
+
+# 2 - Load a Bibtex information using any of the following
+# 2.1 - Load a single file or list of files
+completer.load_file("ex.bib")
+completer.load_file(["ex1.bib", "ex2.bib"])
+# 2.2 - Load bibtex content as string or list of strings
+completer.load_string(bibtex)
+completer.load_string([bibtex1, bibtex2])
+# 2.3 - Load entry, list of entries, or list of list of entries as a dict
+# Lowercase name for fields, "ID" and "ENTRYTYPE" for entry id and type
+completer.load_entry({
+  "author": "John Doe",
+  "title": "My Awesome Paper",
+  "ID": "foo",
+  "ENTRYTYPE": "article"
+})
+# You can also specify author and editor fields as a (list of) firstnames and lastnames
+completer.load_entry({
+  "author": [{"firstname": "John"}, {"lastname": "Doe"}],
+  "title": "My Awesome Paper",
+  "ID": "foo",
+  "ENTRYTYPE": "article"
+})
+
+# 3 - Run the completer (may take a while)
+completer.autocomplete()
+
+# 4 - Get the results
+# As the input may be split into mutliple files (or strings), so is the output
+# The length of output list is the sum of:
+# - the length of lists passed to load_file and load_string
+# - the number of calls to load_entry
+# When using write_file, you must provide the same number of filepaths
+completer.write_file("ex.btac.bib")
+completer.write_file(["ex1.bib", "ex2.bib"])
+completer.write_string() # type: list[str]
+completer.write_entry() # type: list[list[EntryType]]
+```
+
+The settings passed to the constructor mirror the command-line arguments. They
+must all be specified with their keyword argument:
+```python
+lookups: Iterable[LookupType] = ...,
+entries: Optional[Container[str]] = None,
+mark: bool = False,
+ignore_mark: bool = False,
+prefix: bool = False,
+escape_unicode: bool = False,
+diff_mode: bool = False,
+# Restrict which fields should be completed
+fields_to_complete: Optional[Set[FieldType]] = None,
+# Restrict which fields should be overwritten
+fields_to_overwrite: Optional[Set[FieldType]] = None,
+# Specify which fields should have uppercase protection
+fields_to_protect_uppercase: Container[str] = set(),
+filter_by_entrytype: Literal["no", "required", "optional", "all"] = "no",
+copy_doi_to_url: bool = False,
+start_from: Optional[str] = None,
+dont_skip_slow_queries: bool = False,
+timeout: Optional[float] = 20,  # Timeout on all queries, in seconds
+ignore_ssl: bool = False,  # Bypass SSL verification
+verbose: int = 0,  # Verbosity level, from 4 (very verbose debug) to -3 (no output)
+# Output formatting
+align_values: bool = False,
+comma_first: bool = False,
+no_trailing_comma: bool = False,
+indent: str = "\t",
+```
+
 
 ## Credit and license
 

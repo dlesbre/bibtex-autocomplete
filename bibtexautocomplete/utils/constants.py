@@ -2,7 +2,8 @@
 Project-wide constants
 """
 
-from typing import Dict
+from pathlib import Path
+from typing import Dict, TypedDict, Union
 
 NAME = "bibtexautocomplete"
 SCRIPT_NAME = "btac"
@@ -35,6 +36,13 @@ SKIP_QUERIES_IF_DELAY = 60.0  # seconds
 USER_AGENT = f"{NAME}/{VERSION_STR} ({URL}; mailto:{EMAIL})"
 
 EntryType = Dict[str, str]  # Type of a bibtex entry
+PathType = Union[str, Path]
+
+
+class AuthorType(TypedDict, total=False):
+    firstname: Union[str, None]
+    lastname: str
+
 
 MAX_THREAD_NB = 10  # Max number of threads
 

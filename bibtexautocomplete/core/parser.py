@@ -62,11 +62,9 @@ def indent_string(indent: str) -> str:
     sane = indent.replace("t", "\t").replace("n", "\n").replace("_", " ")
     if not (sane.isspace() or sane == ""):
         logger.critical(
-            ("--fi/--indent should be a number or string " "with spaces, '_', 't' and 'n' only.\nGot: '{}'").format(
-                indent
-            )
+            f"--fi/--indent should be a number or string with spaces, '_', 't' and 'n' only.\nGot: '{indent}'"
         )
-        exit(2)
+        raise ValueError(f"indent should be a number or string with spaces, '_', 't' and 'n' only.\nGot: '{indent}'")
     return sane
 
 
@@ -97,7 +95,7 @@ def get_bibfiles(input: Path) -> List[Path]:
             filepath=str(input),
             err=err,
         )
-        exit(1)
+        raise err
     return filter_bibs(files)
 
 
@@ -118,7 +116,7 @@ class MyParser(ArgumentParser):
     def error(self, message: str) -> NoReturn:
         logger.critical(message + "\n", error="Invalid command line", NAME=SCRIPT_NAME)
         self.print_usage(stderr)
-        exit(2)
+        raise ValueError(message)
 
 
 def make_parser() -> MyParser:

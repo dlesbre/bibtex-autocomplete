@@ -4,6 +4,7 @@ main class used to manage calls to different lookups
 """
 
 from datetime import datetime, timedelta
+from fileinput import input
 from functools import reduce
 from json import dump as json_dump
 from logging import INFO
@@ -24,6 +25,7 @@ from typing import (
     Set,
     Tuple,
     TypeVar,
+    Union,
     cast,
 )
 
@@ -35,21 +37,27 @@ from bibtexparser.latexenc import string_to_latex
 from ..bibtex.base_field import BibtexField
 from ..bibtex.constants import FIELD_NO_MATCH, FieldType, SearchedFields
 from ..bibtex.entry import ENTRY_TYPES, BibtexEntry
-from ..bibtex.io import file_read, file_write, get_entries
+from ..bibtex.io import file_read, file_write, get_entries, make_writer, read, write
 from ..bibtex.normalize import has_field
 from ..lookups.abstract_entry_lookup import LookupType
+from ..lookups.https import HTTPSLookup
 from ..utils.constants import (
     BULLET,
+    CONNECTION_TIMEOUT,
     FIELD_PREFIX,
     MARKED_FIELD,
     MAX_THREAD_NB,
     SKIP_QUERIES_IF_DELAY,
     SKIP_QUERIES_IF_REMAINING,
+    AuthorType,
     EntryType,
+    PathType,
 )
 from ..utils.logger import VERBOSE_INFO, Hint, logger
 from ..utils.only_exclude import OnlyExclude
+from .apis import LOOKUPS
 from .data_dump import DataDump
+from .parser import indent_string
 from .threads import LookupThread
 
 T = TypeVar("T")
@@ -104,7 +112,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
     bibdatabases: List[BibDatabase]
     lookups: List[LookupType]
     fields_to_complete: Set[FieldType]  # Set of fields to complete
-    entries: OnlyExclude[str]
+    entries: Container[str]
     start_from: Optional[str]
     fields_to_overwrite: Set[FieldType]
     escape_unicode: bool
@@ -117,6 +125,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
     copy_doi_to_url: bool
     filter_by_entrytype: Literal["no", "required", "optional", "all"]
     dont_skip_slow_queries: bool
+    writer: BibTexWriter
 
     changed_fields: int
     changed_entries: int
@@ -130,31 +139,51 @@ class BibtexAutocomplete(Iterable[EntryType]):
 
     def __init__(
         self,
-        bibdatabases: List[BibDatabase],
-        lookups: Iterable[LookupType],
-        entries: OnlyExclude[str],
         *,
+        lookups: Iterable[LookupType] = LOOKUPS,
+        entries: Optional[Container[str]] = None,
         mark: bool = False,
         ignore_mark: bool = False,
         prefix: bool = False,
         escape_unicode: bool = False,
         diff_mode: bool = False,
+        # Restrict which fields should be completed
         fields_to_complete: Optional[Set[FieldType]] = None,
+        # Restrict which fields should be overwritten
         fields_to_overwrite: Optional[Set[FieldType]] = None,
+        # Specify which fields should have uppercase protection
         fields_to_protect_uppercase: Container[str] = set(),
         filter_by_entrytype: Literal["no", "required", "optional", "all"] = "no",
         copy_doi_to_url: bool = False,
         start_from: Optional[str] = None,
         dont_skip_slow_queries: bool = False,
+        timeout: Optional[float] = CONNECTION_TIMEOUT,  # Timeout on all queries, in seconds
+        ignore_ssl: bool = False,  # Bypass SSL verification
+        verbose: int = 0,  # Verbosity level, from 4 (very verbose debug) to -3 (no output)
+        # Output formatting
+        align_values: bool = False,
+        comma_first: bool = False,
+        no_trailing_comma: bool = False,
+        indent: str = "\t",
     ):
+        HTTPSLookup.connection_timeout = timeout if isinstance(timeout, float) and timeout > 0.0 else None
+        HTTPSLookup.ignore_ssl = ignore_ssl
+        logger.set_verbosity(verbose)
+
+        self.writer = make_writer()
+        self.writer.align_values = align_values
+        self.writer.comma_first = comma_first
+        self.writer.add_trailing_comma = no_trailing_comma
+        self.writer.indent = indent_string(indent)
+
         if fields_to_complete is None:
             fields_to_complete = SearchedFields.copy()
         if fields_to_overwrite is None:
             fields_to_overwrite = set()
-        self.bibdatabases = bibdatabases
+        self.bibdatabases = []
         self.lookups = list(lookups)
         self.fields_to_complete = fields_to_complete
-        self.entries = entries
+        self.entries = OnlyExclude(None, None) if entries is None else entries
         self.fields_to_overwrite = fields_to_complete & fields_to_overwrite
         self.changed_entries = 0
         self.changed_fields = 0
@@ -200,14 +229,15 @@ class BibtexAutocomplete(Iterable[EntryType]):
         filtered = self.count_entries()
         if total > filtered:
             logger.info("Filtered down to {} entries".format(filtered))
-        warn_only, warn_exclude = self.entries.unused(all_entries)
-        for x in sorted(warn_only):
-            logger.warn('No entry with ID "{ID}"', ID=x)
-        for x in sorted(warn_exclude):
-            logger.warn('No entry with ID "{ID}"', ID=x)
+        if isinstance(self.entries, OnlyExclude):
+            warn_only, warn_exclude = self.entries.unused(all_entries)
+            for x in sorted(warn_only):
+                logger.warn('No entry with ID "{ID}"', ID=x)
+            for x in sorted(warn_exclude):
+                logger.warn('No entry with ID "{ID}"', ID=x)
         if self.start_from is not None and self.start_from not in all_entries:
             logger.critical('--start-from / --sf invalid: no entry with ID "{ID}"', ID=self.start_from)
-            exit(2)
+            raise ValueError("start_from value does not appear in list of entries")
 
     @memoize
     def get_id_padding(self) -> int:
@@ -468,10 +498,12 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 err=err,
             )
 
-    def write(self, files: List[Path], writer: BibTexWriter) -> None:
+    def write_file(self, files: Union[PathType, List[PathType]]) -> None:
         """Writes the databases in self to the given files
         If not enough files, an error is raised.
         If too many files, extras are ignored"""
+        if not isinstance(files, list):
+            files = [files]
         self.write_header()
         total = len(self.bibdatabases)
         wrote = 0
@@ -483,16 +515,30 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 total=total,
                 file=file,
             )
-            wrote += file_write(file, db, writer)
+            wrote += file_write(file, db, self.writer)
         logger.info(
             "Wrote {total} {files}",
             total=wrote,
             files="file" if wrote == 1 else "files",
         )
 
-    @staticmethod
-    def read(files: List[Path]) -> List[BibDatabase]:
+    def write_string(self) -> List[str]:
+        """Returns the bibtex string representation of the databases"""
+        bibs = []
+        for db in self.bibdatabases:
+            bibs.append(write(db, self.writer))
+        return bibs
+
+    def write_entry(self) -> List[List[EntryType]]:
+        """Returns the dict representation of the databases"""
+        return [bib.entries for bib in self.bibdatabases]
+
+    def load_file(self, files: Union[PathType, List[PathType]]) -> None:
+        """Read one or more bibtex files, and adds them to self.bibdatabases
+        Creates a separate database for each file"""
         logger.header("Reading files")
+        if not isinstance(files, list):
+            files = [files]
         length = len(files)
         dbs = []
         for i, file in enumerate(files):
@@ -511,4 +557,60 @@ class BibtexAutocomplete(Iterable[EntryType]):
             entry="entries" if nb_entries != 1 else "entry",
             file="files" if length != 1 else "file",
         )
-        return dbs
+        self.bibdatabases += dbs
+
+    def load_string(self, strings: Union[str, List[str]]) -> None:
+        """Read one or more bibtex strings, and adds them to self.bibdatabases
+        Creates a separate database for each passed string"""
+        if not isinstance(strings, list):
+            strings = [strings]
+        for string in strings:
+            self.bibdatabases.append(read(string))
+
+    def convert_authors(self, entry: EntryType, field: Literal["author", "editor"]) -> EntryType:
+        """Convert authors from {'firstname':str|None, 'lastname':str} to a single bibtex string"""
+        if field in entry and not isinstance(entry[field], str):
+            value = cast(Union[AuthorType, list[AuthorType]], entry[field])
+            if not isinstance(value, list):
+                value = [value]
+            names = []
+            for x in value:
+                firstname = ""
+                if "firstname" in x and x["firstname"]:
+                    firstname = str(x["firstname"])
+                if "lastname" not in x or not x["lastname"]:
+                    raise ValueError(f"Invalid {field} name: expected dict with 'firstname' and 'lastname' attributes")
+                lastname = str(x["lastname"])
+                if firstname:
+                    names.append(f"{lastname}, {firstname}")
+                else:
+                    names.append(lastname)
+        entry[field] = " and ".join(names)
+        return entry
+
+    def load_entry(self, entries: Union[EntryType, List[EntryType]]) -> None:
+        """Read one or more bibtex entry dicts, and adds them to self.bibdatabases
+        Creates a single database for all entries passed
+        Entries should be a dict with:
+        - keys are lowercase bibtex strings (e.g. entries["title"] = "My Awesome Paper")
+        - There are two special keys "ENTRYTYPE" and "ID": ('@article{foo, ...}'
+          has "ENTRYTYPE"= "article" and "ID"="foo"
+        - values should be string, with the possible exception of author/editor
+          which can be specified as a dict with keys 'firstname' and 'lastname'
+          or a list of such dicts
+        """
+        if not isinstance(entries, list):
+            entries = [entries]
+        db = BibDatabase()
+        for entry in entries:
+            if "ID" not in entry:
+                raise ValueError("Entries should have an 'ID' field")
+            entry = self.convert_authors(entry, "author")
+            entry = self.convert_authors(entry, "editor")
+            db.entries.append(entry)
+        self.bibdatabases.append(db)
+
+    def load_stdin(self) -> None:
+        """Read a bibtex file from stdin, and adds it to self.bibdatabases
+        Waits until end of input before returning"""
+        self.load_string("".join(input().readline()))

@@ -2,14 +2,13 @@
 Wraps around bibtexparser to provider parser/writer primitives
 """
 
-from pathlib import Path
 from typing import List, cast
 
 from bibtexparser.bibdatabase import BibDatabase, UndefinedString
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
 
-from ..utils.constants import EntryType
+from ..utils.constants import EntryType, PathType
 from ..utils.logger import logger
 
 # from bibtexparser.customization import convert_to_unicode
@@ -43,11 +42,11 @@ def read(bibtex: str, src: str = "") -> BibDatabase:
             src=src,
             err=err,
         )
-        exit(1)
+        raise err
     return database
 
 
-def file_write(filepath: Path, database: BibDatabase, writer: BibTexWriter) -> bool:
+def file_write(filepath: PathType, database: BibDatabase, writer: BibTexWriter) -> bool:
     """Writes database to given file, stdout if None"""
     output = write(database, writer)
     if filepath is None:
@@ -66,7 +65,7 @@ def file_write(filepath: Path, database: BibDatabase, writer: BibTexWriter) -> b
     return True
 
 
-def file_read(filepath: Path) -> BibDatabase:
+def file_read(filepath: PathType) -> BibDatabase:
     """reads the given file, parses and normalizes it"""
     # Read and parse the file
     try:
@@ -78,7 +77,7 @@ def file_read(filepath: Path) -> BibDatabase:
             filepath=str(filepath),
             err=err,
         )
-        exit(1)
+        raise err
     return read(bibtex, str(filepath))
 
 
