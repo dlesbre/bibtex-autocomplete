@@ -1,15 +1,17 @@
 # Change Log
 
-## Version ?.?.? - Unreleased
+## Version 1.4.0 - 2024-10-27
 
 - Add command-line tab completion for flags and some choices (field names)
 - Simplify and documents ways to call this script from python
 - Fix 404 warnings on DOI not found for crossref
 - Add `--sf --start-from` flag and clarify message shown on interrupt, plus show
   instructions on how to resume. Also display a hint that BTAC can be interrupted
-  after 5 minutes if less than half of all entries are completed.
-- Progress bar now only show the number of completed entries, not queries (issue
-  [#19](https://github.com/dlesbre/bibtex-autocomplete/issues/19))
+  after 5 minutes if less than half of all entries are completed (issue
+  [#18](https://github.com/dlesbre/bibtex-autocomplete/issues/18)).
+- Progress bar now only show the number of completed entries, not queries
+  (discussion [#17](https://github.com/dlesbre/bibtex-autocomplete/discussions/17)
+  and issue [#19](https://github.com/dlesbre/bibtex-autocomplete/issues/19))
 - Skip queries to sources if they lag behind (>=10 queries remain or >=60s
   delay between queries) when 2/3rds of the other sources have completed. This
   avoids having a single source slow down btac considerably. Add the
