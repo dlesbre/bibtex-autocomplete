@@ -3,7 +3,7 @@ Bibtexautocomplete
 main class used to manage calls to different lookups
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import reduce
 from json import dump as json_dump
 from logging import INFO
@@ -198,7 +198,16 @@ class BibtexAutocomplete(Iterable[EntryType]):
         """Main function that does all the work
         Iterate through entries, performing all lookups"""
         logger.header("Completing entries")
-        total = self.count_entries()
+
+        # Some local variables used throughout this function
+        nb_entries = self.count_entries()
+        assert len(self.lookups) < MAX_THREAD_NB
+        is_verbose = logger.get_level() < INFO
+        print_hint_time = datetime.now() + timedelta(minutes=5)
+        printed_hint = False
+
+        # Initialize the set of entries to complete, and the set of missing
+        # Fields for each of these
         entries = list(self)
         bib_entries: List[BibtexEntry] = []
         to_complete: List[Set[FieldType]] = []
@@ -206,12 +215,18 @@ class BibtexAutocomplete(Iterable[EntryType]):
             bib = BibtexEntry.from_entry("input", x)
             bib_entries.append(bib)
             to_complete.append(self.get_fields_to_complete(x))
+
+        # Create all threads
         condition = Condition()
-        assert len(self.lookups) < MAX_THREAD_NB
-        threads: List[LookupThread] = []
-        is_verbose = logger.get_level() < INFO
+        threads: List[LookupThread] = [
+            LookupThread(lookup, bib_entries, to_complete, condition) for lookup in self.lookups
+        ]
+        condition.acquire()
+        for thread in threads:
+            thread.start()
+
         with alive_bar(
-            total,
+            nb_entries,
             title="Querying databases:",
             disable=no_progressbar,
             enrich_print=False,
@@ -221,15 +236,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
             stats_end="",
             dual_line=True,
         ) as bar:
-            # Create all threads
-            for lookup in self.lookups:
-                threads.append(LookupThread(lookup, bib_entries, to_complete, condition))
-            condition.acquire()
-            # Start all threads
-            for thread in threads:
-                thread.start()
             self.position = 0
-            nb_entries = self.count_entries()
             while self.position < nb_entries:
                 # Check if all threads have resolved the current entry
                 step = True
@@ -238,11 +245,22 @@ class BibtexAutocomplete(Iterable[EntryType]):
                     if self.position >= thread.position:
                         step = False
                     thread_positions.append(f"{thread.lookup.name}:{thread.position}")
+                # Update progressbar display
                 if is_verbose:
                     bar.text = " ".join(thread_positions)
                 else:
                     bar.text = (
                         f"Processed {self.position}/{nb_entries} entries, " f"found {self.changed_fields} new fields"
+                    )
+                # Display a message if the operation will take a while
+                if not printed_hint and datetime.now() >= print_hint_time and self.position <= nb_entries // 2:
+                    printed_hint = True
+                    logger.info(
+                        "{FgBlue}Hint:{Reset} it looks like this may take a while...\n"
+                        "{FgBlue}  |  {Reset} If needed, BTAC can be safely interrupted with Ctrl+C / SIGINT.\n"
+                        "{FgBlue}  |  {Reset} When interrupted, all completed and uncompleted entries are written to\n"
+                        "{FgBlue}  |  {Reset} a new temporary file. You can then resume completion where interrupted\n"
+                        "{FgBlue}  |  {Reset} using the {FgYellow}--sf / --start-from{Reset} command line option."
                     )
                 if not step:  # Some threads have not found data for current entry
                     condition.wait()
@@ -253,7 +271,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         logger.info(
             "Modified {changed_entries} / {count_entries} entries" ", added {changed_fields} fields",
             changed_entries=self.changed_entries,
-            count_entries=self.count_entries(),
+            count_entries=nb_entries,
             changed_fields=self.changed_fields,
         )
         # Delete empty entries (in diff mode)
