@@ -546,7 +546,7 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
 
 @pytest.mark.parametrize(("argv", "files_to_compare"), tests)
 def test_main(argv: List[str], files_to_compare: List[Tuple[str, str]]) -> None:
-    main(argv)
+    assert main(argv) == 0
     FakeLookup.count = 0
     day = datetime.today().strftime("%Y-%m-%d")
     for expected, generated in files_to_compare:
@@ -637,10 +637,7 @@ exit_tests: List[Tuple[List[str], int]] = [
 
 @pytest.mark.parametrize(("argv", "exit_code"), exit_tests)
 def test_main_exit(argv: List[str], exit_code: int) -> None:
-    with pytest.raises(SystemExit) as test_exit:
-        main(argv)
-    assert test_exit.type is SystemExit
-    assert test_exit.value.code == exit_code
+    assert main(argv) == exit_code
 
 
 def test_promote() -> None:

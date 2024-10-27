@@ -10,6 +10,7 @@ from sys import stderr
 from typing import IO, Iterable, List, NoReturn, Optional, TypeVar
 
 from ..bibtex.constants import FieldNamesSet
+from ..utils.ansi import ANSICodes
 from ..utils.constants import BTAC_FILENAME, CONNECTION_TIMEOUT, SCRIPT_NAME
 from ..utils.logger import logger
 from .apis import LOOKUP_NAMES
@@ -116,7 +117,7 @@ class MyParser(ArgumentParser):
     def error(self, message: str) -> NoReturn:
         logger.critical(message + "\n", error="Invalid command line", NAME=SCRIPT_NAME)
         self.print_usage(stderr)
-        raise ValueError(message)
+        raise ValueError(message.format(**ANSICodes.EmptyCodes))
 
 
 def make_parser() -> MyParser:
