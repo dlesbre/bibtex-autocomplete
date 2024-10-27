@@ -6,6 +6,7 @@
 - Fix 404 warnings on DOI not found for crossref
 - Add `--sf --start-from` flag and clarify message shown on interrupt, plus show
   instructions on how to resume.
+- Progress bar now only show the number of completed entries, not queries
 
 ## Version 1.3.3 - 2024-08-07
 

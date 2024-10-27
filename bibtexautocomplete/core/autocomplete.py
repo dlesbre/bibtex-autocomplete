@@ -198,7 +198,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         """Main function that does all the work
         Iterate through entries, performing all lookups"""
         logger.header("Completing entries")
-        total = self.count_entries() * len(self.lookups)
+        total = self.count_entries()
         entries = list(self)
         bib_entries: List[BibtexEntry] = []
         to_complete: List[Set[FieldType]] = []
@@ -223,7 +223,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         ) as bar:
             # Create all threads
             for lookup in self.lookups:
-                threads.append(LookupThread(lookup, bib_entries, to_complete, condition, bar))
+                threads.append(LookupThread(lookup, bib_entries, to_complete, condition))
             condition.acquire()
             # Start all threads
             for thread in threads:
@@ -247,6 +247,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 if not step:  # Some threads have not found data for current entry
                     condition.wait()
                 else:  # update data for current entry
+                    bar()
                     self.update_entry(entries[self.position], to_complete[self.position], threads)
                     self.position += 1
         logger.info(

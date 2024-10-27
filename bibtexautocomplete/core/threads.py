@@ -1,5 +1,5 @@
 from threading import Condition, Thread
-from typing import Callable, Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 from ..bibtex.constants import FieldType
 from ..bibtex.entry import BibtexEntry
@@ -34,7 +34,6 @@ class LookupThread(Thread):
         entries: List[BibtexEntry],
         to_complete: List[Set[FieldType]],
         condition: Condition,
-        bar: Callable[[], None],
     ):
         self.entries = entries
         self.to_complete = to_complete
@@ -43,8 +42,6 @@ class LookupThread(Thread):
         self.position = 0
         self.nb_entries = len(entries)
         self.result = []
-
-        self.bar = bar
         super().__init__(name=lookup.name, daemon=True)
 
     def run(self) -> None:
@@ -79,7 +76,6 @@ class LookupThread(Thread):
             self.condition.acquire()
             self.result.append((result, info))
             self.position += 1
-            self.bar()
             self.condition.notify()
         self.condition.release()
         return None
