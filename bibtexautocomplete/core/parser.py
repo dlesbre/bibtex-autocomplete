@@ -174,6 +174,7 @@ def make_parser() -> MyParser:
     parser.add_argument("input", nargs="*", type=Path, action="append", default=[])
 
     parser.add_argument("--copy-doi-to-url", "-u", action="store_true")
+    parser.add_argument("--no-skip", "--ns", action="store_true")
 
     return parser
 
@@ -268,6 +269,9 @@ More information and demo:
   {FgYellow}-t --timeout{Reset} {FgGreen}<float>{Reset}  set timeout on request, default: {TIMEOUT} s
         Set to -1 for no timeout.
   {FgYellow}-S --ignore-ssl{Reset}       Ignore SSL verification when performing queries
+  {FgYellow}--ns --no-skip{Reset}        By default, btac will skip queries to some sources
+        if they lag behind while 2/3 of the others have finished, saving time.
+        This disables skipping.
 
   {FgYellow}-d --dump-data{Reset} {FgGreen}<file.json>{Reset} writes all data from matching entries to
         the given file in JSON format, so data from multiple sources can be compared

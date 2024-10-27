@@ -188,6 +188,7 @@ def main(argv: Optional[List[str]] = None) -> None:
         filter_by_entrytype=args.filter_fields_by_entrytype,
         copy_doi_to_url=args.copy_doi_to_url,
         start_from=args.start_from,
+        dont_skip_slow_queries=args.no_skip,
     )
     completer.print_filters()
     try:

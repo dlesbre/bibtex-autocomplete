@@ -27,6 +27,11 @@ EMAIL = "dorian.lesbre" + chr(64) + "gmail.com"
 MIN_QUERY_DELAY = 0.02  # s, so 50 per second
 CONNECTION_TIMEOUT = 20.0  # seconds
 
+# Skip last queries to sources if the lag behind while 2/3 of the others have
+# finished. This defines the "lag behind" criteria:
+SKIP_QUERIES_IF_REMAINING = 10  # queries
+SKIP_QUERIES_IF_DELAY = 60.0  # seconds
+
 USER_AGENT = f"{NAME}/{VERSION_STR} ({URL}; mailto:{EMAIL})"
 
 EntryType = Dict[str, str]  # Type of a bibtex entry

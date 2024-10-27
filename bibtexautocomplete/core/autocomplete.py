@@ -43,9 +43,11 @@ from ..utils.constants import (
     FIELD_PREFIX,
     MARKED_FIELD,
     MAX_THREAD_NB,
+    SKIP_QUERIES_IF_DELAY,
+    SKIP_QUERIES_IF_REMAINING,
     EntryType,
 )
-from ..utils.logger import VERBOSE_INFO, logger
+from ..utils.logger import VERBOSE_INFO, Hint, logger
 from ..utils.only_exclude import OnlyExclude
 from .data_dump import DataDump
 from .threads import LookupThread
@@ -58,6 +60,21 @@ UPPER = "".join(chr(i) for i in range(maxunicode) if chr(i).isupper())
 LOWER = "".join(chr(i) for i in range(maxunicode) if chr(i).islower())
 
 WORD_WITH_UPPERCASE = compile("([" + LOWER + "]*[" + UPPER + "]+[" + LOWER + UPPER + "]*)")
+
+
+InterruptHint = Hint(
+    "it looks like this may take a while...\n"
+    "If needed, BTAC can be safely interrupted with Ctrl+C / SIGINT.\n"
+    "When interrupted, all completed and uncompleted entries are written to\n"
+    "a new temporary file. You can then resume completion where interrupted\n"
+    "using the {FgYellow}--sf / --start-from{Reset} command line option."
+)
+
+SkipHint = Hint(
+    "Skipping occurs to avoid potentially very long wait times if a few\n"
+    "sources are significantly slower to respond. It can be disabled with the\n"
+    "{FgYellow}--no-skip{Reset} command line option."
+)
 
 
 def memoize(method: Callable[[T], Q]) -> Callable[[T], Q]:
@@ -208,7 +225,6 @@ class BibtexAutocomplete(Iterable[EntryType]):
         assert len(self.lookups) < MAX_THREAD_NB
         is_verbose = logger.get_level() < INFO
         print_hint_time = datetime.now() + timedelta(minutes=5)
-        printed_hint = False
         wait_for_threads = True
 
         # Initialize the set of entries to complete, and the set of missing
@@ -271,8 +287,8 @@ class BibtexAutocomplete(Iterable[EntryType]):
                         # Skip if more than 5 remaining, or a delay of over 120
                         # seconds between querys
                         wait_for_threads = False
-                        if remaining >= 10 or (
-                            hasattr(thread.lookup, "query_delay") and thread.lookup.query_delay >= 120
+                        if remaining >= SKIP_QUERIES_IF_REMAINING or (
+                            hasattr(thread.lookup, "query_delay") and thread.lookup.query_delay >= SKIP_QUERIES_IF_DELAY
                         ):
                             thread.skip_to_end = True
                             thread.result += [(None, dict())] * remaining
@@ -281,19 +297,13 @@ class BibtexAutocomplete(Iterable[EntryType]):
                                 f"[{{FgBlue}}{thread.name}{{Reset}}] Skipping last {remaining} queries since the"
                                 " majority of the other sources have finished."
                             )
+                            SkipHint.emit()
                         else:
                             wait_for_threads = True
 
                 # Display a message if the operation will take a while
-                if not printed_hint and datetime.now() >= print_hint_time and self.position <= nb_entries // 2:
-                    printed_hint = True
-                    logger.info(
-                        "{FgBlue}Hint:{Reset} it looks like this may take a while...\n"
-                        "{FgBlue}  |  {Reset} If needed, BTAC can be safely interrupted with Ctrl+C / SIGINT.\n"
-                        "{FgBlue}  |  {Reset} When interrupted, all completed and uncompleted entries are written to\n"
-                        "{FgBlue}  |  {Reset} a new temporary file. You can then resume completion where interrupted\n"
-                        "{FgBlue}  |  {Reset} using the {FgYellow}--sf / --start-from{Reset} command line option."
-                    )
+                if datetime.now() >= print_hint_time and self.position <= nb_entries // 2:
+                    InterruptHint.emit()
                 if not step:  # Some threads have not found data for current entry
                     if wait_for_threads:
                         condition.wait()

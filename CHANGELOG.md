@@ -9,6 +9,10 @@
   after 5 minutes if less than half of all entries are completed.
 - Progress bar now only show the number of completed entries, not queries (issue
   [#19](https://github.com/dlesbre/bibtex-autocomplete/issues/19))
+- Skip queries to sources if they lag behind (>=10 queries remain or >=60s
+  delay between queries) when 2/3rds of the other sources have completed. This
+  avoids having a single source slow down btac considerably. Add the
+  `--ns --no-skip` flag to disable this behavior.
 
 ## Version 1.3.3 - 2024-08-07
 

@@ -384,6 +384,10 @@ are a few options you can use to control the output format:
   [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1129)
   ```
   Another (better) fix for this is to run `pip install --upgrade certifi` to update python's certificates.
+- `--ns --no-skip` disable skipping. By default, btac will skip queries to sources
+  if they lag behind (>=10 queries remain or >=60s delay between queries) when
+  2/3rds of the other sources have completed. This avoids having a single source
+  slow down btac considerably.
 
 - `-d --dump-data <file.json>` writes matching entries to the given JSON files.
 
