@@ -99,6 +99,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
     diff_mode: bool
     copy_doi_to_url: bool
     filter_by_entrytype: Literal["no", "required", "optional", "all"]
+    dont_skip_slow_queries: bool
 
     changed_fields: int
     changed_entries: int
@@ -115,6 +116,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         bibdatabases: List[BibDatabase],
         lookups: Iterable[LookupType],
         entries: OnlyExclude[str],
+        *,
         mark: bool = False,
         ignore_mark: bool = False,
         prefix: bool = False,
@@ -126,6 +128,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         filter_by_entrytype: Literal["no", "required", "optional", "all"] = "no",
         copy_doi_to_url: bool = False,
         start_from: Optional[str] = None,
+        dont_skip_slow_queries: bool = False,
     ):
         if fields_to_complete is None:
             fields_to_complete = SearchedFields.copy()
@@ -153,6 +156,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         self.position = 0
         self.copy_doi_to_url = copy_doi_to_url
         self.start_from = start_from
+        self.dont_skip_slow_queries = dont_skip_slow_queries
 
     def __iter__(self) -> Iterator[EntryType]:
         """Iterate through entries"""
@@ -205,6 +209,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         is_verbose = logger.get_level() < INFO
         print_hint_time = datetime.now() + timedelta(minutes=5)
         printed_hint = False
+        wait_for_threads = True
 
         # Initialize the set of entries to complete, and the set of missing
         # Fields for each of these
@@ -244,14 +249,41 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 for thread in threads:
                     if self.position >= thread.position:
                         step = False
-                    thread_positions.append(f"{thread.lookup.name}:{thread.position}")
+                    thread_positions.append((thread, thread.position))
                 # Update progressbar display
                 if is_verbose:
-                    bar.text = " ".join(thread_positions)
-                else:
-                    bar.text = (
-                        f"Processed {self.position}/{nb_entries} entries, " f"found {self.changed_fields} new fields"
+                    bar.text = f"{self.position}/{nb_entries} {self.changed_fields} fields " + " ".join(
+                        f"{thread.lookup.name}:{i}" for (thread, i) in thread_positions
                     )
+                else:
+                    bar.text = f"Processed {self.position}/{nb_entries} entries, found {self.changed_fields} new fields"
+
+                # Check if two thirds of our source have finished
+                thread_positions.sort(key=lambda x: x[1])
+                two_thirds_pos = thread_positions[len(thread_positions) // 3][1]
+                if not self.dont_skip_slow_queries and two_thirds_pos >= nb_entries:
+                    # Most source are done, skip the remaining ones if they are
+                    # lagging far behind
+                    for thread, pos in thread_positions:
+                        if pos >= nb_entries:
+                            continue
+                        remaining = nb_entries - pos
+                        # Skip if more than 5 remaining, or a delay of over 120
+                        # seconds between querys
+                        wait_for_threads = False
+                        if remaining >= 10 or (
+                            hasattr(thread.lookup, "query_delay") and thread.lookup.query_delay >= 120
+                        ):
+                            thread.skip_to_end = True
+                            thread.result += [(None, dict())] * remaining
+                            thread.position = nb_entries
+                            logger.warn(
+                                f"[{{FgBlue}}{thread.name}{{Reset}}] Skipping last {remaining} queries since the"
+                                " majority of the other sources have finished."
+                            )
+                        else:
+                            wait_for_threads = True
+
                 # Display a message if the operation will take a while
                 if not printed_hint and datetime.now() >= print_hint_time and self.position <= nb_entries // 2:
                     printed_hint = True
@@ -263,7 +295,8 @@ class BibtexAutocomplete(Iterable[EntryType]):
                         "{FgBlue}  |  {Reset} using the {FgYellow}--sf / --start-from{Reset} command line option."
                     )
                 if not step:  # Some threads have not found data for current entry
-                    condition.wait()
+                    if wait_for_threads:
+                        condition.wait()
                 else:  # update data for current entry
                     bar()
                     self.update_entry(entries[self.position], to_complete[self.position], threads)

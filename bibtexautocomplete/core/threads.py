@@ -27,6 +27,7 @@ class LookupThread(Thread):
 
     position: int
     nb_entries: int
+    skip_to_end: bool
 
     def __init__(
         self,
@@ -42,6 +43,7 @@ class LookupThread(Thread):
         self.position = 0
         self.nb_entries = len(entries)
         self.result = []
+        self.skip_to_end = False
         super().__init__(name=lookup.name, daemon=True)
 
     def run(self) -> None:
@@ -72,6 +74,8 @@ class LookupThread(Thread):
                         f"Website = {self.name}",
                         err,
                     )
+            if self.skip_to_end:
+                return None
 
             self.condition.acquire()
             self.result.append((result, info))

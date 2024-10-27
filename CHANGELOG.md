@@ -5,8 +5,10 @@
 - Add command-line tab completion for flags and some choices (field names)
 - Fix 404 warnings on DOI not found for crossref
 - Add `--sf --start-from` flag and clarify message shown on interrupt, plus show
-  instructions on how to resume.
-- Progress bar now only show the number of completed entries, not queries
+  instructions on how to resume. Also display a hint that BTAC can be interrupted
+  after 5 minutes if less than half of all entries are completed.
+- Progress bar now only show the number of completed entries, not queries (issue
+  [#19](https://github.com/dlesbre/bibtex-autocomplete/issues/19))
 
 ## Version 1.3.3 - 2024-08-07
 
