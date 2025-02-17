@@ -65,7 +65,7 @@ class AbbreviatedStringField(StrictStringField):
        - FIELD_FULL_MATCH * 2 / 3 if match in lowercase, all non alpha-numeric normalize_str
        - FIELD_FULL_MATCH / 3 if one of the normalize_str values abbreviates the other through is_abbrev
        - FIELD_NO_MATCH if match using normalize_str
-    - combining just picks the left argument
+    - combining picks the longest argument
     """
 
     @classmethod
@@ -120,7 +120,7 @@ class DOIField(StrictStringField):
 
 
 class URLField(StrictStringField):
-    """Class for DOI field
+    """Class for URL field
     Normalized to https://domain/path decoded + reencoded to ensure same encoding
     Checks the URL exists by simple query"""
 
