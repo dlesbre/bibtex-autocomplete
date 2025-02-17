@@ -162,6 +162,11 @@ def make_parser() -> MyParser:
 
     parser.add_argument("--silent", "-s", action="count", default=0)
     parser.add_argument("--no-color", "-n", action="store_true")
+    parser.add_argument(
+        "--color",
+        choices=["auto", "always", "on", "yes", "true", "force", "never", "off", "no", "false"],
+        default="auto",
+    )
     parser.add_argument("--ignore-ssl", "-S", action="store_true")
 
     parser.add_argument("--version", action="store_true")
@@ -278,7 +283,9 @@ More information and demo:
 
   {FgYellow}-v --verbose{Reset}          increase verbosity (use up to 3 times)
   {FgYellow}-s --silent{Reset}           decrease verbosity (use up to 4 times)
-  {FgYellow}-n --no-color{Reset}         don't color/stylise output
+  {FgYellow}--color{Reset} {FgGreen}<auto|always|never>{Reset} enable/disable colored output
+        can also be set with environment variables NO_COLOR and CLICOLOR_FORCE
+        (http://bixense.com/clicolors/). Defaults to auto, which checks if stdout isatty.
 
   {FgYellow}--version{Reset}             show version number
   {FgYellow}-h --help{Reset}             show this help

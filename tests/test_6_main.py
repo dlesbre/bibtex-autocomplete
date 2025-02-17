@@ -142,6 +142,9 @@ tests: List[Tuple[List[str], List[Tuple[str, str]]]] = [
     ([input_bib], [("input.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "-n"], [("input.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--no-color"], [("input.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--color", "always"], [("input.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--color=never"], [("input.btac.bib.exp", "input.btac.bib")]),
+    ([input_bib, "--color=auto"], [("input.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "-v"], [("input.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "--verbose"], [("input.btac.bib.exp", "input.btac.bib")]),
     ([input_bib, "-s"], [("input.btac.bib.exp", "input.btac.bib")]),
@@ -632,6 +635,7 @@ exit_tests: List[Tuple[List[str], int]] = [
     ([input_bib, "--start-from", "not-an-entry"], 2),
     ([input_bib, "--sf", "not-an-entry"], 2),
     ([input_bib, "--fi", "invalid"], 2),
+    ([input_bib, "--color", "invalid"], 2),
 ]
 
 

@@ -1,5 +1,10 @@
 # Change Log
 
+## Unreleased
+
+- Deprecate `-n / --no-color` option, replace it with `--color <auto|always|force>`
+  and environment variables.
+
 ## Version 1.4.0 - 2024-10-27
 
 - Add command-line tab completion for flags and some choices (field names)

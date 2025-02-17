@@ -41,6 +41,7 @@ from ..bibtex.io import file_read, file_write, get_entries, make_writer, read, w
 from ..bibtex.normalize import has_field
 from ..lookups.abstract_entry_lookup import LookupType
 from ..lookups.https import HTTPSLookup
+from ..utils.ansi import ANSICodes
 from ..utils.constants import (
     BULLET,
     CONNECTION_TIMEOUT,
@@ -165,7 +166,12 @@ class BibtexAutocomplete(Iterable[EntryType]):
         comma_first: bool = False,
         no_trailing_comma: bool = False,
         indent: str = "\t",
+        color: Optional[Literal["auto", "always", "never"]] = None,
     ):
+        # main set the color directly because it can output various warnings,
+        # but for API use, we can also set the color here
+        if color is not None:
+            ANSICodes.auto_colors(color)
         HTTPSLookup.connection_timeout = timeout if isinstance(timeout, float) and timeout > 0.0 else None
         HTTPSLookup.ignore_ssl = ignore_ssl
         logger.set_verbosity(verbose)

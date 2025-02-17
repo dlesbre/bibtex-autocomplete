@@ -2,9 +2,33 @@
 ANSI escape sequence for colors and styles
 """
 
+from os import environ
+from sys import stdout
+from typing import Literal
+
 
 class ANSICodes:
     use_ansi: bool = True
+
+    @classmethod
+    def auto_colors(
+        cls,
+        parameter: Literal["auto", "always", "on", "yes", "true", "force", "never", "off", "no", "false"],
+    ) -> None:
+        """Check whether or not we should use ANSI colors:
+        Check if the given parameter requires/disables it first
+        If not, check for env variables NO_COLOR and CLICOLOR_FORCE (http://bixense.com/clicolors/)
+        If not, check stdout.isatty"""
+        if parameter in ["always", "on", "yes", "true", "force"]:
+            cls.use_ansi = True
+        elif parameter in ["never", "off", "no", "false"]:
+            cls.use_ansi = False
+        elif environ.get("NO_COLOR"):
+            cls.use_ansi = False
+        elif environ.get("CLICOLOR_FORCE"):
+            cls.use_ansi = True
+        else:
+            cls.use_ansi = stdout.isatty()
 
     Codes = {
         # Foreground Colors

@@ -430,7 +430,10 @@ are a few options you can use to control the output format:
 - `-s --silent` hide info and progress bar. Keep showing warnings and errors.
   Use twice to also hide warnings, thrice to also hide errors and four times to
   also hide critical errors, effectively killing all output.
-- `-n --no-color` don't use ANSI codes to color and stylize output
+- `--color <auto|always|never>` sets whether btac should use colored output.
+  Can also be set by the `NO_COLOR` or the `CLICOLOR_FORCE` environment variables,
+  as explained here: http://bixense.com/clicolors/. Defaults to `auto`, which checks
+  if standard output is a terminal via the `isatty` function
 
 - `--version` show version number
 - `-h --help` show help

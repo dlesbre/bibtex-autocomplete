@@ -1,6 +1,5 @@
 from argparse import ArgumentParser
 from pathlib import Path
-from sys import stdout
 from tempfile import mkstemp
 from typing import Any, Callable, Container, List, Optional, Set
 
@@ -74,7 +73,12 @@ def main(argv: Optional[List[str]] = None) -> int:
     except ValueError:
         return 2
 
-    ANSICodes.use_ansi = stdout.isatty() and not args.no_color
+    if args.no_color and args.color == "auto":
+        args.color = "never"
+    ANSICodes.auto_colors(args.color)
+
+    if args.no_color:
+        logger.warn("the -n / --no-color option is deprecated. Use --color=never instead.", error="DEPRECATION WARNING")
 
     if args.help:
         print(
