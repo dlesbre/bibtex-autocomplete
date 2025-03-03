@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## Version 1.4.1 - 2025-03-03
 
 - Deprecate `-n / --no-color` option, replace it with `--color <auto|always|force>`
   and environment variables.
