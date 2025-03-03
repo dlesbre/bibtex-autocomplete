@@ -61,7 +61,6 @@ narrow down the list of sources if some aren't relevant using [command line opti
 
 ### Contents
 
-- [New in version 1.3](#new-in-version-13)
 - [Demo](#demo)
 - [Quick overview](#quick-overview)
 - [Installation](#installation)
@@ -76,14 +75,6 @@ narrow down the list of sources if some aren't relevant using [command line opti
   - [Optional flags](#optional-flags)
 - [Running from python](#running-from-python)
 - [Credit and license](#credit-and-license)
-
-## New in version 1.3
-
-Added OpenAlex and Inspire HEP as sources. Switched to a majority vote between source
-to find new field, along with smart field normalization and comparison. And of course,
-bug fixes!
-
-See the [changelog](https://github.com/dlesbre/bibtex-autocomplete/blob/master/CHANGELOG.md) for full details.
 
 ## Demo
 
