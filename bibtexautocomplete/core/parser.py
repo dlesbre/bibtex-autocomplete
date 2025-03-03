@@ -114,7 +114,7 @@ class MyParser(ArgumentParser):
         "  See {FgYellow}{NAME} --help{Reset} for a list of options."
     )
 
-    def print_usage(self, file: Optional[SupportsWrite[str]] = None) -> None:
+    def print_usage(self, file: "Optional[SupportsWrite[str]]" = None) -> None:
         logger.to_logger(CRITICAL, self.USAGE, NAME=SCRIPT_NAME)
 
     def error(self, message: str) -> NoReturn:
