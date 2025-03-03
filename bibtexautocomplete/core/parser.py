@@ -7,7 +7,7 @@ from logging import CRITICAL
 from os import listdir
 from pathlib import Path
 from sys import stderr
-from typing import IO, Iterable, List, NoReturn, Optional, TypeVar
+from typing import TYPE_CHECKING, Iterable, List, NoReturn, Optional, TypeVar
 
 from ..bibtex.constants import FieldNamesSet
 from ..utils.ansi import ANSICodes
@@ -16,6 +16,9 @@ from ..utils.logger import logger
 from .apis import LOOKUP_NAMES
 
 T = TypeVar("T")
+
+if TYPE_CHECKING:
+    from _typeshed import SupportsWrite
 
 
 def flatten(list_of_lists: Iterable[List[T]]) -> List[T]:
@@ -111,7 +114,7 @@ class MyParser(ArgumentParser):
         "  See {FgYellow}{NAME} --help{Reset} for a list of options."
     )
 
-    def print_usage(self, file: Optional[IO[str]] = None) -> None:
+    def print_usage(self, file: Optional[SupportsWrite[str]] = None) -> None:
         logger.to_logger(CRITICAL, self.USAGE, NAME=SCRIPT_NAME)
 
     def error(self, message: str) -> NoReturn:

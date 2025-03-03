@@ -348,7 +348,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                     self.update_entry(entries[self.position], to_complete[self.position], threads)
                     self.position += 1
         logger.info(
-            "Modified {changed_entries} / {count_entries} entries" ", added {changed_fields} fields",
+            "Modified {changed_entries} / {count_entries} entries, added {changed_fields} fields",
             changed_entries=self.changed_entries,
             count_entries=nb_entries,
             changed_fields=self.changed_fields,
