@@ -42,8 +42,9 @@ add specific fields (like DOIs, or ISSN) to a manually curated bib file.
 
 It is designed to be as simple to use as possible: just give it a bib file and
 let **btac** work its magic! It combines multiple sources and runs consistency
-and normalization checks on the added fields (check that URLs lead to a valid
-webpage, that DOIs exist at https://dx.doi.org/).
+and normalization checks on the added fields (only adds URLs that lead to a valid
+webpage, DOIs that exist at https://dx.doi.org/, ISSN/ISBN with valid check 
+digits...).
 
 It attempts to complete a BibTeX file by querying the following domains:
 - [openalex.org](https://openalex.org/): ~240 million entries
@@ -101,11 +102,11 @@ entries that don't have one of those two fields *will not* be completed.
   for full details)
 - If the year is known, entries with different years will also not match.
 
-**Disclaimers**
+**Disclaimers:**
 
 - There is no guarantee that the script will find matches for your entries, or
   that the websites will have any data to add to your entries, (or even that the
-  website data is correct, but that's not for me to say...)
+  website data is correct).
 
 - The script is designed to minimize the chance of false positives - that is
   adding data from another similar-ish entry to your entry. If you find any such
@@ -119,21 +120,21 @@ by performing a majority vote among the sources. To do so it uses smart
 normalization and merging tactics for each field:
 - Authors (and editors) match if they have same last names and, if both first
   names present, the first name of one is equal/an abbreviation of the other.
-  Author list match they have at least one author in common.
+  Author lists match they have at least one author in common.
 - ISSN and ISBN are normalized and have their check digits verified. ISBN are converted
-  to their 13 digit representation
+  to their 13 digit representation.
 - URL and DOI are checked for valid format, and further validated by querying
   them online to ensure they exist. DOI are normalized to strip any leading URL
   and converted to lowercase.
 - Many fields match with abbreviation detection (journal, institution, booktitle,
   organization, publisher, school and series). So `ACM` will match
-  `Association for Computer Machinery`
-- Pages are normalized to use `--` as separator
+  `Association for Computer Machinery`.
+- Pages are normalized to use `--` as separator.
 - All other fields are compared excluding case and punctuation.
 
 The script will not overwrite any user given non-empty fields, unless the
 `-f/--force-overwrite` flag is given. If you want to check what fields are
-added, you can use `-v/--verbose` to have them printed to stdout (with
+added, you can use `-v/--verbose` to have them printed to standard output (with
 source information), or `-p/--prefix` to have the new fields be prefixed with
 `BTAC` in the output file.
 
