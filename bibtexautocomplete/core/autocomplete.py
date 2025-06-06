@@ -591,7 +591,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                     names.append(f"{lastname}, {firstname}")
                 else:
                     names.append(lastname)
-        entry[field] = " and ".join(names)
+            entry[field] = " and ".join(names)
         return entry
 
     def load_entry(self, entries: Union[EntryType, List[EntryType]]) -> None:
