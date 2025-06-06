@@ -6,12 +6,9 @@ dynamic = ["version"]
 description = "Script to autocomplete bibtex files by polling online databases"
 requires-python = ">= 3.8"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = { file = "LICENSE" }
 keywords = ["bibtex", "biblatex", "latex", "autocomplete", "btac"]
-dependencies = [
-  "bibtexparser<2.0.0",
-  "alive-progress>=3.0.0",
-]
+dependencies = ["bibtexparser<2.0.0", "alive-progress>=3.0.0"]
 classifiers = [
   # How mature is this project? Common values are
   #   3 - Alpha
@@ -65,12 +62,10 @@ dev = [
 include = ["bibtexautocomplete*"]
 
 [tool.setuptools.dynamic]
-version = {attr = "bibtexautocomplete.utils.constants.VERSION_STR"}
+version = { attr = "bibtexautocomplete.utils.constants.VERSION_STR" }
 
 [tool.ruff]
 line-length = 120
-
-[tool.ruff.lint]
 select = ["E", "F", "B", "W", "I"]
 
 [tool.mypy]
