@@ -1,5 +1,9 @@
 # Change Log
 
+## Version 1.4.2 - 2025-06-07
+
+- Fix an error when calling `load_entry` via the python API.
+
 ## Version 1.4.1 - 2025-03-03
 
 - Deprecate `-n / --no-color` option, replace it with `--color <auto|always|force>`
