@@ -16,14 +16,14 @@ permissions:
 jobs:
   test-latest:
     runs-on: ubuntu-latest
-    name: "Static checks and test (python 3.12)"
+    name: "Static checks and test (python 3.13)"
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python 3.12
+      - name: Set up Python 3.13
         uses: actions/setup-python@v3
         with:
-          python-version: "3.12"
+          python-version: "3.13"
       - name: Install dependencies
         run: make setup-dev
       - name: Lint and check formatting
@@ -40,7 +40,7 @@ jobs:
     name: "Tests python"
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
       - uses: actions/checkout@v3
