@@ -193,10 +193,10 @@ urls = [
         "https://link.springer.com/content/pdf/bfm:978-1-4615-4625-2/1?pdf=chapter%20toc",
         True,
     ),
-    (
-        "https://dspace.cvut.cz/bitstream/10467/62442/1/Technick%c3%a1%20zpr%c3%a1va_Dietz_Hoogervorst_2015.pdf",
-        True,
-    ),
+    #     (
+    #         "https://dspace.cvut.cz/bitstream/10467/62442/1/Technick%c3%a1%20zpr%c3%a1va_Dietz_Hoogervorst_2015.pdf",
+    #         True,
+    #     ),
 ]
 
 
