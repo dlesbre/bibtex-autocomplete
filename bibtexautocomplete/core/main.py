@@ -34,7 +34,7 @@ from .parser import (
 
 parser_autocomplete: Optional[Callable[[ArgumentParser], Any]] = None
 try:
-    from argcomplete import autocomplete
+    from argcomplete import autocomplete  # type: ignore
 
     parser_autocomplete = autocomplete
 except ImportError:
