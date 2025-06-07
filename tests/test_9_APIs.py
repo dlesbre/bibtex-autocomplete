@@ -69,8 +69,12 @@ class Base:
         bib = BibtexEntry.from_entry("test", self.entry[0])
         a = self.Lookup(bib)
         res = a.query()
-        assert res is not None
-        assert res.doi.to_str() == self.entry[1]
+        if res is None:
+            status = a.get_last_query_info().get("response-status")
+            assert isinstance(status, int)
+            assert status == 429 or status >= 500
+        else:  # res is not None
+            assert res.doi.to_str() == self.entry[1]
 
     def test_junk(self) -> None:
         bib = BibtexEntry.from_entry("test", entry_junk)
@@ -88,8 +92,12 @@ class Base:
         bib = BibtexEntry.from_entry("test", entry)
         a = self.Lookup(bib)
         res = a.query()
-        assert res is not None
-        assert res.doi.to_str() == self.entry[1]
+        if res is None:
+            status = a.get_last_query_info().get("response-status")
+            assert isinstance(status, int)
+            assert status == 429 or status >= 500
+        else:  # res is not None
+            assert res.doi.to_str() == self.entry[1]
 
     def test_no_title(self) -> None:
         entry = self.entry[0].copy()
