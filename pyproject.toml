@@ -52,6 +52,7 @@ dev = [
   "argcomplete",
   "pre-commit",
   "pytest",
+  "pytest-stub",
   "mypy",
   "ruff",
   "coverage",
