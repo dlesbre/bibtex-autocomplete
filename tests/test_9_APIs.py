@@ -71,8 +71,8 @@ class Base:
         res = a.query()
         if res is None:
             status = a.get_last_query_info().get("response-status")
-            assert isinstance(status, int)
-            assert status == 429 or status >= 500
+            if isinstance(status, int):  # None when no response
+                assert status == 429 or status >= 500
         else:  # res is not None
             assert res.doi.to_str() == self.entry[1]
 
@@ -94,8 +94,8 @@ class Base:
         res = a.query()
         if res is None:
             status = a.get_last_query_info().get("response-status")
-            assert isinstance(status, int)
-            assert status == 429 or status >= 500
+            if isinstance(status, int):  # None when no response
+                assert status == 429 or status >= 500
         else:  # res is not None
             assert res.doi.to_str() == self.entry[1]
 
