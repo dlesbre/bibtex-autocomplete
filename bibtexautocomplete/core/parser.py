@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Iterable, List, NoReturn, Optional, TypeVar
 from ..bibtex.constants import FieldNamesSet
 from ..utils.ansi import ANSICodes
 from ..utils.constants import BTAC_FILENAME, CONNECTION_TIMEOUT, SCRIPT_NAME
+from ..utils.functions import BTAC_CLI_Error, BTAC_File_Error
 from ..utils.logger import logger
 from .apis import LOOKUP_NAMES
 
@@ -68,7 +69,9 @@ def indent_string(indent: str) -> str:
         logger.critical(
             f"--fi/--indent should be a number or string with spaces, '_', 't' and 'n' only.\nGot: '{indent}'"
         )
-        raise ValueError(f"indent should be a number or string with spaces, '_', 't' and 'n' only.\nGot: '{indent}'")
+        raise BTAC_CLI_Error(
+            f"indent should be a number or string with spaces, '_', 't' and 'n' only.\nGot: '{indent}'"
+        )
     return sane
 
 
@@ -99,7 +102,7 @@ def get_bibfiles(input: Path) -> List[Path]:
             filepath=str(input),
             err=err,
         )
-        raise err
+        raise BTAC_File_Error("Failed to read '{filepath}': {err}".format(filepath=str(input), err=err), err) from None
     return filter_bibs(files)
 
 
@@ -120,7 +123,7 @@ class MyParser(ArgumentParser):
     def error(self, message: str) -> NoReturn:
         logger.critical(message + "\n", error="Invalid command line", NAME=SCRIPT_NAME)
         self.print_usage(stderr)
-        raise ValueError(message.format(**ANSICodes.EmptyCodes))
+        raise BTAC_CLI_Error(message.format(**ANSICodes.EmptyCodes))
 
 
 def make_parser() -> MyParser:

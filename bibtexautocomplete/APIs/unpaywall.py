@@ -46,7 +46,7 @@ class UnpaywallLookup(JSON_Lookup):
         base.update(super().get_params())
         if self.doi is None:
             if self.title is None:
-                raise ValueError("query with no title or doi")
+                raise ValueError("unpaywall query with no title or doi")
             base["query"] = self.title
         return base
 

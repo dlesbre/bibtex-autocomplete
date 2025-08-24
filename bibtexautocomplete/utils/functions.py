@@ -1,4 +1,6 @@
-from typing import Callable, Iterable, List, Optional, Set, Tuple, TypeVar
+from typing import Callable, Iterable, List, Optional, Set, Tuple, TypeVar, Union
+
+from bibtexparser.bibdatabase import UndefinedString
 
 T = TypeVar("T")
 Q = TypeVar("Q")
@@ -32,3 +34,19 @@ def split_iso_date(date: str) -> Tuple[Optional[str], Optional[str]]:
         if len(date) >= 7 and date[5:7].isnumeric() and 1 <= int(date[5:7]) <= 12:
             month = date[5:7]
     return year, month
+
+
+class BTAC_CLI_Error(ValueError):
+    """Exception raised for invalid btac command line options/API use"""
+
+
+class BTAC_File_Error(Exception):
+    """Exception raised for invalid file access OR invalid file format"""
+
+    message: str
+    previous_error: Union[UndefinedString, IOError, UnicodeDecodeError]
+
+    def __init__(self, message: str, previous_error: Union[UndefinedString, IOError, UnicodeDecodeError]):
+        super().__init__()
+        self.message = message
+        self.previous_error = previous_error

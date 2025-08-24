@@ -54,6 +54,7 @@ from ..utils.constants import (
     EntryType,
     PathType,
 )
+from ..utils.functions import BTAC_CLI_Error
 from ..utils.logger import VERBOSE_INFO, Hint, logger
 from ..utils.only_exclude import OnlyExclude
 from .apis import LOOKUPS
@@ -243,7 +244,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
                 logger.warn('No entry with ID "{ID}"', ID=x)
         if self.start_from is not None and self.start_from not in all_entries:
             logger.critical('--start-from / --sf invalid: no entry with ID "{ID}"', ID=self.start_from)
-            raise ValueError("start_from value does not appear in list of entries")
+            raise BTAC_CLI_Error("start_from value does not appear in list of entries")
 
     @memoize
     def get_id_padding(self) -> int:

@@ -3,8 +3,6 @@ from pathlib import Path
 from tempfile import mkstemp
 from typing import Any, Callable, Container, List, Optional, Set
 
-from bibtexparser.bibdatabase import UndefinedString
-
 from ..bibtex.constants import FieldNamesSet, FieldType, SearchedFields
 from ..bibtex.io import write
 from ..utils.ansi import ANSICodes, ansi_format
@@ -18,7 +16,7 @@ from ..utils.constants import (
     VERSION_DATE,
     VERSION_STR,
 )
-from ..utils.functions import list_sort_using, list_unduplicate
+from ..utils.functions import BTAC_CLI_Error, BTAC_File_Error, list_sort_using, list_unduplicate
 from ..utils.logger import logger
 from ..utils.only_exclude import OnlyExclude
 from .apis import LOOKUP_NAMES, LOOKUPS
@@ -90,7 +88,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             args = parser.parse_args()
         else:
             args = parser.parse_args(argv)
-    except ValueError:
+    except BTAC_CLI_Error:
         return ErrorCodes.CLI_ERROR
 
     if args.no_color and args.color == "auto":
@@ -263,9 +261,9 @@ def main(argv: Optional[List[str]] = None) -> int:
         except KeyboardInterrupt:
             logger.warn("Interrupted x2")
             return ErrorCodes.DOUBLE_INTERRUPT
-    except ValueError:
+    except BTAC_CLI_Error:
         return ErrorCodes.CLI_ERROR
-    except (UndefinedString, IOError, UnicodeDecodeError):
+    except BTAC_File_Error:
         return ErrorCodes.INPUT_ERROR
     except Exception as err:
         logger.traceback("BTAC encountered an unexpected error:", err)

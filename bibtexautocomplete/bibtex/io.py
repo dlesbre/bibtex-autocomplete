@@ -9,6 +9,7 @@ from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
 
 from ..utils.constants import EntryType, PathType
+from ..utils.functions import BTAC_File_Error
 from ..utils.logger import logger
 
 # from bibtexparser.customization import convert_to_unicode
@@ -42,7 +43,9 @@ def read(bibtex: str, src: str = "") -> BibDatabase:
             src=src,
             err=err,
         )
-        raise err
+        raise BTAC_File_Error(
+            "Failed to parse bibtex{src}: undefined string '{err}'".format(src=src, err=err), err
+        ) from None
     return database
 
 
@@ -77,7 +80,9 @@ def file_read(filepath: PathType) -> BibDatabase:
             filepath=str(filepath),
             err=err,
         )
-        raise err
+        raise BTAC_File_Error(
+            "Failed to read '{filepath}': {err}".format(filepath=str(filepath), err=err), err
+        ) from None
     return read(bibtex, str(filepath))
 
 
