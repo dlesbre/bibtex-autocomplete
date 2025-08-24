@@ -68,7 +68,7 @@ version = { attr = "bibtexautocomplete.utils.constants.VERSION_STR" }
 
 [tool.ruff]
 line-length = 120
-select = ["E", "F", "B", "W", "I"]
+lint.select = ["E", "F", "B", "W", "I"]
 
 [tool.mypy]
 strict = true
