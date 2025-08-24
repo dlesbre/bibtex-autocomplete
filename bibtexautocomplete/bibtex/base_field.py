@@ -45,11 +45,13 @@ class BibtexField(Generic[T]):
 
     skip_slow_checks: bool = False
 
+    entry_id: str
     field: str
     source: str
     value: Optional[T]
 
-    def __init__(self, field: str, source: str) -> None:
+    def __init__(self, entry_id: str, field: str, source: str) -> None:
+        self.entry_id = entry_id
         self.value = None
         self.source = source
         self.field = field
@@ -104,7 +106,7 @@ class BibtexField(Generic[T]):
         (eg. fewer abbreviations). This will only be called on fields that match"""
         if self.value is not None:
             if other.value is not None:
-                obj = self.__class__(self.field, self.source + SOURCE_SEPARATOR + other.source)
+                obj = self.__class__(self.entry_id, self.field, self.source + SOURCE_SEPARATOR + other.source)
                 obj.value = self.combine_values(self.value, other.value)
                 return obj
         logger.warn("Combining fields which store None")
@@ -137,7 +139,7 @@ class BibtexField(Generic[T]):
                         "Invalid Bibtex: could not convert from latex to unicode.\n"
                         "  | Entry: {entry}\n  | Field: {field}\n  | Erronous value: '{value}'"
                     ).format(
-                        entry="",
+                        entry=self.entry_id,
                         field=self.field,
                         value=value,
                     )
