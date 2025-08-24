@@ -29,7 +29,7 @@ from typing import (
     cast,
 )
 
-from alive_progress import alive_bar  # type: ignore
+from alive_progress import alive_bar
 from bibtexparser.bibdatabase import BibDatabase
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.latexenc import string_to_latex
