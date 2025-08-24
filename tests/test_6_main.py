@@ -636,6 +636,7 @@ exit_tests: List[Tuple[List[str], int]] = [
     ([input_bib, "--sf", "not-an-entry"], 2),
     ([input_bib, "--fi", "invalid"], 2),
     ([input_bib, "--color", "invalid"], 2),
+    ([path.join(test_dir, "latex-to-unicode.bib")], 1),
 ]
 
 
