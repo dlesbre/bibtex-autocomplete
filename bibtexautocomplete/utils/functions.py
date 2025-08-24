@@ -44,9 +44,9 @@ class BTAC_File_Error(Exception):
     """Exception raised for invalid file access OR invalid file format"""
 
     message: str
-    previous_error: Union[UndefinedString, IOError, UnicodeDecodeError]
+    previous_error: Union[UndefinedString, IOError, UnicodeDecodeError, None]
 
-    def __init__(self, message: str, previous_error: Union[UndefinedString, IOError, UnicodeDecodeError]):
+    def __init__(self, message: str, previous_error: Union[UndefinedString, IOError, UnicodeDecodeError, None] = None):
         super().__init__()
         self.message = message
         self.previous_error = previous_error

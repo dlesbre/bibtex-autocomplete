@@ -13,10 +13,11 @@ from typing import (
     TypeVar,
 )
 
-from bibtexparser.latexenc import latex_to_unicode
-
+from ..utils.constants import INPUT_SOURCE
+from ..utils.functions import BTAC_File_Error
 from ..utils.logger import logger
 from .constants import FIELD_FULL_MATCH, FIELD_NO_MATCH
+from .normalize import safe_latex_to_unicode
 
 
 class Comparable(Protocol):
@@ -128,7 +129,24 @@ class BibtexField(Generic[T]):
     def set_str(self, value: Optional[str]) -> None:
         """Same as set, but converts the value from string to T first"""
         if value is not None:
-            self.set(self.convert(latex_to_unicode(value)))
+            cvalue = safe_latex_to_unicode(value)
+            if cvalue is None:
+                if self.source == INPUT_SOURCE:
+                    # Invalid latex field from an input file -> raise an error
+                    message = (
+                        "Invalid Bibtex: could not convert from latex to unicode.\n"
+                        "Entry: {entry}\nField: {field}\nErronous value: '{value}'"
+                    ).format(
+                        entry="",
+                        field=self.field,
+                        value=value,
+                    )
+                    logger.error(message)
+                    raise BTAC_File_Error(message)
+                else:
+                    self.value = None
+            else:
+                self.set(self.convert(cvalue))
         else:
             self.value = None
 
@@ -143,10 +161,10 @@ class StrictStringField(BibtexField[str]):
 
     @classmethod
     def normalize(cls, value: str) -> Optional[str]:
-        value = latex_to_unicode(value.strip())
-        if value == "":
+        cvalue = safe_latex_to_unicode(value.strip())
+        if cvalue == "" or cvalue is None:
             return None
-        return value
+        return cvalue
 
 
 # Listify: turn a bibtex field of T into one of List[T]

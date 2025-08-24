@@ -46,6 +46,7 @@ from ..utils.constants import (
     BULLET,
     CONNECTION_TIMEOUT,
     FIELD_PREFIX,
+    INPUT_SOURCE,
     MARKED_FIELD,
     MAX_THREAD_NB,
     SKIP_QUERIES_IF_DELAY,
@@ -270,7 +271,7 @@ class BibtexAutocomplete(Iterable[EntryType]):
         bib_entries: List[BibtexEntry] = []
         to_complete: List[Set[FieldType]] = []
         for x in entries:
-            bib = BibtexEntry.from_entry("input", x)
+            bib = BibtexEntry.from_entry(INPUT_SOURCE, x)
             bib_entries.append(bib)
             to_complete.append(self.get_fields_to_complete(x))
 

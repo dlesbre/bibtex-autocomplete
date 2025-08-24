@@ -64,3 +64,5 @@ MARKED_FIELD = FIELD_PREFIX + "queried"
 
 # Bullet printed to the screen when printing a list
 BULLET = "{FgBlue}{StBold}*{Reset} "
+
+INPUT_SOURCE = "input"

@@ -13,6 +13,18 @@ from ..utils.constants import EntryType
 from ..utils.logger import logger
 
 
+def safe_latex_to_unicode(string: str) -> Optional[str]:
+    """Safe version of bibtexparser's latex_to_unicode.
+    Returns None instead of raising an error for invalid input"""
+    try:
+        newval = latex_to_unicode(string)
+        if isinstance(newval, str):  # Type check since latex_to_unicode returns Any
+            return newval
+        return None
+    except ValueError:
+        return None
+
+
 def make_plain(value: Optional[str]) -> Optional[str]:
     """Returns a plain version of the field (remove redundant braces)
     returns None if the field is None or empty string"""
@@ -52,7 +64,9 @@ def normalize_str_weak(string: str, from_latex: bool = True) -> str:
     replace tabs and newline with spaces,
     removes duplicate spaces"""
     if from_latex:
-        string = latex_to_unicode(string)
+        s = safe_latex_to_unicode(string)
+        if s is not None:
+            string = s
     string = strip_accents(string).lower()
     return sub(r"\s+", " ", string)
 
@@ -62,7 +76,9 @@ def normalize_str(string: str) -> str:
     Converts to lower case, strips accents
     Replaces all non alpha-numeric characters with spaces
     Removes duplicate spaces"""
-    string = latex_to_unicode(string)
+    s = safe_latex_to_unicode(string)
+    if s is not None:
+        string = s
     res = ""
     prev_space = False
     for x in strip_accents(string):
