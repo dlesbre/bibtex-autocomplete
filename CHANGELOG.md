@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 1.4.3 - 2025-08-24
+
+- Cleaner error message when failing to decode latex from input files
+  (issue [#20](https://github.com/dlesbre/bibtex-autocomplete/issues/20)).
+
 ## Version 1.4.2 - 2025-06-07
 
 - Fix an error when calling `load_entry` via the python API.
