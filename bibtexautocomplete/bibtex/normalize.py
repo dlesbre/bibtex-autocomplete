@@ -21,7 +21,7 @@ def safe_latex_to_unicode(string: str) -> Optional[str]:
         if isinstance(newval, str):  # Type check since latex_to_unicode returns Any
             return newval
         return None
-    except ValueError:
+    except TypeError:
         return None
 
 

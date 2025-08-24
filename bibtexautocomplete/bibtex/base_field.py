@@ -135,7 +135,7 @@ class BibtexField(Generic[T]):
                     # Invalid latex field from an input file -> raise an error
                     message = (
                         "Invalid Bibtex: could not convert from latex to unicode.\n"
-                        "Entry: {entry}\nField: {field}\nErronous value: '{value}'"
+                        "  | Entry: {entry}\n  | Field: {field}\n  | Erronous value: '{value}'"
                     ).format(
                         entry="",
                         field=self.field,
