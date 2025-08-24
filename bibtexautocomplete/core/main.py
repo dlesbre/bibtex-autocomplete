@@ -41,6 +41,24 @@ except ImportError:
     pass
 
 
+class ErrorCodes:
+    """Error codes returned by main:
+    INPUT_ERROR: could not read bib files/file is not a valid bib
+    CLI_ERROR: bad/conflicting command line arguments
+    INTERRUPT: program received an interrupt, but had time to clean up (save data to temp)
+    DOUBLE_INTERRUPT: program was killed
+    FAILURE: program had an unexpected crash
+    """
+
+    SUCCESS = 0
+    INPUT_ERROR = 1
+    CLI_ERROR = 2
+    INTERRUPT = 5
+    DOUBLE_INTERRUPT = 7
+
+    FAILURE = 10
+
+
 def conflict(parser: MyParser, prefix: str, option1: str, option2: str) -> int:
     try:
         parser.error(
@@ -54,14 +72,16 @@ def conflict(parser: MyParser, prefix: str, option1: str, option2: str) -> int:
             + "{Reset} option."
         )
     except ValueError:
-        return 2
+        return ErrorCodes.CLI_ERROR
 
 
 def main(argv: Optional[List[str]] = None) -> int:
     """The main function of bibtexautocomplete
     Takes an argv like List as argument,
     if none, uses sys.argv
-    see HELP_TEXT or main(["-h"]) for details"""
+    see HELP_TEXT or main(["-h"]) for details
+
+    Returns an integer, see ErrorCodes for meaning"""
     parser = make_parser()
     if parser_autocomplete is not None:
         parser_autocomplete(parser)
@@ -71,7 +91,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         else:
             args = parser.parse_args(argv)
     except ValueError:
-        return 2
+        return ErrorCodes.CLI_ERROR
 
     if args.no_color and args.color == "auto":
         args.color = "never"
@@ -95,14 +115,14 @@ def main(argv: Optional[List[str]] = None) -> int:
                 PREFIX=FIELD_PREFIX,
             )
         )
-        return 0
+        return ErrorCodes.SUCCESS
     if args.version:
         print(
             "{NAME} version {VERSION} ({VERSION_DATE})".format(
                 NAME=SCRIPT_NAME, VERSION=VERSION_STR, VERSION_DATE=VERSION_DATE
             )
         )
-        return 0
+        return ErrorCodes.SUCCESS
 
     if args.silent:
         args.verbose = -args.silent
@@ -174,7 +194,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                 "       with {FgYellow}-o / --output {FgGreen}<filename>{Reset}."
             )
         except ValueError:
-            return 2
+            return ErrorCodes.CLI_ERROR
 
     try:
         completer = BibtexAutocomplete(
@@ -239,14 +259,15 @@ def main(argv: Optional[List[str]] = None) -> int:
                 if i == completer.position:
                     logger.info("Only completed entries up to and including '{}'.\n".format(entry.get("ID", "<no_id>")))
                     break_next = True
-            return 5
+            return ErrorCodes.INTERRUPT
         except KeyboardInterrupt:
             logger.warn("Interrupted x2")
-            return 7
+            return ErrorCodes.DOUBLE_INTERRUPT
     except ValueError:
-        return 2
-    except UndefinedString:
-        return 1
-    except (IOError, UnicodeDecodeError):
-        return 1
-    return 0
+        return ErrorCodes.CLI_ERROR
+    except (UndefinedString, IOError, UnicodeDecodeError):
+        return ErrorCodes.INPUT_ERROR
+    except Exception as err:
+        logger.traceback("BTAC encountered an unexpected error:", err)
+        return ErrorCodes.FAILURE
+    return ErrorCodes.SUCCESS
