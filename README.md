@@ -49,7 +49,6 @@ It attempts to complete a BibTeX file by querying the following domains:
 - [www.crossref.org](https://www.crossref.org/): ~150 million entries
 - [arxiv.org](https://arxiv.org/): open access archive, ~2.4 million entries
 - [semanticscholar.org](https://www.semanticscholar.org/): ~215 million entries
-- [unpaywall.org](https://unpaywall.org/): database of open access articles, ~48 million entries
 - [dblp.org](https://dblp.org): computer science, ~7 million entries
 - [researchr.org](https://researchr.org/): computer science
 - [inspirehep.net](https://inspirehep.net/): high-energy physics, ~1.5 million entries
@@ -257,10 +256,10 @@ regularly.
 - `-q --only-query <site>` or `-Q --dont-query <site>`
 
   Restrict which websites to query from. `<site>` must be one of: `openalex`,
-  `crossref`, `arxiv`, `s2`, `unpaywall`, `dblp`, `researchr`, `hep`. These arguments
+  `crossref`, `arxiv`, `s2`, `dblp`, `researchr`, `hep`. These arguments
   can be used multiple times, for example to only query Crossref and DBLP use
   `-q crossref -q dblp` or
-  `-Q openalex -Q researchr -Q unpaywall -Q arxiv -Q s2 -Q hep`
+  `-Q openalex -Q researchr -Q arxiv -Q s2 -Q hep`
 
 - `-e --only-entry <id>` or `-E --exclude-entry <id>`
 
@@ -401,7 +400,6 @@ are a few options you can use to control the output format:
       },
       "openalex": ...,
       "arxiv": null, // null when no match found
-      "unpaywall": ...,
       "dblp": ...,
       "researchr": ...,
       "inspire": ...
