@@ -6,7 +6,6 @@
 [![PyPI status][status-shield]][pypi-link]
 [![Downloads][download-shield]](https://pepy.tech/project/bibtexautocomplete)
 
-[![Maintenance][maintain-shield]][commit-link]
 [![Commit][commit-shield]][commit-link]
 [![actions][pipeline-shield]][pipeline-link]
 [![issues][issues-shield]][issues-link]
@@ -21,7 +20,6 @@
 [download-shield]:  https://static.pepy.tech/badge/bibtexautocomplete
 [pypi-link]: https://pypi.python.org/pypi/bibtexautocomplete/
 
-[maintain-shield]: https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg
 [commit-shield]: https://img.shields.io/github/last-commit/dlesbre/bibtex-autocomplete
 [commit-link]: https://github.com/dlesbre/bibtex-autocomplete/graphs/commit-activity
 
@@ -43,7 +41,7 @@ add specific fields (like DOIs, or ISSN) to a manually curated bib file.
 It is designed to be as simple to use as possible: just give it a bib file and
 let **btac** work its magic! It combines multiple sources and runs consistency
 and normalization checks on the added fields (only adds URLs that lead to a valid
-webpage, DOIs that exist at https://dx.doi.org/, ISSN/ISBN with valid check 
+webpage, DOIs that exist at https://dx.doi.org/, ISSN/ISBN with valid check
 digits...).
 
 It attempts to complete a BibTeX file by querying the following domains:
