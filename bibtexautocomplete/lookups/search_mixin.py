@@ -34,11 +34,11 @@ class SearchResultMixin(Generic[result]):
         value between ENTRY_NO_MATCH and ENTRY_CERTAIN_MATCH (included)
 
     Attribute: ok_codes : list of expected codes, fails data.code is not in them
-      defaults to [200]
+      defaults to [200, 202]
     """
 
     # HTTP codes that indicate we (likely) got valid data
-    ok_codes: List[int] = [200]
+    ok_codes: List[int] = [200, 202]
 
     # HTTP codes that shouldn't raise a warning, but indicate we got no data
     # Typically 404 for websites that return 404 on unknown DOIs.

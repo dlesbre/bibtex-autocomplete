@@ -13,8 +13,14 @@ from ..utils.logger import logger
 from ..utils.safe_json import SafeJSON
 
 
+def http_code_ok(code: int) -> bool:
+    """Returns true if the passed code corresponds to an OK/accept HTTP response
+    I.E. 200 or 202"""
+    return code == 200 or code == 202
+
+
 class URLCheck(ConditionMixin[str, Optional[Data]], RedirectFollower[str, Optional[Data]]):
-    """Checks that an URL exists (should return 200)
+    """Checks that an URL exists (should return 2XX)
     Follows redirection (up to a certain depth)"""
 
     name = "url_checker"
@@ -34,7 +40,7 @@ class URLCheck(ConditionMixin[str, Optional[Data]], RedirectFollower[str, Option
             self.path = split[1]
 
     def process_data(self, data: Data) -> Optional[Data]:
-        if data.code != 200:
+        if http_code_ok(data.code):
             return None
         return data
 
@@ -45,7 +51,7 @@ class DOICheck(
 ):
     """
     Queries https://doi.org/api/handles/<doi> to check DOI exists
-    and get redirection URL, then checks the redirection URL returns 200
+    and get redirection URL, then checks the redirection URL returns 2XX
     or redirects to an URL that does.
 
     Example URL: https://doi.org/api/handles/10.1109/tro.2004.829459
@@ -80,7 +86,7 @@ class DOICheck(
         return self.path + quote(self.doi)
 
     def process_data(self, data: Data) -> Optional[bool]:
-        if data.code != 200:
+        if not http_code_ok(data.code):
             return None
         json = SafeJSON.from_bytes(data.data)
         if json["responseCode"].to_int() != 1:
