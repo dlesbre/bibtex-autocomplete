@@ -96,5 +96,5 @@ ENTRY_NO_MATCH = 0  # Any score below is no match
 def cast_field_name(field: str) -> Optional[FieldType]:
     """Checks the string is a valid field and converts its type"""
     if field in FieldNamesSet:
-        return cast(FieldType, field)
+        return field
     return None
