@@ -310,13 +310,13 @@ class ListField(BibtexField[List[T]]):
         """faster than match_values_slow (O(n^2) instead of O(n^3)),
         used on long lists.
         May not find the best matches overall though"""
-        set_b = set(b)
+        b_copy = b.copy()
         common = 0
         common_scores = 0
         for elt_a in a:
             max_score = FIELD_NO_MATCH
             max_elt = None
-            for elt_b in b:
+            for elt_b in b_copy:
                 score = cls.base_class.match_values(elt_a, elt_b)
                 if score > max_score:
                     max_score = score
@@ -324,7 +324,7 @@ class ListField(BibtexField[List[T]]):
             if max_elt is not None:
                 common += 1
                 common_scores += max_score
-                set_b.remove(max_elt)
+                b_copy.remove(max_elt)
         return cls.compute_score(a, b, common_scores, common)
 
     @classmethod
