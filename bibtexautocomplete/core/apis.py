@@ -7,7 +7,6 @@ from ..APIs.inspire_hep import InpireHEPLookup
 from ..APIs.openalex import OpenAlexLookup
 from ..APIs.researchr import ResearchrLookup
 from ..APIs.semantic_scholar import SemanticScholarLookup
-from ..APIs.unpaywall import UnpaywallLookup
 from ..lookups.abstract_entry_lookup import LookupType
 
 # List of lookup to use, in the order they will be used
@@ -16,7 +15,6 @@ LOOKUPS: List[LookupType] = [
     CrossrefLookup,
     ArxivLookup,
     SemanticScholarLookup,
-    UnpaywallLookup,
     DBLPLookup,
     ResearchrLookup,
     InpireHEPLookup,

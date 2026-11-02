@@ -10,7 +10,6 @@ from bibtexautocomplete.APIs.inspire_hep import InpireHEPLookup
 from bibtexautocomplete.APIs.openalex import OpenAlexLookup
 from bibtexautocomplete.APIs.researchr import ResearchrLookup
 from bibtexautocomplete.APIs.semantic_scholar import SemanticScholarLookup
-from bibtexautocomplete.APIs.unpaywall import UnpaywallLookup
 from bibtexautocomplete.bibtex.author import Author
 from bibtexautocomplete.bibtex.entry import BibtexEntry
 from bibtexautocomplete.lookups.https import HTTPSRateCapedLookup
@@ -133,10 +132,6 @@ class TestDBLP(Base):
 
 class TestResearchr(Base):
     Lookup = ResearchrLookup
-
-
-class TestUnpaywall(Base):
-    Lookup = UnpaywallLookup
 
 
 class TestArxiv(Base):
