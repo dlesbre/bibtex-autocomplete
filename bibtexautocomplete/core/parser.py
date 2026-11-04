@@ -14,7 +14,7 @@ from ..utils.ansi import ANSICodes
 from ..utils.constants import BTAC_FILENAME, CONNECTION_TIMEOUT, SCRIPT_NAME
 from ..utils.functions import BTAC_CLI_Error, BTAC_File_Error
 from ..utils.logger import logger
-from .apis import LOOKUP_NAMES
+from .apis import DEPRECATED_LOOKUPS, LOOKUP_NAMES
 
 T = TypeVar("T")
 
@@ -133,8 +133,10 @@ def make_parser() -> MyParser:
         usage="btac [--options] <input_files>\nSee help for a list of options.\n",
     )
 
-    parser.add_argument("--dont-query", "-Q", action="append", default=[], choices=LOOKUP_NAMES)
-    parser.add_argument("--only-query", "-q", action="append", default=[], choices=LOOKUP_NAMES)
+    lookups = LOOKUP_NAMES + DEPRECATED_LOOKUPS
+
+    parser.add_argument("--dont-query", "-Q", action="append", default=[], choices=lookups)
+    parser.add_argument("--only-query", "-q", action="append", default=[], choices=lookups)
     parser.add_argument("--dont-complete", "-C", action="append", default=[], choices=FIELD_NAMES)
     parser.add_argument("--only-complete", "-c", action="append", default=[], choices=FIELD_NAMES)
     parser.add_argument("--dont-overwrite", "-W", action="append", default=[], choices=FIELD_NAMES)

@@ -19,7 +19,7 @@ from ..utils.constants import (
 from ..utils.functions import BTAC_CLI_Error, BTAC_File_Error, list_sort_using, list_unduplicate
 from ..utils.logger import logger
 from ..utils.only_exclude import OnlyExclude
-from .apis import LOOKUP_NAMES, LOOKUPS
+from .apis import DEPRECATED_LOOKUPS, LOOKUP_NAMES, LOOKUPS
 from .autocomplete import BibtexAutocomplete
 from .parser import (
     HELP_TEXT,
@@ -138,6 +138,12 @@ def main(argv: Optional[List[str]] = None) -> int:
         args.output = make_output_names(args.input, args.output)
 
     lookups = OnlyExclude[str].from_nonempty(args.only_query, args.dont_query).filter(LOOKUPS, lambda x: x.name)
+    deprecated = set(args.only_query).intersection(DEPRECATED_LOOKUPS)
+    for lookup in deprecated:
+        logger.warn("Deprecated source '" + lookup + "' passed to -q/--only-query will not be queried.")
+    deprecated = set(args.dont_query).intersection(DEPRECATED_LOOKUPS)
+    for lookup in deprecated:
+        logger.warn("Deprecated source '" + lookup + "' passed to -Q/--dont-query, ignored.")
     if args.only_query != [] and args.dont_query != []:
         return conflict(parser, "a ", "-q/--only-query", "-Q/--dont-query")
     if args.only_query != []:
@@ -147,6 +153,9 @@ def main(argv: Optional[List[str]] = None) -> int:
             # Print set without leading and ending brace
             logger.warn("Duplicate '-q' arguments ignored: {set}", set=str(dups)[1:-1])
         lookups = list_sort_using(lookups, args.only_query, lambda x: x.name)
+    if not lookups:
+        logger.error("No lookups selected, exiting")
+        return ErrorCodes.CLI_ERROR
 
     fields = OnlyExclude[FieldType].from_nonempty(args.only_complete, args.dont_complete)
     if args.only_complete != [] and args.dont_complete != []:

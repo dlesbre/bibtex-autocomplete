@@ -20,3 +20,5 @@ LOOKUPS: List[LookupType] = [
     InpireHEPLookup,
 ]
 LOOKUP_NAMES = [cls.name for cls in LOOKUPS]
+
+DEPRECATED_LOOKUPS = ["unpaywall"]
