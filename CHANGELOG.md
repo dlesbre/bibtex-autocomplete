@@ -1,5 +1,12 @@
 # Change Log
 
+## Version 1.5.0 - 2026-11-04
+
+- Fix crash when merging long author lists with duplicates
+- Remove warning on 202 responses
+- Removed unpaywall API as it is a duplicate of openalex. The `-q / -Q` command
+  line arguments no longer accept `unpaywall` as a parameter.
+
 ## Version 1.4.3 - 2025-08-24
 
 - Cleaner error message when failing to decode latex from input files
