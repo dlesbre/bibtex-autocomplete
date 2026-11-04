@@ -69,6 +69,7 @@ version = { attr = "bibtexautocomplete.utils.constants.VERSION_STR" }
 [tool.ruff]
 line-length = 120
 lint.select = ["E", "F", "B", "W", "I"]
+exclude = ["README.md"]
 
 [tool.mypy]
 strict = true
